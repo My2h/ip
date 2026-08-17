@@ -19,17 +19,26 @@ public class FF15 {
 
         Scanner scanner = new Scanner(System.in); // Scanner object to receive input
         String input = scanner.nextLine();
-        ArrayList<String> list = new ArrayList<>(); // Container To-Do List
+        ArrayList<Task> list = new ArrayList<>(); // Container To-Do List
 
         while (!input.equals("bye")) {
             if (input.equals("list")) {
-                printDivider(line);
+                printMessage("Here are the tasks in your list:");
                 for (int i = 0; i < list.size(); i++) {
-                    printMessage((i + 1) + ". " + list.get(i));
+                    printMessage((i + 1) + "." + list.get(i));
                 }
+            } else if (input.startsWith("mark ")) {
+                Task task = list.get(Integer.parseInt(input.substring(5).trim()) - 1);
+                task.markAsDone();
+                printMessage("Nicesu! I've marked this task as done:");
+                printMessage("  " + task);
+            } else if (input.startsWith("unmark ")) {
+                Task task = list.get(Integer.parseInt(input.substring(7).trim()) - 1);
+                task.markAsNotDone();
+                printMessage("OK, I've marked this task as not done yet:");
+                printMessage("  " + task);
             } else {
-                list.add(input);
-                printDivider(line);
+                list.add(new Task(input));
                 printMessage("added: " + input);
             }
             printDivider(line);
@@ -37,7 +46,6 @@ public class FF15 {
             input = scanner.nextLine();
         }
 
-        printDivider(line);
         printMessage("Okok bye bye, see you again soon !");
         printDivider(line);
     }
