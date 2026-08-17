@@ -22,46 +22,74 @@ public class FF15 {
         ArrayList<Task> list = new ArrayList<>(); // Container To-Do List
 
         while (!input.equals("bye")) {
-            if (input.equals("list")) {
-                printMessage("Here are the tasks in your list:");
-                for (int i = 0; i < list.size(); i++) {
-                    printMessage((i + 1) + "." + list.get(i));
+            try {
+                if (input.equals("list")) {
+                    printMessage("Here are the tasks in your list:");
+                    for (int i = 0; i < list.size(); i++) {
+                        printMessage((i + 1) + "." + list.get(i));
+                    }
+                } else if (input.equals("mark") || input.startsWith("mark ")) {           // Mark command
+                    int number = parseTaskNumber(argumentAfter(input, "mark"), list.size());
+                    Task task = list.get(number - 1);
+                    task.markAsDone();
+                    printMessage("You are cooking! I've marked this task as done:");
+                    printMessage("  " + task);
+                } else if (input.equals("unmark") || input.startsWith("unmark ")) {         // Unmark command
+                    int number = parseTaskNumber(argumentAfter(input, "unmark"), list.size());
+                    Task task = list.get(number - 1);
+                    task.markAsNotDone();
+                    printMessage("OK, I've marked this task as not done yet:");
+                    printMessage("  " + task);
+                } else if (input.equals("todo") || input.startsWith("todo ")) {          // Todo task
+                    String description = argumentAfter(input, "todo");
+                    if (description.isEmpty()) {                                                           // handle empty description for todo 
+                        throw new FF15Exception("The description of a todo can't be empty, bro."); 
+                    }
+                    Task task = new Todo(description);
+                    list.add(task);
+                    printTaskAdded(task, list);
+                } else if (input.equals("deadline") || input.startsWith("deadline ")) {     // deadline task
+                    String details = argumentAfter(input, "deadline");
+                    int byIndex = details.indexOf(" /by"); 
+                    if (byIndex == -1) {                                                                     // handle invalid date input for deadlines
+                        throw new FF15Exception("A deadline needs a /by, e.g.: deadline return book /by Sunday");
+                    }
+                    String description = details.substring(0, byIndex).trim();
+                    String by = details.substring(byIndex + " /by".length()).trim();
+                    if (description.isEmpty()) {                                                            // handle empty description input for deadlines
+                        throw new FF15Exception("The description of a deadline can't be empty, bro.");
+                    }
+                    if (by.isEmpty()) {                                                                     // handle empty date input for deadlines
+                        throw new FF15Exception("The /by date/time of a deadline can't be empty, bro.");
+                    }
+                    Task task = new Deadline(description, by);
+                    list.add(task);
+                    printTaskAdded(task, list);
+                } else if (input.equals("event") || input.startsWith("event ")) {        // event task
+                    String details = argumentAfter(input, "event");
+                    int fromIndex = details.indexOf(" /from");
+                    int toIndex = details.indexOf(" /to");
+                    if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {                    // handle invalid date input for events
+                        throw new FF15Exception(
+                                "An event needs /from and /to, e.g.: event project meeting /from Mon 2pm /to 4pm");
+                    }
+                    String description = details.substring(0, fromIndex).trim();
+                    String from = details.substring(fromIndex + " /from".length(), toIndex).trim();
+                    String to = details.substring(toIndex + " /to".length()).trim();
+                    if (description.isEmpty()) {                                                      // handle empty description input for events
+                        throw new FF15Exception("The description of an event can't be empty bro.");
+                    }
+                    if (from.isEmpty() || to.isEmpty()) {                                             // handle empty dates input for events
+                        throw new FF15Exception("The /from and /to date/times of an event can't be empty, bro.");
+                    }
+                    Task task = new Event(description, from, to);                
+                    list.add(task);
+                    printTaskAdded(task, list);
+                } else {
+                    throw new FF15Exception("I'm sorry big man, I don't know what that means :-(");
                 }
-            } else if (input.startsWith("mark ")) {           // Mark command
-                Task task = list.get(Integer.parseInt(input.substring(5).trim()) - 1);
-                task.markAsDone();
-                printMessage("You are cooking! I've marked this task as done:");
-                printMessage("  " + task);
-            } else if (input.startsWith("unmark ")) {         // Unmark command
-                Task task = list.get(Integer.parseInt(input.substring(7).trim()) - 1);
-                task.markAsNotDone();
-                printMessage("OK, I've marked this task as not done yet:");
-                printMessage("  " + task);
-            } else if (input.startsWith("todo ")) {          // Todo task
-                Task task = new Todo(input.substring(5).trim());
-                list.add(task);
-                printTaskAdded(task, list);
-            } else if (input.startsWith("deadline ")) {     // deadline task
-                String details = input.substring(9).trim();
-                int byIndex = details.indexOf(" /by ");
-                String description = details.substring(0, byIndex);
-                String by = details.substring(byIndex + " /by ".length());
-                Task task = new Deadline(description, by);
-                list.add(task);
-                printTaskAdded(task, list);
-            } else if (input.startsWith("event ")) {        // event task
-                String details = input.substring(6).trim();
-                int fromIndex = details.indexOf(" /from ");
-                int toIndex = details.indexOf(" /to ");
-                String description = details.substring(0, fromIndex);
-                String from = details.substring(fromIndex + " /from ".length(), toIndex);
-                String to = details.substring(toIndex + " /to ".length());
-                Task task = new Event(description, from, to);
-                list.add(task);
-                printTaskAdded(task, list);
-            } else {                                              // normal task
-                list.add(new Task(input));
-                printMessage("added: " + input);
+            } catch (FF15Exception e) {
+                printMessage("OOPS!!! " + e.getMessage());
             }
             printDivider(line);
             System.out.println();
@@ -70,6 +98,37 @@ public class FF15 {
 
         printMessage("Okok bye bye, see you again soon !");
         printDivider(line);
+    }
+
+    /**
+     * Returns whatever follows the command word in {@code input} (trimmed), or an
+     * empty string if the command word was typed with nothing after it.
+     */
+    private static String argumentAfter(String input, String commandWord) {
+        if (input.length() <= commandWord.length()) {
+            return "";
+        }
+        return input.substring(commandWord.length() + 1).trim();
+    }
+
+    /**
+     * Parses a 1-based task number typed as an argument to mark/unmark, checking that
+     * it is present, numeric, and within range of the current list.
+     */
+    private static int parseTaskNumber(String arg, int listSize) throws FF15Exception {
+        if (arg.isEmpty()) {
+            throw new FF15Exception("Tell me which task number, e.g. mark 2.");
+        }
+        int number;
+        try {
+            number = Integer.parseInt(arg);
+        } catch (NumberFormatException e) {
+            throw new FF15Exception("'" + arg + "' doesn't look like a task number.");
+        }
+        if (number < 1 || number > listSize) {
+            throw new FF15Exception("I don't have task number " + number + ". You've got " + listSize + " task(s).");
+        }
+        return number;
     }
 
     private static void printDivider(String divider) {         // helper to print line
