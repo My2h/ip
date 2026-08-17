@@ -30,13 +30,19 @@ public class FF15 {
             } else if (input.startsWith("mark ")) {
                 Task task = list.get(Integer.parseInt(input.substring(5).trim()) - 1);
                 task.markAsDone();
-                printMessage("Nicesu! I've marked this task as done:");
+                printMessage("You are cooking! I've marked this task as done:");
                 printMessage("  " + task);
             } else if (input.startsWith("unmark ")) {
                 Task task = list.get(Integer.parseInt(input.substring(7).trim()) - 1);
                 task.markAsNotDone();
                 printMessage("OK, I've marked this task as not done yet:");
                 printMessage("  " + task);
+            } else if (input.startsWith("todo ")) {
+                Task task = new Todo(input.substring(5).trim());
+                list.add(task);
+                printMessage("Got it. I've added this task:");
+                printMessage("  " + task);
+                printMessage("Now you have " + list.size() + " tasks in the list.");
             } else {
                 list.add(new Task(input));
                 printMessage("added: " + input);
