@@ -49,7 +49,17 @@ public class FF15 {
                 Task task = new Deadline(description, by);
                 list.add(task);
                 printTaskAdded(task, list);
-            } else {                                              // normal task 
+            } else if (input.startsWith("event ")) {        // event task
+                String details = input.substring(6).trim();
+                int fromIndex = details.indexOf(" /from ");
+                int toIndex = details.indexOf(" /to ");
+                String description = details.substring(0, fromIndex);
+                String from = details.substring(fromIndex + " /from ".length(), toIndex);
+                String to = details.substring(toIndex + " /to ".length());
+                Task task = new Event(description, from, to);
+                list.add(task);
+                printTaskAdded(task, list);
+            } else {                                              // normal task
                 list.add(new Task(input));
                 printMessage("added: " + input);
             }
