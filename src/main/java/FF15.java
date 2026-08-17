@@ -27,23 +27,29 @@ public class FF15 {
                 for (int i = 0; i < list.size(); i++) {
                     printMessage((i + 1) + "." + list.get(i));
                 }
-            } else if (input.startsWith("mark ")) {
+            } else if (input.startsWith("mark ")) {           // Mark command
                 Task task = list.get(Integer.parseInt(input.substring(5).trim()) - 1);
                 task.markAsDone();
                 printMessage("You are cooking! I've marked this task as done:");
                 printMessage("  " + task);
-            } else if (input.startsWith("unmark ")) {
+            } else if (input.startsWith("unmark ")) {         // Unmark command
                 Task task = list.get(Integer.parseInt(input.substring(7).trim()) - 1);
                 task.markAsNotDone();
                 printMessage("OK, I've marked this task as not done yet:");
                 printMessage("  " + task);
-            } else if (input.startsWith("todo ")) {
+            } else if (input.startsWith("todo ")) {          // Todo task
                 Task task = new Todo(input.substring(5).trim());
                 list.add(task);
-                printMessage("Got it. I've added this task:");
-                printMessage("  " + task);
-                printMessage("Now you have " + list.size() + " tasks in the list.");
-            } else {
+                printTaskAdded(task, list);
+            } else if (input.startsWith("deadline ")) {     // deadline task
+                String details = input.substring(9).trim();
+                int byIndex = details.indexOf(" /by ");
+                String description = details.substring(0, byIndex);
+                String by = details.substring(byIndex + " /by ".length());
+                Task task = new Deadline(description, by);
+                list.add(task);
+                printTaskAdded(task, list);
+            } else {                                              // normal task 
                 list.add(new Task(input));
                 printMessage("added: " + input);
             }
@@ -56,11 +62,17 @@ public class FF15 {
         printDivider(line);
     }
 
-    private static void printDivider(String divider) {
+    private static void printDivider(String divider) {         // helper to print line
         System.out.println("    " + divider);
     }
 
-    private static void printMessage(String message) {
+    private static void printMessage(String message) {         // helper to print message
         System.out.println("     " + message);
+    }
+
+    private static void printTaskAdded(Task task, ArrayList<Task> list) {        // helper to print task message
+        printMessage("Got it. I've added this task:");
+        printMessage("  " + task);
+        printMessage("Now you have " + list.size() + " tasks in the list.");
     }
 }
