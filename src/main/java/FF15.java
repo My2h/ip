@@ -103,6 +103,7 @@ public class FF15 {
     /**
      * Returns whatever follows the command word in {@code input} (trimmed), or an
      * empty string if the command word was typed with nothing after it.
+     * remove command and obtain string
      */
     private static String argumentAfter(String input, String commandWord) {
         if (input.length() <= commandWord.length()) {
@@ -114,16 +115,17 @@ public class FF15 {
     /**
      * Parses a 1-based task number typed as an argument to mark/unmark, checking that
      * it is present, numeric, and within range of the current list.
+     * for mark and unmark commands
      */
     private static int parseTaskNumber(String arg, int listSize) throws FF15Exception {
         if (arg.isEmpty()) {
-            throw new FF15Exception("Tell me which task number, e.g. mark 2.");
+            throw new FF15Exception("Bro Tell me which task number, e.g. mark 2.");
         }
         int number;
         try {
             number = Integer.parseInt(arg);
         } catch (NumberFormatException e) {
-            throw new FF15Exception("'" + arg + "' doesn't look like a task number.");
+            throw new FF15Exception("'" + arg + "' aint looking like a task number.");
         }
         if (number < 1 || number > listSize) {
             throw new FF15Exception("I don't have task number " + number + ". You've got " + listSize + " task(s).");
