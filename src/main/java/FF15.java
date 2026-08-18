@@ -40,6 +40,12 @@ public class FF15 {
                     task.markAsNotDone();
                     printMessage("OK, I've marked this task as not done yet:");
                     printMessage("  " + task);
+                } else if (input.equals("delete") || input.startsWith("delete ")) {        // delete command
+                    int number = parseTaskNumber(argumentAfter(input, "delete"), list.size());
+                    Task task = list.remove(number - 1);
+                    printMessage("Noted. I've removed this task:");
+                    printMessage("  " + task);
+                    printMessage("Now you have " + list.size() + " tasks in the list.");
                 } else if (input.equals("todo") || input.startsWith("todo ")) {          // Todo task
                     String description = argumentAfter(input, "todo");
                     if (description.isEmpty()) {                                                           // handle empty description for todo 
@@ -89,7 +95,7 @@ public class FF15 {
                     throw new FF15Exception("I'm sorry big man, I don't know what that means :-(");
                 }
             } catch (FF15Exception e) {
-                printMessage("OOPS!!! " + e.getMessage());
+                printMessage("AYY!!! " + e.getMessage());
             }
             printDivider(line);
             System.out.println();
