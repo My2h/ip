@@ -22,6 +22,7 @@ public class FF15 {
         ArrayList<Task> list = new ArrayList<>(); // Container To-Do List
 
         while (!input.equals("bye")) {
+            printDivider(line);
             try {
                 if (input.equals("list")) {
                     printMessage("Here are the tasks in your list:");
@@ -102,6 +103,7 @@ public class FF15 {
             input = scanner.nextLine();
         }
 
+        printDivider(line);
         printMessage("Okok bye bye, see you again soon !");
         printDivider(line);
     }
