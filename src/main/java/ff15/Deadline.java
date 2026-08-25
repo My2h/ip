@@ -1,3 +1,5 @@
+package ff15;
+
 /**
  * Represents a task that needs to be done before a specific date/time.
  */
@@ -12,5 +14,10 @@ public class Deadline extends Task {
     @Override
     public String toString() {
         return "[D]" + super.toString() + " (by: " + date + ")";
+    }
+
+    @Override
+    public String toFileFormat() {
+        return "D | " + super.toFileFormat() + " | " + date;
     }
 }

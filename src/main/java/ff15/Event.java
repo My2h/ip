@@ -1,3 +1,5 @@
+package ff15;
+
 /**
  * Represents a task that starts at a specific date/time and ends at a specific date/time.
  */
@@ -14,5 +16,10 @@ public class Event extends Task {
     @Override
     public String toString() {
         return "[E]" + super.toString() + " (from: " + from + " to: " + to + ")";
+    }
+
+    @Override
+    public String toFileFormat() {
+        return "E | " + super.toFileFormat() + " | " + from + " | " + to;
     }
 }

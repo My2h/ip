@@ -60,15 +60,22 @@ def parse_plan(plan_path):
     return cases
 
 
+PACKAGE_RE = re.compile(r"^\s*package\s+([\w.]+)\s*;", re.MULTILINE)
+
+
 def find_main_class(src_dir):
-    for java_file in sorted(src_dir.glob("*.java")):
-        if re.search(r"public\s+static\s+void\s+main\s*\(", java_file.read_text(encoding="utf-8")):
+    for java_file in sorted(src_dir.rglob("*.java")):
+        text = java_file.read_text(encoding="utf-8")
+        if re.search(r"public\s+static\s+void\s+main\s*\(", text):
+            package_match = PACKAGE_RE.search(text)
+            if package_match:
+                return f"{package_match.group(1)}.{java_file.stem}"
             return java_file.stem
     raise ValueError(f"No file with a public static void main(...) found under {src_dir}")
 
 
 def compile_program(src_dir, build_dir):
-    java_files = [str(p) for p in src_dir.glob("*.java")]
+    java_files = [str(p) for p in src_dir.rglob("*.java")]
     result = subprocess.run(
         ["javac", "-d", str(build_dir), *java_files],
         capture_output=True, text=True,
@@ -147,6 +154,30 @@ def main():
                 proc.stdin.flush()
                 transcript.append("")
                 transcript.append(case.input_lines[0])
+
+                # Each response is bounded by an opening divider (printed as
+                # soon as the input is read) and a closing divider. Consume
+                # the opening one here; only blank lines (the separator
+                # after the previous case's closing divider) may precede it.
+                opening_content, opening_divider = read_block(proc)
+                if opening_divider is None:
+                    failure = (case.name, "an opening divider line", describe_crash(proc))
+                    break
+                if strip_blank_edges(opening_content):
+                    failure = (
+                        case.name,
+                        "(only blank lines before the opening divider)",
+                        "\n".join(opening_content),
+                    )
+                    break
+                if opening_divider != reference_divider:
+                    failure = (
+                        case.name,
+                        f"divider line: {reference_divider!r}",
+                        f"divider line: {opening_divider!r}",
+                    )
+                    break
+                transcript.append(opening_divider)
 
             content, divider = read_block(proc)
             if divider is None:

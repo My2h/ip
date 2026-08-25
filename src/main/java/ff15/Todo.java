@@ -1,3 +1,5 @@
+package ff15;
+
 /**
  * Represents a task with no date/time attached to it.
  */
@@ -9,5 +11,10 @@ public class Todo extends Task {
     @Override
     public String toString() {
         return "[T]" + super.toString();
+    }
+
+    @Override
+    public String toFileFormat() {
+        return "T | " + super.toFileFormat();
     }
 }

@@ -9,8 +9,8 @@ Unless the user says otherwise, assume that you are assisting a student working 
 # Student profile
 
 * Prior knowledge: Basic Java and OOP concepts.
-* Level of programming experience: [to be filled]
-* IDE and level of expertise: [to be filled]
+* Level of programming experience: [Beginner]
+* IDE and level of expertise: [Beginner]
 
 # Guidance for interacting with users
 
@@ -33,3 +33,16 @@ Ensure that Java 25 is used when running the application or build tasks. On macO
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
+
+## Testing
+
+After each code update (a change to any file under `src/main/java`), before
+reporting the task as done:
+
+1. Update `test/ui-test-plan.md` if the change affects console output —
+   added/changed/removed commands, changed message wording, or changed
+   formatting. Get expected output by running the program with the new
+   input first and copying its real output; don't hand-type a guess.
+2. Invoke the `test-ui` skill to run the plan and confirm it passes. If it
+   fails, treat that as a bug to fix (in the code or the plan, whichever is
+   wrong) before considering the update done.

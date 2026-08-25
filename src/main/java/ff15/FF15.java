@@ -1,3 +1,6 @@
+package ff15;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -10,17 +13,32 @@ public class FF15 {
                 + "|_|   |_|   |_||____/ \n";
         String line = "____________________________________________________________";
 
+        // Load whatever was saved by the previous session before greeting the user, so
+        // that the tasks are already in memory by the time the first command arrives.
+        ArrayList<Task> list = new ArrayList<>(); // Container To-Do List
+        String loadWarning = null;
+        try {
+            list = Storage.load();
+        } catch (IOException | FF15Exception e) {
+            // A missing file is normal and loads as an empty list; anything else
+            // (unreadable or corrupted file) is reported and we start fresh.
+            loadWarning = "AYY!!! Couldn't read your saved tasks: " + e.getMessage();
+        }
+
         printDivider(line);
         System.out.println(banner);
         printMessage("Eh hello bro, I'm FF15 !");
         printMessage("What can I do for you big man ?");
+        if (loadWarning != null) {
+            printMessage(loadWarning);
+            printMessage("Starting you off with an empty list.");
+        }
         printDivider(line);
         System.out.println();
 
         Scanner scanner = new Scanner(System.in); // Scanner object to receive input
         String input = scanner.nextLine();
         Command command = Command.match(input);
-        ArrayList<Task> list = new ArrayList<>(); // Container To-Do List
 
         while (command != Command.BYE) {
             printDivider(line);
@@ -36,6 +54,7 @@ public class FF15 {
                         int number = parseTaskNumber(argumentAfter(input, "mark"), list.size());
                         Task task = list.get(number - 1);
                         task.markAsDone();
+                        Storage.save(list);
                         printMessage("You are cooking! I've marked this task as done:");
                         printMessage("  " + task);
                     }
@@ -43,12 +62,14 @@ public class FF15 {
                         int number = parseTaskNumber(argumentAfter(input, "unmark"), list.size());
                         Task task = list.get(number - 1);
                         task.markAsNotDone();
+                        Storage.save(list);
                         printMessage("OK, I've marked this task as not done yet:");
                         printMessage("  " + task);
                     }
                     case DELETE -> {
                         int number = parseTaskNumber(argumentAfter(input, "delete"), list.size());
                         Task task = list.remove(number - 1);
+                        Storage.save(list);
                         printMessage("Noted. I've removed this task:");
                         printMessage("  " + task);
                         printMessage("Now you have " + list.size() + " tasks in the list.");
@@ -60,6 +81,7 @@ public class FF15 {
                         }
                         Task task = new Todo(description);
                         list.add(task);
+                        Storage.save(list);
                         printTaskAdded(task, list);
                     }
                     case DEADLINE -> {
@@ -78,6 +100,7 @@ public class FF15 {
                         }
                         Task task = new Deadline(description, by);
                         list.add(task);
+                        Storage.save(list);
                         printTaskAdded(task, list);
                     }
                     case EVENT -> {
@@ -99,12 +122,15 @@ public class FF15 {
                         }
                         Task task = new Event(description, from, to);
                         list.add(task);
+                        Storage.save(list);
                         printTaskAdded(task, list);
                     }
                     default -> throw new FF15Exception("I'm sorry big man, I don't know what that means :-(");
                 }
             } catch (FF15Exception e) {
                 printMessage("AYY!!! " + e.getMessage());
+            } catch (IOException e) {
+                printMessage("AYY!!! Couldn't save your tasks: " + e.getMessage());
             }
             printDivider(line);
             System.out.println();
