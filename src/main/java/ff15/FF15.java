@@ -2,16 +2,10 @@ package ff15;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 public class FF15 {
     public static void main(String[] args) {
-        String banner = " _____ _____ _  ____  \n"
-                + "|  ___|  ___/ |/ ___| \n"
-                + "| |_  | |_  | |\\___ \\ \n"
-                + "|  _| |  _| | | ___) |\n"
-                + "|_|   |_|   |_||____/ \n";
-        String line = "____________________________________________________________";
+        Ui ui = new Ui();
 
         // Load whatever was saved by the previous session before greeting the user, so
         // that the tasks are already in memory by the time the first command arrives.
@@ -22,34 +16,19 @@ public class FF15 {
         } catch (IOException | FF15Exception e) {
             // A missing file is normal and loads as an empty list; anything else
             // (unreadable or corrupted file) is reported and we start fresh.
-            loadWarning = "AYY!!! Couldn't read your saved tasks: " + e.getMessage();
+            loadWarning = "Couldn't read your saved tasks: " + e.getMessage();
         }
 
-        printDivider(line);
-        System.out.println(banner);
-        printMessage("Eh hello bro, I'm FF15 !");
-        printMessage("What can I do for you big man ?");
-        if (loadWarning != null) {
-            printMessage(loadWarning);
-            printMessage("Starting you off with an empty list.");
-        }
-        printDivider(line);
-        System.out.println();
+        ui.showWelcome(loadWarning);
 
-        Scanner scanner = new Scanner(System.in); // Scanner object to receive input
-        String input = scanner.nextLine();
+        String input = ui.readCommand();
         Command command = Command.match(input);
 
         while (command != Command.BYE) {
-            printDivider(line);
+            ui.startBlock();
             try {
                 switch (command) {
-                    case LIST -> {
-                        printMessage("Here are the tasks in your list:");
-                        for (int i = 0; i < list.size(); i++) {
-                            printMessage((i + 1) + "." + list.get(i));
-                        }
-                    }
+                    case LIST -> ui.showTaskList("Here are the tasks in your list:", list);
                     case ON -> {
                         String query = argumentAfter(input, "on");
                         if (query.isEmpty()) {
@@ -59,12 +38,9 @@ public class FF15 {
                         DateRange range = DateRange.parse(query);
                         ArrayList<Task> matches = tasksIn(list, range);
                         if (matches.isEmpty()) {
-                            printMessage("You've got nothing on " + range.getLabel() + ", bro.");
+                            ui.showMessage("You've got nothing on " + range.getLabel() + ", bro.");
                         } else {
-                            printMessage("Here are the tasks on " + range.getLabel() + ":");
-                            for (int i = 0; i < matches.size(); i++) {
-                                printMessage((i + 1) + "." + matches.get(i));
-                            }
+                            ui.showTaskList("Here are the tasks on " + range.getLabel() + ":", matches);
                         }
                     }
                     case MARK -> {
@@ -72,24 +48,20 @@ public class FF15 {
                         Task task = list.get(number - 1);
                         task.markAsDone();
                         Storage.save(list);
-                        printMessage("You are cooking! I've marked this task as done:");
-                        printMessage("  " + task);
+                        ui.showTask("You are cooking! I've marked this task as done:", task);
                     }
                     case UNMARK -> {
                         int number = parseTaskNumber(argumentAfter(input, "unmark"), list.size());
                         Task task = list.get(number - 1);
                         task.markAsNotDone();
                         Storage.save(list);
-                        printMessage("OK, I've marked this task as not done yet:");
-                        printMessage("  " + task);
+                        ui.showTask("OK, I've marked this task as not done yet:", task);
                     }
                     case DELETE -> {
                         int number = parseTaskNumber(argumentAfter(input, "delete"), list.size());
                         Task task = list.remove(number - 1);
                         Storage.save(list);
-                        printMessage("Noted. I've removed this task:");
-                        printMessage("  " + task);
-                        printMessage("Now you have " + list.size() + " tasks in the list.");
+                        ui.showTaskRemoved(task, list.size());
                     }
                     case TODO -> {
                         String description = argumentAfter(input, "todo");
@@ -99,7 +71,7 @@ public class FF15 {
                         Task task = new Todo(description);
                         list.add(task);
                         Storage.save(list);
-                        printTaskAdded(task, list);
+                        ui.showTaskAdded(task, list.size());
                     }
                     case DEADLINE -> {
                         String details = argumentAfter(input, "deadline");
@@ -118,7 +90,7 @@ public class FF15 {
                         Task task = new Deadline(description, TaskTime.parse(by));
                         list.add(task);
                         Storage.save(list);
-                        printTaskAdded(task, list);
+                        ui.showTaskAdded(task, list.size());
                     }
                     case EVENT -> {
                         String details = argumentAfter(input, "event");
@@ -145,24 +117,21 @@ public class FF15 {
                         Task task = new Event(description, fromDate, toDate);
                         list.add(task);
                         Storage.save(list);
-                        printTaskAdded(task, list);
+                        ui.showTaskAdded(task, list.size());
                     }
                     default -> throw new FF15Exception("I'm sorry big man, I don't know what that means :-(");
                 }
             } catch (FF15Exception e) {
-                printMessage("AYY!!! " + e.getMessage());
+                ui.showError(e.getMessage());
             } catch (IOException e) {
-                printMessage("AYY!!! Couldn't save your tasks: " + e.getMessage());
+                ui.showError("Couldn't save your tasks: " + e.getMessage());
             }
-            printDivider(line);
-            System.out.println();
-            input = scanner.nextLine();
+            ui.endBlock();
+            input = ui.readCommand();
             command = Command.match(input);
         }
 
-        printDivider(line);
-        printMessage("Okok bye bye, see you again soon !");
-        printDivider(line);
+        ui.showGoodbye();
     }
 
     /**
@@ -210,19 +179,5 @@ public class FF15 {
             }
         }
         return matches;
-    }
-
-    private static void printDivider(String divider) {         // helper to print line
-        System.out.println("    " + divider);
-    }
-
-    private static void printMessage(String message) {         // helper to print message
-        System.out.println("     " + message);
-    }
-
-    private static void printTaskAdded(Task task, ArrayList<Task> list) {        // helper to print task message
-        printMessage("Got it. I've added this task:");
-        printMessage("  " + task);
-        printMessage("Now you have " + list.size() + " tasks in the list.");
     }
 }
