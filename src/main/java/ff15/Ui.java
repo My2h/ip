@@ -46,21 +46,20 @@ public class Ui {
     }
 
     /**
-     * Prints the banner and greeting as one block.
-     *
-     * @param loadWarning a problem met while loading the save file, reported
-     *     under the greeting; null when the tasks loaded cleanly
+     * Prints the banner and greeting. The caller frames it with
+     * {@link #startBlock()} and {@link #endBlock()}, so that anything else
+     * belonging to startup - such as a loading error - lands in the same block.
      */
-    public void showWelcome(String loadWarning) {
-        startBlock();
+    public void showWelcome() {
         System.out.println(BANNER);
         showMessage("Eh hello bro, I'm FF15 !");
         showMessage("What can I do for you big man ?");
-        if (loadWarning != null) {
-            showError(loadWarning);
-            showMessage("Starting you off with an empty list.");
-        }
-        endBlock();
+    }
+
+    /** Reports that the save file could not be read, and that the session starts empty. */
+    public void showLoadingError(String reason) {
+        showError("Couldn't read your saved tasks: " + reason);
+        showMessage("Starting you off with an empty list.");
     }
 
     /** Prints the farewell as the final block, with no blank line after it. */
