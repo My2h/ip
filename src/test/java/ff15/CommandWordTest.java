@@ -29,6 +29,7 @@ public class CommandWordTest {
         assertEquals(CommandWord.DEADLINE, CommandWord.match("deadline return book /by 2019-12-02"));
         assertEquals(CommandWord.EVENT, CommandWord.match("event meeting /from 2019-12-05 /to 2019-12-06"));
         assertEquals(CommandWord.ON, CommandWord.match("on 2019-12-02"));
+        assertEquals(CommandWord.FIND, CommandWord.match("find book"));
     }
 
     @Test
@@ -37,6 +38,7 @@ public class CommandWordTest {
         // treat the line as an unknown command.
         assertEquals(CommandWord.MARK, CommandWord.match("mark"));
         assertEquals(CommandWord.TODO, CommandWord.match("todo"));
+        assertEquals(CommandWord.FIND, CommandWord.match("find"));
     }
 
     @Test
@@ -48,6 +50,7 @@ public class CommandWordTest {
     @Test
     public void match_longerWordStartingWithACommand_returnsUnknown() {
         assertEquals(CommandWord.UNKNOWN, CommandWord.match("marker"));
+        assertEquals(CommandWord.UNKNOWN, CommandWord.match("finder"));
         assertEquals(CommandWord.UNKNOWN, CommandWord.match("listing"));
         assertEquals(CommandWord.UNKNOWN, CommandWord.match("byebye"));
     }

@@ -39,6 +39,18 @@ public class Task {
     }
 
     /**
+     * Returns whether this task description contains {@code keyword}, ignoring
+     * the difference between upper and lower case so that {@code find Book}
+     * still turns up a task described as {@code read book}.
+     *
+     * @param keyword the text the user is searching for.
+     * @return true if the description contains the keyword.
+     */
+    public boolean hasKeyword(String keyword) {
+        return description.toLowerCase().contains(keyword.toLowerCase());
+    }
+
+    /**
      * Returns whether this task falls within {@code range}. A plain task has no
      * date attached, so it never does; {@link Deadline} and {@link Event} override
      * this with their own answer.

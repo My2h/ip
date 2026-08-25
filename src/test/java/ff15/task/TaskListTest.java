@@ -156,6 +156,54 @@ public class TaskListTest {
     }
 
     @Test
+    public void find_matchingDescriptions_returnsThemInListOrder() throws FF15Exception {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+        tasks.add(new Todo("buy milk"));
+        tasks.add(new Deadline("return book", TaskTime.parse("2019-12-02")));
+
+        List<Task> matches = tasks.find("book");
+
+        assertEquals(2, matches.size());
+        assertEquals("[T][ ] read book", matches.get(0).toString());
+        assertEquals("[D][ ] return book (by: Dec 02 2019)", matches.get(1).toString());
+    }
+
+    @Test
+    public void find_differentCase_stillMatches() {
+        TaskList tasks = listOf("Read Book");
+        assertEquals(1, tasks.find("book").size());
+        assertEquals(1, tasks.find("BOOK").size());
+    }
+
+    @Test
+    public void find_nothingMatches_returnsEmptyList() {
+        TaskList tasks = listOf("read book", "buy milk");
+        assertTrue(tasks.find("homework").isEmpty());
+    }
+
+    @Test
+    public void find_emptyList_returnsEmptyList() {
+        assertTrue(new TaskList().find("book").isEmpty());
+    }
+
+    @Test
+    public void find_keywordOnlyInADate_doesNotMatch() throws FF15Exception {
+        TaskList tasks = new TaskList();
+        tasks.add(new Deadline("return book", TaskTime.parse("2019-12-02")));
+        assertTrue(tasks.find("2019").isEmpty());
+        assertTrue(tasks.find("Dec").isEmpty());
+    }
+
+    @Test
+    public void find_returnedList_isSeparateFromTheTaskList() {
+        TaskList tasks = listOf("read book");
+        List<Task> matches = tasks.find("book");
+        matches.clear();
+        assertEquals(1, tasks.size());
+    }
+
+    @Test
     public void asList_everyTask_appearsInOrder() {
         TaskList tasks = listOf("a", "b");
         List<Task> view = tasks.asList();

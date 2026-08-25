@@ -79,6 +79,23 @@ public class TaskList {
     }
 
     /**
+     * Returns the tasks whose description contains {@code keyword}, kept in list
+     * order. Only the description is searched, so a date is never matched.
+     *
+     * @param keyword the text the user is searching for.
+     * @return the matching tasks, empty when nothing matches.
+     */
+    public List<Task> find(String keyword) {
+        List<Task> matches = new ArrayList<>();
+        for (Task task : tasks) {
+            if (task.hasKeyword(keyword)) {
+                matches.add(task);
+            }
+        }
+        return matches;
+    }
+
+    /**
      * Returns the tasks for reading only, e.g. to print them or write them to
      * disk. The view cannot be modified, so nothing outside this class can change
      * the list behind its back.

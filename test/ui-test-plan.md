@@ -913,6 +913,140 @@ delete 1
      Now you have 0 tasks in the list.
 ```
 
+## Test Case: Add a todo to search for
+
+**Aim:** Refills the empty list with a task whose description contains "book", setting up the `find` cases that follow.
+**Input:**
+```
+todo read book
+```
+**Expected Output:**
+```
+     Got it. I've added this task:
+       [T][ ] read book
+     Now you have 1 tasks in the list.
+```
+
+## Test Case: Add a deadline to search for
+
+**Aim:** Adds a second task also containing "book", so `find book` has more than one match to report.
+**Input:**
+```
+deadline return book /by 2019-06-06
+```
+**Expected Output:**
+```
+     Got it. I've added this task:
+       [D][ ] return book (by: Jun 06 2019)
+     Now you have 2 tasks in the list.
+```
+
+## Test Case: Mark the todo before searching
+
+**Aim:** Marks the todo done so the `find` results show the real status icon rather than always a blank one.
+**Input:**
+```
+mark 1
+```
+**Expected Output:**
+```
+     You are cooking! I've marked this task as done:
+       [T][X] read book
+```
+
+## Test Case: Mark the deadline before searching
+
+**Aim:** Marks the deadline done as well, so both matches come back with an `[X]`.
+**Input:**
+```
+mark 2
+```
+**Expected Output:**
+```
+     You are cooking! I've marked this task as done:
+       [D][X] return book (by: Jun 06 2019)
+```
+
+## Test Case: Find tasks by keyword
+
+**Aim:** `find book` reports every task whose description contains the keyword, numbered from 1 in list order, across both task types.
+**Input:**
+```
+find book
+```
+**Expected Output:**
+```
+     Here are the matching tasks in your list:
+     1.[T][X] read book
+     2.[D][X] return book (by: Jun 06 2019)
+```
+
+## Test Case: Find ignores capitalisation
+
+**Aim:** `find BOOK` returns the same matches as `find book`, since the keyword search ignores the difference between upper and lower case.
+**Input:**
+```
+find BOOK
+```
+**Expected Output:**
+```
+     Here are the matching tasks in your list:
+     1.[T][X] read book
+     2.[D][X] return book (by: Jun 06 2019)
+```
+
+## Test Case: Find with no matches
+
+**Aim:** A keyword matching nothing says so, rather than printing an empty list header.
+**Input:**
+```
+find milk
+```
+**Expected Output:**
+```
+     You've got nothing matching 'milk', bro.
+```
+
+## Test Case: Find without a keyword
+
+**Aim:** `find` with nothing after it is rejected with a message telling the user what to type.
+**Input:**
+```
+find
+```
+**Expected Output:**
+```
+     AYY!!! Tell me what to look for, e.g.: find book
+```
+
+## Test Case: Delete the searched todo
+
+**Aim:** Starts draining the list again so the plan still leaves an empty save file behind.
+**Input:**
+```
+delete 1
+```
+**Expected Output:**
+```
+     Noted. I've removed this task:
+       [T][X] read book
+     Now you have 1 tasks in the list.
+```
+
+## Test Case: Delete the searched deadline
+
+**Aim:** Removes the last remaining task, returning the list to empty before the final cases.
+**Input:**
+```
+delete 1
+```
+**Expected Output:**
+```
+     Noted. I've removed this task:
+       [D][X] return book (by: Jun 06 2019)
+     Now you have 0 tasks in the list.
+```
+
 ## Test Case: Command word is case-sensitive
 **Aim:** `Todo ...` (capital T) doesn't match the lowercase `todo` command, so it should be rejected as unknown rather than silently adding a task.
 **Input:**
