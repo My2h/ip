@@ -70,7 +70,7 @@ public class Storage {
             case "T" -> task = new Todo(description);
             case "D" -> {
                 requireFieldCount(fields, 4, line);      // plus the /by date
-                task = new Deadline(description, fields[3]);
+                task = new Deadline(description, Deadline.parseDate(fields[3]));
             }
             case "E" -> {
                 requireFieldCount(fields, 5, line);      // plus the /from and /to date/times

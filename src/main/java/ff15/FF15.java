@@ -88,7 +88,7 @@ public class FF15 {
                         String details = argumentAfter(input, "deadline");
                         int byIndex = details.indexOf(" /by");
                         if (byIndex == -1) {                                                                     // handle invalid date input for deadlines
-                            throw new FF15Exception("A deadline needs a /by, e.g.: deadline return book /by Sunday");
+                            throw new FF15Exception("A deadline needs a /by, e.g.: deadline return book /by 2019-12-02");
                         }
                         String description = details.substring(0, byIndex).trim();
                         String by = details.substring(byIndex + " /by".length()).trim();
@@ -98,7 +98,7 @@ public class FF15 {
                         if (by.isEmpty()) {                                                                     // handle empty date input for deadlines
                             throw new FF15Exception("The /by date/time of a deadline can't be empty, bro.");
                         }
-                        Task task = new Deadline(description, by);
+                        Task task = new Deadline(description, Deadline.parseDate(by));
                         list.add(task);
                         Storage.save(list);
                         printTaskAdded(task, list);

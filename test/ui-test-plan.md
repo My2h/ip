@@ -149,7 +149,7 @@ deadline return book
 ```
 **Expected Output:**
 ```
-     AYY!!! A deadline needs a /by, e.g.: deadline return book /by Sunday
+     AYY!!! A deadline needs a /by, e.g.: deadline return book /by 2019-12-02
 ```
 
 ## Test Case: Deadline with no description at all
@@ -160,7 +160,7 @@ deadline /by Sunday
 ```
 **Expected Output:**
 ```
-     AYY!!! A deadline needs a /by, e.g.: deadline return book /by Sunday
+     AYY!!! A deadline needs a /by, e.g.: deadline return book /by 2019-12-02
 ```
 
 ## Test Case: Deadline with empty /by
@@ -178,23 +178,45 @@ deadline return book /by
 **Aim:** `deadlinex ...` must not be treated as `deadline` — `startsWith("deadline ")` requires the trailing space, so this should fall through to the unknown-command error.
 **Input:**
 ```
-deadlinex return book /by Sunday
+deadlinex return book /by 2019-12-02
 ```
 **Expected Output:**
 ```
      AYY!!! I'm sorry big man, I don't know what that means :-(
 ```
 
-## Test Case: Add a deadline
-**Aim:** `deadline <description> /by <by>` adds a Deadline, tagged `[D]`, with the by-string shown as-is.
+## Test Case: Deadline with a /by that isn't a date
+**Aim:** A `/by` in the old free-text style is now rejected, since the date is parsed into a `LocalDate` instead of being stored as a String.
 **Input:**
 ```
 deadline return book /by Sunday
 ```
 **Expected Output:**
 ```
+     AYY!!! 'Sunday' isn't a date I understand. Write it as yyyy-mm-dd, e.g.: deadline return book /by 2019-12-02
+```
+
+## Test Case: Deadline with a well-formed but impossible date
+**Aim:** `2019-13-45` matches the yyyy-mm-dd shape but has no such month or day, so the parser rejects it too — confirming the check is a real date parse, not just a pattern match.
+**Input:**
+```
+deadline return book /by 2019-13-45
+```
+**Expected Output:**
+```
+     AYY!!! '2019-13-45' isn't a date I understand. Write it as yyyy-mm-dd, e.g.: deadline return book /by 2019-12-02
+```
+
+## Test Case: Add a deadline
+**Aim:** `deadline <description> /by <yyyy-mm-dd>` adds a Deadline, tagged `[D]`, with the date parsed into a `LocalDate` and printed back in `MMM dd yyyy` form rather than as the text that was typed.
+**Input:**
+```
+deadline return book /by 2019-12-02
+```
+**Expected Output:**
+```
      Got it. I've added this task:
-       [D][ ] return book (by: Sunday)
+       [D][ ] return book (by: Dec 02 2019)
      Now you have 2 tasks in the list.
 ```
 
@@ -208,7 +230,7 @@ list
 ```
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: Sunday)
+     2.[D][ ] return book (by: Dec 02 2019)
 ```
 
 ## Test Case: Event with no /from or /to
@@ -311,7 +333,7 @@ list
 ```
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: Sunday)
+     2.[D][ ] return book (by: Dec 02 2019)
      3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ```
 
@@ -414,7 +436,7 @@ list
 ```
      Here are the tasks in your list:
      1.[T][X] read book
-     2.[D][ ] return book (by: Sunday)
+     2.[D][ ] return book (by: Dec 02 2019)
      3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ```
 
@@ -484,7 +506,7 @@ list
 ```
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: Sunday)
+     2.[D][ ] return book (by: Dec 02 2019)
      3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ```
 
@@ -542,7 +564,7 @@ list
 ```
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: Sunday)
+     2.[D][ ] return book (by: Dec 02 2019)
      3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ```
 
@@ -555,7 +577,7 @@ delete 2
 **Expected Output:**
 ```
      Noted. I've removed this task:
-       [D][ ] return book (by: Sunday)
+       [D][ ] return book (by: Dec 02 2019)
      Now you have 2 tasks in the list.
 ```
 
