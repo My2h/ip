@@ -31,8 +31,39 @@ Ensure that Java 25 is used when running the application or build tasks. On macO
 ## Git
 
 Use lightweight tags unless the user requests an annotated tag.
-When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
+
+Follow the SE-EDU Git conventions:
+https://se-education.org/guides/conventions/git.html
+
+### Commit message subject line
+
+* Imperative mood: "Add README.md", not "Added README.md" or "Adding README.md".
+* Capitalize the first letter: "Move index.html file to root", not "move ...".
+* No full stop at the end: "Update sample data", not "Update sample data.".
+* Aim for 50 characters, hard limit 72.
+* An optional `<scope>:` prefix is fine where it helps, e.g.
+  `Person class: Remove static imports`.
+
+### Commit message body
+
+Keep commits to the subject line by default — that is this user's stated
+preference. Write a body only when asked for one, and then:
+
+* Separate it from the subject with a blank line, and wrap it at 72 characters.
+* Explain WHAT changed and WHY, not HOW; the diff already shows the how.
+* Use blank lines between paragraphs, and bullet points where they help.
+* Suggested flow: current situation (present tense), reason for the change,
+  what is being done (imperative mood), why it was done that way.
+* If the explanation is getting long, that usually means the change should be
+  split into several commits.
+
+### Branch names
+
+Kebab case, with meaningful keywords: `refactor-ui-tests`. For a branch
+addressing an issue, prefix the issue number:
+`1234-ui-freeze-error`. Where the course specifies a branch name for a graded
+increment (`branch-Level-8`, `A-JUnitBranch`), that name wins.
 
 ## Testing
 
