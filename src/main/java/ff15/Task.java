@@ -32,4 +32,12 @@ public class Task {
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;
     }
+
+    /**
+     * Returns this task's representation for the save file, e.g. {@code "1 | read book"}.
+     * Subclasses prepend a type letter and append any extra fields of their own.
+     */
+    public String toFileFormat() {
+        return (isDone ? "1" : "0") + " | " + description;
+    }
 }

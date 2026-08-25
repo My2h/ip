@@ -1,5 +1,6 @@
 package ff15;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -38,6 +39,7 @@ public class FF15 {
                         int number = parseTaskNumber(argumentAfter(input, "mark"), list.size());
                         Task task = list.get(number - 1);
                         task.markAsDone();
+                        Storage.save(list);
                         printMessage("You are cooking! I've marked this task as done:");
                         printMessage("  " + task);
                     }
@@ -45,12 +47,14 @@ public class FF15 {
                         int number = parseTaskNumber(argumentAfter(input, "unmark"), list.size());
                         Task task = list.get(number - 1);
                         task.markAsNotDone();
+                        Storage.save(list);
                         printMessage("OK, I've marked this task as not done yet:");
                         printMessage("  " + task);
                     }
                     case DELETE -> {
                         int number = parseTaskNumber(argumentAfter(input, "delete"), list.size());
                         Task task = list.remove(number - 1);
+                        Storage.save(list);
                         printMessage("Noted. I've removed this task:");
                         printMessage("  " + task);
                         printMessage("Now you have " + list.size() + " tasks in the list.");
@@ -62,6 +66,7 @@ public class FF15 {
                         }
                         Task task = new Todo(description);
                         list.add(task);
+                        Storage.save(list);
                         printTaskAdded(task, list);
                     }
                     case DEADLINE -> {
@@ -80,6 +85,7 @@ public class FF15 {
                         }
                         Task task = new Deadline(description, by);
                         list.add(task);
+                        Storage.save(list);
                         printTaskAdded(task, list);
                     }
                     case EVENT -> {
@@ -101,12 +107,15 @@ public class FF15 {
                         }
                         Task task = new Event(description, from, to);
                         list.add(task);
+                        Storage.save(list);
                         printTaskAdded(task, list);
                     }
                     default -> throw new FF15Exception("I'm sorry big man, I don't know what that means :-(");
                 }
             } catch (FF15Exception e) {
                 printMessage("AYY!!! " + e.getMessage());
+            } catch (IOException e) {
+                printMessage("AYY!!! Couldn't save your tasks: " + e.getMessage());
             }
             printDivider(line);
             System.out.println();
