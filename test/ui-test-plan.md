@@ -149,7 +149,7 @@ deadline return book
 ```
 **Expected Output:**
 ```
-     AYY!!! A deadline needs a /by, e.g.: deadline return book /by 2019-12-02
+     AYY!!! A deadline needs a /by, e.g.: deadline return book /by 2019-12-02 1800
 ```
 
 ## Test Case: Deadline with no description at all
@@ -160,7 +160,7 @@ deadline /by Sunday
 ```
 **Expected Output:**
 ```
-     AYY!!! A deadline needs a /by, e.g.: deadline return book /by 2019-12-02
+     AYY!!! A deadline needs a /by, e.g.: deadline return book /by 2019-12-02 1800
 ```
 
 ## Test Case: Deadline with empty /by
@@ -193,7 +193,7 @@ deadline return book /by Sunday
 ```
 **Expected Output:**
 ```
-     AYY!!! 'Sunday' isn't a date I understand. Write dates as yyyy-mm-dd, e.g. 2019-12-02
+     AYY!!! 'Sunday' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
 ```
 
 ## Test Case: Deadline with a well-formed but impossible date
@@ -204,7 +204,7 @@ deadline return book /by 2019-13-45
 ```
 **Expected Output:**
 ```
-     AYY!!! '2019-13-45' isn't a date I understand. Write dates as yyyy-mm-dd, e.g. 2019-12-02
+     AYY!!! '2019-13-45' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
 ```
 
 ## Test Case: Add a deadline
@@ -241,7 +241,7 @@ event project meeting
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 /to 2019-12-06
+     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with /to before /from
@@ -252,7 +252,7 @@ event project meeting /to 2019-12-06 /from 2019-12-05
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 /to 2019-12-06
+     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with /from but no /to
@@ -263,7 +263,7 @@ event project meeting /from 2019-12-05
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 /to 2019-12-06
+     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with /to but no /from
@@ -274,7 +274,7 @@ event project meeting /to 2019-12-06
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 /to 2019-12-06
+     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with empty /from
@@ -329,7 +329,7 @@ event project meeting /from Monday /to 2019-12-06
 ```
 **Expected Output:**
 ```
-     AYY!!! 'Monday' isn't a date I understand. Write dates as yyyy-mm-dd, e.g. 2019-12-02
+     AYY!!! 'Monday' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
 ```
 
 ## Test Case: Add an event
@@ -801,6 +801,116 @@ delete 1
 **Expected Output:**
 ```
      AYY!!! I don't have task number 1. You've got 0 task(s).
+```
+
+## Test Case: Add a deadline with a time
+**Aim:** `/by <yyyy-mm-dd> <HHmm>` pins the deadline to a time of day, shown after the date. The list is empty again at this point, so the count restarts at 1.
+**Input:**
+```
+deadline return book /by 2019-12-02 1800
+```
+**Expected Output:**
+```
+     Got it. I've added this task:
+       [D][ ] return book (by: Dec 02 2019, 6:00pm)
+     Now you have 1 tasks in the list.
+```
+
+## Test Case: Deadline with an impossible time
+**Aim:** `1860` has the HHmm shape but there is no 60th minute, so it is rejected — the same shape-plus-value check the date half gets.
+**Input:**
+```
+deadline return book /by 2019-12-02 1860
+```
+**Expected Output:**
+```
+     AYY!!! '2019-12-02 1860' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+```
+
+## Test Case: Deadline with a time in the wrong format
+**Aim:** A time must be typed as HHmm, so `6pm` is rejected even though the date beside it is valid.
+**Input:**
+```
+deadline return book /by 2019-12-02 6pm
+```
+**Expected Output:**
+```
+     AYY!!! '2019-12-02 6pm' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+```
+
+## Test Case: Add an event with times
+**Aim:** An event can carry a time at each end, letting it start and finish on the same day.
+**Input:**
+```
+event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
+```
+**Expected Output:**
+```
+     Got it. I've added this task:
+       [E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
+     Now you have 2 tasks in the list.
+```
+
+## Test Case: Event that ends earlier the same day
+**Aim:** Both ends fall on the same date, so only the times distinguish them — this is rejected, confirming the ordering check compares the time as well as the date.
+**Input:**
+```
+event project meeting /from 2019-12-05 1600 /to 2019-12-05 1400
+```
+**Expected Output:**
+```
+     AYY!!! An event can't end before it starts, bro.
+```
+
+## Test Case: List tasks that carry times
+**Aim:** `list` shows both timed tasks, confirming the two negative cases above added nothing.
+**Input:**
+```
+list
+```
+**Expected Output:**
+```
+     Here are the tasks in your list:
+     1.[D][ ] return book (by: Dec 02 2019, 6:00pm)
+     2.[E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
+```
+
+## Test Case: Query a day for a task that carries a time
+**Aim:** `on` still matches by day, ignoring the time of day, so a timed event is found by a plain date query.
+**Input:**
+```
+on 2019-12-05
+```
+**Expected Output:**
+```
+     Here are the tasks on Dec 05 2019:
+     1.[E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
+```
+
+## Test Case: Delete the timed deadline
+**Aim:** Removes the timed deadline, draining the list back toward empty so the plan leaves an empty save file behind.
+**Input:**
+```
+delete 1
+```
+**Expected Output:**
+```
+     Noted. I've removed this task:
+       [D][ ] return book (by: Dec 02 2019, 6:00pm)
+     Now you have 1 tasks in the list.
+```
+
+## Test Case: Delete the timed event
+**Aim:** Removes the last task, leaving the list — and so the save file — empty at the end of the run.
+**Input:**
+```
+delete 1
+```
+**Expected Output:**
+```
+     Noted. I've removed this task:
+       [E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
+     Now you have 0 tasks in the list.
 ```
 
 ## Test Case: Command word is case-sensitive

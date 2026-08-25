@@ -1,17 +1,15 @@
 package ff15;
 
-import java.time.LocalDate;
-
 /**
- * Represents a task that starts on a specific date and ends on a specific date.
- * Both dates are held as {@link LocalDate}s so that the event can be compared
- * against a {@link DateRange}.
+ * Represents a task that starts on a specific date and ends on a specific date,
+ * either of which may also carry a time of day. Both are held as
+ * {@link TaskTime}s so that the event can be compared against a {@link DateRange}.
  */
 public class Event extends Task {
-    protected LocalDate from;
-    protected LocalDate to;
+    protected TaskTime from;
+    protected TaskTime to;
 
-    public Event(String description, LocalDate from, LocalDate to) {
+    public Event(String description, TaskTime from, TaskTime to) {
         super(description);
         this.from = from;
         this.to = to;
@@ -24,18 +22,18 @@ public class Event extends Task {
      */
     @Override
     public boolean occursIn(DateRange range) {
-        return range.overlaps(from, to);
+        return range.overlaps(from.getDate(), to.getDate());
     }
 
     @Override
     public String toString() {
         return "[E]" + super.toString()
-                + " (from: " + Dates.format(from) + " to: " + Dates.format(to) + ")";
+                + " (from: " + from + " to: " + to + ")";
     }
 
     @Override
     public String toFileFormat() {
         return "E | " + super.toFileFormat()
-                + " | " + Dates.toFileFormat(from) + " | " + Dates.toFileFormat(to);
+                + " | " + from.toFileFormat() + " | " + to.toFileFormat();
     }
 }
