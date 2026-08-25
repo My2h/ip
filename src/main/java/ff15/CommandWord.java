@@ -21,6 +21,8 @@ public enum CommandWord {
     DEADLINE("deadline", true),
     /** Adds a task running between two given dates or date/times. */
     EVENT("event", true),
+    /** Shows the tasks whose description contains a given keyword. */
+    FIND("find", true),
     /** Ends the session. */
     BYE("bye", false),
     /** Anything the chatbot does not recognise. Has no word of its own. */

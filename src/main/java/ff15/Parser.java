@@ -4,6 +4,7 @@ import ff15.command.AddCommand;
 import ff15.command.Command;
 import ff15.command.DeleteCommand;
 import ff15.command.ExitCommand;
+import ff15.command.FindCommand;
 import ff15.command.ListCommand;
 import ff15.command.MarkCommand;
 import ff15.command.OnCommand;
@@ -44,6 +45,7 @@ public class Parser {
             case TODO -> new AddCommand(parseTodo(input));
             case DEADLINE -> new AddCommand(parseDeadline(input));
             case EVENT -> new AddCommand(parseEvent(input));
+            case FIND -> new FindCommand(parseKeyword(input));
             case BYE -> new ExitCommand();
             case UNKNOWN -> throw new FF15Exception("I'm sorry big man, I don't know what that means :-(");
         };
@@ -131,6 +133,15 @@ public class Parser {
             throw new FF15Exception("An event can't end before it starts, bro.");
         }
         return new Event(description, fromTime, toTime);
+    }
+
+    /** Returns the keyword a {@code find} command should search for. */
+    private static String parseKeyword(String input) throws FF15Exception {
+        String keyword = argumentAfter(input, CommandWord.FIND);
+        if (keyword.isEmpty()) {
+            throw new FF15Exception("Tell me what to look for, e.g.: find book");
+        }
+        return keyword;
     }
 
     /** Builds the span of dates asked about by an {@code on} command. */

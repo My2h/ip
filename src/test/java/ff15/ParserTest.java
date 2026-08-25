@@ -6,14 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import ff15.command.AddCommand;
 import ff15.command.Command;
 import ff15.command.DeleteCommand;
 import ff15.command.ExitCommand;
+import ff15.command.FindCommand;
 import ff15.command.ListCommand;
 import ff15.command.MarkCommand;
 import ff15.command.OnCommand;
@@ -52,6 +55,23 @@ public class ParserTest {
         } finally {
             System.setOut(realOut);
         }
+    }
+
+    /**
+     * Parses and runs {@code input} against {@code tasks}, returning everything the
+     * Ui printed while doing so.
+     */
+    private String runCapturing(TaskList tasks, String input) throws Exception {
+        PrintStream realOut = System.out;
+        ByteArrayOutputStream captured = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(captured, true, StandardCharsets.UTF_8));
+        try {
+            Command command = Parser.parse(input);
+            command.execute(tasks, new Ui(), new Storage(tempDir.resolve("tasks.txt").toString()));
+        } finally {
+            System.setOut(realOut);
+        }
+        return captured.toString(StandardCharsets.UTF_8);
     }
 
     /** Parses and runs {@code input} against an empty list, returning the single task it added. */
@@ -97,6 +117,11 @@ public class ParserTest {
         assertInstanceOf(MarkCommand.class, Parser.parse("mark 1"));
         assertInstanceOf(UnmarkCommand.class, Parser.parse("unmark 1"));
         assertInstanceOf(DeleteCommand.class, Parser.parse("delete 1"));
+    }
+
+    @Test
+    public void parse_find_returnsFindCommand() throws FF15Exception {
+        assertInstanceOf(FindCommand.class, Parser.parse("find book"));
     }
 
     @Test
@@ -277,6 +302,54 @@ public class ParserTest {
     public void parse_eventStartingAndEndingAtTheSameMoment_isAccepted() throws Exception {
         assertEquals("[E][ ] meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 2:00pm)",
                 addedBy("event meeting /from 2019-12-05 1400 /to 2019-12-05 1400").toString());
+    }
+
+    @Test
+    public void parse_find_reportsTheMatchingTasks() throws Exception {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+        tasks.add(new Todo("buy milk"));
+
+        String printed = runCapturing(tasks, "find book");
+
+        assertTrue(printed.contains("Here are the matching tasks in your list:"), printed);
+        assertTrue(printed.contains("1.[T][ ] read book"), printed);
+        assertFalse(printed.contains("buy milk"), printed);
+    }
+
+    @Test
+    public void parse_findWithNothingMatching_saysSo() throws Exception {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+
+        String printed = runCapturing(tasks, "find homework");
+
+        assertTrue(printed.contains("You've got nothing matching 'homework', bro."), printed);
+    }
+
+    @Test
+    public void parse_findWithSurroundingSpaces_trimsTheKeyword() throws Exception {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+
+        String printed = runCapturing(tasks, "find    book   ");
+
+        assertTrue(printed.contains("1.[T][ ] read book"), printed);
+    }
+
+    @Test
+    public void parse_findLeavesTheListAlone_doesNotChangeAnyTask() throws Exception {
+        TaskList tasks = new TaskList();
+        tasks.add(new Todo("read book"));
+        runCapturing(tasks, "find book");
+        assertEquals(1, tasks.size());
+        assertEquals("[T][ ] read book", tasks.get(1).toString());
+    }
+
+    @Test
+    public void parse_findWithoutAKeyword_throwsException() {
+        assertThrows(FF15Exception.class, () -> Parser.parse("find"));
+        assertThrows(FF15Exception.class, () -> Parser.parse("find   "));
     }
 
     @Test
