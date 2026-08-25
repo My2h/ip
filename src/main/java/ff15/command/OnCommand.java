@@ -11,10 +11,16 @@ import java.util.List;
 public class OnCommand extends Command {
     private final DateRange range;
 
+    /**
+     * Creates a command that will report the tasks falling in one span of dates.
+     *
+     * @param range the day, month, or year the user asked about
+     */
     public OnCommand(DateRange range) {
         this.range = range;
     }
 
+    /** Shows the tasks falling within the range, or says there are none. */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) {
         List<Task> matches = tasks.tasksIn(range);
