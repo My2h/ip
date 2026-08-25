@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * One thing the user asked the chatbot to do.
  *
- * <p>{@link Parser} turns an input line into the matching subclass, carrying
+ * <p>{@link ff15.Parser} turns an input line into the matching subclass, carrying
  * whatever that command needs (a task to add, a number to delete). The subclass
  * then carries it out in {@link #execute}, so adding a new command means adding
  * a class rather than another branch to a switch.

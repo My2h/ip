@@ -49,7 +49,7 @@ public class Storage {
     }
 
     /**
-     * Reads the tasks saved by {@link #save(List)} back into a list.
+     * Reads the tasks saved by {@link #save(TaskList)} back into a list.
      * Returns an empty list if the data file does not exist yet, which is the
      * normal situation on the very first run.
      *
