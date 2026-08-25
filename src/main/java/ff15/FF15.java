@@ -1,3 +1,5 @@
+package ff15;
+
 import java.util.ArrayList;
 import java.util.Scanner;
 

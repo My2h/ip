@@ -1,3 +1,5 @@
+package ff15;
+
 /**
  * Represents the fixed set of command words FF15 understands.
  */
