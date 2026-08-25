@@ -36,8 +36,13 @@ Do not commit or push unless explicitly asked.
 
 ## Testing
 
-After each code update (a change to any file under `src/main/java`), before
-reporting the task as done:
+There are two test suites, and both must be kept green.
+
+### UI tests
+
+`test/ui-test-plan.md` drives the whole program through a scripted console
+session. After each code update (a change to any file under `src/main/java`),
+before reporting the task as done:
 
 1. Update `test/ui-test-plan.md` if the change affects console output —
    added/changed/removed commands, changed message wording, or changed
@@ -46,3 +51,28 @@ reporting the task as done:
 2. Invoke the `test-ui` skill to run the plan and confirm it passes. If it
    fails, treat that as a bug to fix (in the code or the plan, whichever is
    wrong) before considering the update done.
+
+### JUnit tests
+
+JUnit 5 tests live under `src/test/java`, mirroring the package and class
+being tested: `ff15.task.Todo` is tested by `ff15.task.TodoTest` in
+`src/test/java/ff15/task/TodoTest.java`. Run them with `./gradlew test`.
+
+Name test methods `featureUnderTest_testScenario_expectedBehavior()`, e.g.
+`parse_malformedDate_throwsException()` or `get_onePastTheEnd_throwsException()`.
+
+**Coverage target: the top ~50% highest-value methods.** Value here means
+complex, core, or critical logic — parsing, date arithmetic, index handling,
+and save-file round-tripping — rather than one-line getters, constructors, or
+`Ui` printing (which the UI test plan already covers end to end).
+
+**JUnit tests must be updated after each code change to stay at that target.**
+Concretely, when a change under `src/main/java`:
+
+* adds a non-trivial method, add tests for it in the matching `*Test` class;
+* changes what an existing tested method does, update its tests to match the
+  new intended behaviour rather than deleting the failing assertions;
+* adds a new class holding real logic, add the matching `*Test` class;
+* fixes a bug, add the test case that would have caught it.
+
+A change is not done until `./gradlew test` passes.
