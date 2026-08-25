@@ -5,6 +5,7 @@ package ff15;
  */
 public enum Command {
     LIST("list", false),
+    ON("on", true),
     MARK("mark", true),
     UNMARK("unmark", true),
     DELETE("delete", true),

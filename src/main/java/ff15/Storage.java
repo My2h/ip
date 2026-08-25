@@ -70,11 +70,11 @@ public class Storage {
             case "T" -> task = new Todo(description);
             case "D" -> {
                 requireFieldCount(fields, 4, line);      // plus the /by date
-                task = new Deadline(description, Deadline.parseDate(fields[3]));
+                task = new Deadline(description, Dates.parse(fields[3]));
             }
             case "E" -> {
                 requireFieldCount(fields, 5, line);      // plus the /from and /to date/times
-                task = new Event(description, fields[3], fields[4]);
+                task = new Event(description, Dates.parse(fields[3]), Dates.parse(fields[4]));
             }
             default -> throw new FF15Exception("I don't recognise the task type '" + type
                     + "' on this saved line: " + line);
