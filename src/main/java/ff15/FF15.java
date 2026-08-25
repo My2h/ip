@@ -1,8 +1,9 @@
 package ff15;
 
+import java.io.IOException;
+
 import ff15.command.Command;
 import ff15.task.TaskList;
-import java.io.IOException;
 
 /**
  * The chatbot itself: it wires together the four parts of the program and runs

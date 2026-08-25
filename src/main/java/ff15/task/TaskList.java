@@ -1,9 +1,10 @@
 package ff15.task;
 
-import ff15.FF15Exception;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import ff15.FF15Exception;
 
 /**
  * Holds the tasks the user is keeping track of, and the operations that add to,

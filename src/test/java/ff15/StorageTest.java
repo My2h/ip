@@ -4,17 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
 import ff15.task.Deadline;
 import ff15.task.Event;
 import ff15.task.Task;
 import ff15.task.TaskList;
 import ff15.task.TaskTime;
 import ff15.task.Todo;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -85,7 +86,8 @@ public class StorageTest {
         original.add(new Deadline("return book", TaskTime.parse("2019-12-02")));
         original.add(new Deadline("submit report", TaskTime.parse("2019-12-02 1800")));
         original.add(new Event("holiday", TaskTime.parse("2019-12-20"), TaskTime.parse("2019-12-26")));
-        original.add(new Event("meeting", TaskTime.parse("2019-12-05 1400"), TaskTime.parse("2019-12-05 1600")));
+        original.add(new Event("meeting",
+                TaskTime.parse("2019-12-05 1400"), TaskTime.parse("2019-12-05 1600")));
 
         storage.save(original);
         TaskList reloaded = new TaskList(storage.load());

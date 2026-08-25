@@ -24,46 +24,48 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## Java coding standard
+
+All Java code in this project, under `src/main/java` and `src/test/java` alike,
+must follow the SE-EDU Java coding standard (intermediate level):
+https://se-education.org/guides/conventions/java/intermediate.html
+
+Invoke the `seedu-java-coding-standard` skill for the full rules before writing
+or reviewing Java code. Apply them as you write, not as a clean-up pass
+afterwards. Before reporting a code change as done, run the checker:
+
+```bash
+py .claude/skills/seedu-java-coding-standard/scripts/check-style.py
+```
+
+It exits non-zero on any violation. A clean run does not prove full compliance,
+since naming and comment rules still need a human read, but a dirty run always
+means something must be fixed.
+
 ## Java version:
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
 
 ## Git
 
-Use lightweight tags unless the user requests an annotated tag.
 Do not commit or push unless explicitly asked.
 
-Follow the SE-EDU Git conventions:
+All commits must follow the SE-EDU Git conventions:
 https://se-education.org/guides/conventions/git.html
 
-### Commit message subject line
+Invoke the `seedu-git-standard` skill for the full rules before proposing or
+writing any commit message, or naming a branch. In short:
 
-* Imperative mood: "Add README.md", not "Added README.md" or "Adding README.md".
-* Capitalize the first letter: "Move index.html file to root", not "move ...".
-* No full stop at the end: "Update sample data", not "Update sample data.".
-* Aim for 50 characters, hard limit 72.
-* An optional `<scope>:` prefix is fine where it helps, e.g.
-  `Person class: Remove static imports`.
+* Subject line in imperative mood, capitalized, no trailing full stop, 50
+  characters preferred and 72 at most.
+* Keep commit messages to the subject line unless the user asks for a body.
+* One commit per standalone change. Keep source changes separate from changes
+  to agent files such as this one or anything under `.claude/skills/`.
+* Branch names in kebab case, except where the course dictates the name for a
+  graded increment.
 
-### Commit message body
-
-Keep commits to the subject line by default — that is this user's stated
-preference. Write a body only when asked for one, and then:
-
-* Separate it from the subject with a blank line, and wrap it at 72 characters.
-* Explain WHAT changed and WHY, not HOW; the diff already shows the how.
-* Use blank lines between paragraphs, and bullet points where they help.
-* Suggested flow: current situation (present tense), reason for the change,
-  what is being done (imperative mood), why it was done that way.
-* If the explanation is getting long, that usually means the change should be
-  split into several commits.
-
-### Branch names
-
-Kebab case, with meaningful keywords: `refactor-ui-tests`. For a branch
-addressing an issue, prefix the issue number:
-`1234-ui-freeze-error`. Where the course specifies a branch name for a graded
-increment (`branch-Level-8`, `A-JUnitBranch`), that name wins.
+Use lightweight tags unless the user requests an annotated tag. Increment tags
+go on the merge commit on `master`, not on the feature branch tip.
 
 ## Testing
 

@@ -1,10 +1,11 @@
 package ff15.command;
 
+import java.io.IOException;
+
 import ff15.FF15Exception;
 import ff15.Storage;
 import ff15.Ui;
 import ff15.task.TaskList;
-import java.io.IOException;
 
 /**
  * One thing the user asked the chatbot to do.

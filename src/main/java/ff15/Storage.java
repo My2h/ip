@@ -1,11 +1,5 @@
 package ff15;
 
-import ff15.task.Deadline;
-import ff15.task.Event;
-import ff15.task.Task;
-import ff15.task.TaskList;
-import ff15.task.TaskTime;
-import ff15.task.Todo;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +7,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import ff15.task.Deadline;
+import ff15.task.Event;
+import ff15.task.Task;
+import ff15.task.TaskList;
+import ff15.task.TaskTime;
+import ff15.task.Todo;
 
 /**
  * Saves the task list to a file on disk, and loads it back again. The location

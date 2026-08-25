@@ -1,8 +1,9 @@
 package ff15;
 
-import ff15.task.Task;
 import java.util.List;
 import java.util.Scanner;
+
+import ff15.task.Task;
 
 /**
  * Deals with everything the user sees and types: reading commands from the
