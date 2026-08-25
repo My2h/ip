@@ -13,17 +13,32 @@ public class FF15 {
                 + "|_|   |_|   |_||____/ \n";
         String line = "____________________________________________________________";
 
+        // Load whatever was saved by the previous session before greeting the user, so
+        // that the tasks are already in memory by the time the first command arrives.
+        ArrayList<Task> list = new ArrayList<>(); // Container To-Do List
+        String loadWarning = null;
+        try {
+            list = Storage.load();
+        } catch (IOException | FF15Exception e) {
+            // A missing file is normal and loads as an empty list; anything else
+            // (unreadable or corrupted file) is reported and we start fresh.
+            loadWarning = "AYY!!! Couldn't read your saved tasks: " + e.getMessage();
+        }
+
         printDivider(line);
         System.out.println(banner);
         printMessage("Eh hello bro, I'm FF15 !");
         printMessage("What can I do for you big man ?");
+        if (loadWarning != null) {
+            printMessage(loadWarning);
+            printMessage("Starting you off with an empty list.");
+        }
         printDivider(line);
         System.out.println();
 
         Scanner scanner = new Scanner(System.in); // Scanner object to receive input
         String input = scanner.nextLine();
         Command command = Command.match(input);
-        ArrayList<Task> list = new ArrayList<>(); // Container To-Do List
 
         while (command != Command.BYE) {
             printDivider(line);
