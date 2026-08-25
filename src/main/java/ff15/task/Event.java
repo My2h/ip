@@ -1,4 +1,4 @@
-package ff15;
+package ff15.task;
 
 /**
  * Represents a task that starts on a specific date and ends on a specific date,

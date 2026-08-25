@@ -1,5 +1,6 @@
-package ff15;
+package ff15.task;
 
+import ff15.FF15Exception;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

@@ -1,4 +1,4 @@
-package ff15;
+package ff15.task;
 
 /**
  * Represents a task with no date/time attached to it.

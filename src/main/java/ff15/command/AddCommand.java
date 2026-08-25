@@ -1,5 +1,9 @@
-package ff15;
+package ff15.command;
 
+import ff15.Storage;
+import ff15.Ui;
+import ff15.task.Task;
+import ff15.task.TaskList;
 import java.io.IOException;
 
 /**
