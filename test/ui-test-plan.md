@@ -22,6 +22,28 @@ case which incorrectly mutates state (e.g. adds a task it should have
 rejected) shows up immediately as a wrong task count or wrong task line,
 rather than being masked by a later positive case.
 
+## Preconditions
+
+The program loads its saved tasks from `data/ff15.txt` on startup, so the
+plan assumes that file is **empty or absent** before the run — otherwise the
+first `list` case would show leftover tasks. Delete it before running:
+
+```bash
+rm -f data/ff15.txt
+```
+
+A complete run ends with every task deleted, so the file is left empty and
+the next run starts clean. A run that stops early (at a failing case) leaves
+tasks behind, so delete the file again before re-running.
+
+If the file exists but is corrupted (an unknown task type, or a line missing
+fields), the startup block prints two extra lines after the greeting — e.g.
+`AYY!!! Couldn't read your saved tasks: ...` followed by
+`Starting you off with an empty list.` — and the session continues with an
+empty list. That case can't be covered here, since the runner starts the
+program itself and each plan runs as one session; check it by hand by
+writing a bad line into `data/ff15.txt` and starting the program.
+
 ## Test Case: Startup
 **Aim:** The program prints its banner and greeting before any input is given.
 **Input:**
