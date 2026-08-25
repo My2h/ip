@@ -28,6 +28,15 @@ public class Task {
         isDone = false;
     }
 
+    /**
+     * Returns whether this task falls within {@code range}. A plain task has no
+     * date attached, so it never does; {@link Deadline} and {@link Event} override
+     * this with their own answer.
+     */
+    public boolean occursIn(DateRange range) {
+        return false;
+    }
+
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;

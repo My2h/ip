@@ -149,7 +149,7 @@ deadline return book
 ```
 **Expected Output:**
 ```
-     AYY!!! A deadline needs a /by, e.g.: deadline return book /by Sunday
+     AYY!!! A deadline needs a /by, e.g.: deadline return book /by 2019-12-02 1800
 ```
 
 ## Test Case: Deadline with no description at all
@@ -160,7 +160,7 @@ deadline /by Sunday
 ```
 **Expected Output:**
 ```
-     AYY!!! A deadline needs a /by, e.g.: deadline return book /by Sunday
+     AYY!!! A deadline needs a /by, e.g.: deadline return book /by 2019-12-02 1800
 ```
 
 ## Test Case: Deadline with empty /by
@@ -178,23 +178,45 @@ deadline return book /by
 **Aim:** `deadlinex ...` must not be treated as `deadline` — `startsWith("deadline ")` requires the trailing space, so this should fall through to the unknown-command error.
 **Input:**
 ```
-deadlinex return book /by Sunday
+deadlinex return book /by 2019-12-02
 ```
 **Expected Output:**
 ```
      AYY!!! I'm sorry big man, I don't know what that means :-(
 ```
 
-## Test Case: Add a deadline
-**Aim:** `deadline <description> /by <by>` adds a Deadline, tagged `[D]`, with the by-string shown as-is.
+## Test Case: Deadline with a /by that isn't a date
+**Aim:** A `/by` in the old free-text style is now rejected, since the date is parsed into a `LocalDate` instead of being stored as a String.
 **Input:**
 ```
 deadline return book /by Sunday
 ```
 **Expected Output:**
 ```
+     AYY!!! 'Sunday' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+```
+
+## Test Case: Deadline with a well-formed but impossible date
+**Aim:** `2019-13-45` matches the yyyy-mm-dd shape but has no such month or day, so the parser rejects it too — confirming the check is a real date parse, not just a pattern match.
+**Input:**
+```
+deadline return book /by 2019-13-45
+```
+**Expected Output:**
+```
+     AYY!!! '2019-13-45' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+```
+
+## Test Case: Add a deadline
+**Aim:** `deadline <description> /by <yyyy-mm-dd>` adds a Deadline, tagged `[D]`, with the date parsed into a `LocalDate` and printed back in `MMM dd yyyy` form rather than as the text that was typed.
+**Input:**
+```
+deadline return book /by 2019-12-02
+```
+**Expected Output:**
+```
      Got it. I've added this task:
-       [D][ ] return book (by: Sunday)
+       [D][ ] return book (by: Dec 02 2019)
      Now you have 2 tasks in the list.
 ```
 
@@ -208,7 +230,7 @@ list
 ```
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: Sunday)
+     2.[D][ ] return book (by: Dec 02 2019)
 ```
 
 ## Test Case: Event with no /from or /to
@@ -219,47 +241,47 @@ event project meeting
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from Mon 2pm /to 4pm
+     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with /to before /from
 **Aim:** `/to` appearing before `/from` is rejected, since the code requires `toIndex` to come after `fromIndex`.
 **Input:**
 ```
-event project meeting /to 4pm /from Mon 2pm
+event project meeting /to 2019-12-06 /from 2019-12-05
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from Mon 2pm /to 4pm
+     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with /from but no /to
 **Aim:** Supplying only `/from` still reports the combined needs-both error.
 **Input:**
 ```
-event project meeting /from Mon 2pm
+event project meeting /from 2019-12-05
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from Mon 2pm /to 4pm
+     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with /to but no /from
 **Aim:** Supplying only `/to` still reports the combined needs-both error.
 **Input:**
 ```
-event project meeting /to 4pm
+event project meeting /to 2019-12-06
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from Mon 2pm /to 4pm
+     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with empty /from
 **Aim:** `event <description> /from /to <to>` with nothing between `/from` and `/to` reports the empty date/time error.
 **Input:**
 ```
-event project meeting /from /to 4pm
+event project meeting /from /to 2019-12-06
 ```
 **Expected Output:**
 ```
@@ -270,7 +292,7 @@ event project meeting /from /to 4pm
 **Aim:** `event <description> /from <from> /to` with nothing after `/to` reports the empty date/time error.
 **Input:**
 ```
-event project meeting /from Mon 2pm /to
+event project meeting /from 2019-12-05 /to
 ```
 **Expected Output:**
 ```
@@ -281,23 +303,45 @@ event project meeting /from Mon 2pm /to
 **Aim:** `eventx ...` must not be treated as `event` — `startsWith("event ")` requires the trailing space, so this should fall through to the unknown-command error.
 **Input:**
 ```
-eventx project meeting /from Mon 2pm /to 4pm
+eventx project meeting /from 2019-12-05 /to 2019-12-07
 ```
 **Expected Output:**
 ```
      AYY!!! I'm sorry big man, I don't know what that means :-(
 ```
 
-## Test Case: Add an event
-**Aim:** `event <description> /from <from> /to <to>` adds an Event, tagged `[E]`, with both the from and to strings shown as-is.
+## Test Case: Event that ends before it starts
+**Aim:** A `/to` date earlier than the `/from` date is rejected, since an event can't finish before it begins.
 **Input:**
 ```
-event project meeting /from Mon 2pm /to 4pm
+event project meeting /from 2019-12-09 /to 2019-12-08
+```
+**Expected Output:**
+```
+     AYY!!! An event can't end before it starts, bro.
+```
+
+## Test Case: Event with a /from that isn't a date
+**Aim:** Event dates go through the same parser as deadline dates, so free text is rejected the same way.
+**Input:**
+```
+event project meeting /from Monday /to 2019-12-06
+```
+**Expected Output:**
+```
+     AYY!!! 'Monday' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+```
+
+## Test Case: Add an event
+**Aim:** `event <description> /from <yyyy-mm-dd> /to <yyyy-mm-dd>` adds an Event, tagged `[E]`, with both dates parsed into `LocalDate`s and printed back in `MMM dd yyyy` form. It spans three days so that the `on` cases below can check a query for a day in the middle of an event.
+**Input:**
+```
+event project meeting /from 2019-12-05 /to 2019-12-07
 ```
 **Expected Output:**
 ```
      Got it. I've added this task:
-       [E][ ] project meeting (from: Mon 2pm to: 4pm)
+       [E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
      Now you have 3 tasks in the list.
 ```
 
@@ -311,8 +355,124 @@ list
 ```
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: Sunday)
-     3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+     2.[D][ ] return book (by: Dec 02 2019)
+     3.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
+```
+
+## Test Case: Query a day with one deadline on it
+**Aim:** `on <yyyy-mm-dd>` lists the tasks falling on that single day — here only the deadline, since the event hasn't started and the todo has no date at all.
+**Input:**
+```
+on 2019-12-02
+```
+**Expected Output:**
+```
+     Here are the tasks on Dec 02 2019:
+     1.[D][ ] return book (by: Dec 02 2019)
+```
+
+## Test Case: Query a day in the middle of an event
+**Aim:** Dec 06 is neither the event's start nor its end, but the event is still running that day, so it matches — confirming the check is an overlap, not an equality test on the two end dates.
+**Input:**
+```
+on 2019-12-06
+```
+**Expected Output:**
+```
+     Here are the tasks on Dec 06 2019:
+     1.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
+```
+
+## Test Case: Query a whole month
+**Aim:** `on <yyyy-mm>` widens the span to the whole month, so both dated tasks match. The todo is still excluded, having no date.
+**Input:**
+```
+on 2019-12
+```
+**Expected Output:**
+```
+     Here are the tasks on Dec 2019:
+     1.[D][ ] return book (by: Dec 02 2019)
+     2.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
+```
+
+## Test Case: Query a whole year
+**Aim:** `on <yyyy>` widens the span again to the whole year, with the results kept in list order.
+**Input:**
+```
+on 2019
+```
+**Expected Output:**
+```
+     Here are the tasks on 2019:
+     1.[D][ ] return book (by: Dec 02 2019)
+     2.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
+```
+
+## Test Case: Query a date with nothing on it
+**Aim:** A day no task falls on reports that plainly, rather than printing a bare header that would look like a bug.
+**Input:**
+```
+on 2020-01-01
+```
+**Expected Output:**
+```
+     You've got nothing on Jan 01 2020, bro.
+```
+
+## Test Case: Query with no date at all
+**Aim:** `on` with nothing after it asks for one, listing all three accepted forms.
+**Input:**
+```
+on
+```
+**Expected Output:**
+```
+     AYY!!! Tell me when, e.g.: on 2019-12-02, on 2019-12, or on 2019
+```
+
+## Test Case: Query that isn't a date at all
+**Aim:** Free text after `on` is rejected with the same three-forms hint.
+**Input:**
+```
+on nonsense
+```
+**Expected Output:**
+```
+     AYY!!! 'nonsense' isn't a date, month, or year I understand. Try: on 2019-12-02, on 2019-12, or on 2019
+```
+
+## Test Case: Query with an impossible month
+**Aim:** `2019-13` has the yyyy-mm shape but no 13th month, so the parse fails rather than matching on shape alone.
+**Input:**
+```
+on 2019-13
+```
+**Expected Output:**
+```
+     AYY!!! '2019-13' isn't a date, month, or year I understand. Try: on 2019-12-02, on 2019-12, or on 2019
+```
+
+## Test Case: Query with too many date parts
+**Aim:** Four dash-separated parts match none of the day/month/year shapes, so the query is rejected instead of being silently truncated to a day.
+**Input:**
+```
+on 2019-12-02-05
+```
+**Expected Output:**
+```
+     AYY!!! '2019-12-02-05' isn't a date, month, or year I understand. Try: on 2019-12-02, on 2019-12, or on 2019
+```
+
+## Test Case: Word that merely starts with "on"
+**Aim:** `once 2019` must not be treated as `on` — `startsWith("on ")` requires the trailing space, so this should fall through to the unknown-command error.
+**Input:**
+```
+once 2019
+```
+**Expected Output:**
+```
+     AYY!!! I'm sorry big man, I don't know what that means :-(
 ```
 
 ## Test Case: Mark with no task number
@@ -414,8 +574,8 @@ list
 ```
      Here are the tasks in your list:
      1.[T][X] read book
-     2.[D][ ] return book (by: Sunday)
-     3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+     2.[D][ ] return book (by: Dec 02 2019)
+     3.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
 ```
 
 ## Test Case: Unmark with no task number
@@ -484,8 +644,8 @@ list
 ```
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: Sunday)
-     3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+     2.[D][ ] return book (by: Dec 02 2019)
+     3.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
 ```
 
 ## Test Case: Delete with no task number
@@ -542,8 +702,8 @@ list
 ```
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[D][ ] return book (by: Sunday)
-     3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+     2.[D][ ] return book (by: Dec 02 2019)
+     3.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
 ```
 
 ## Test Case: Delete task 2
@@ -555,7 +715,7 @@ delete 2
 **Expected Output:**
 ```
      Noted. I've removed this task:
-       [D][ ] return book (by: Sunday)
+       [D][ ] return book (by: Dec 02 2019)
      Now you have 2 tasks in the list.
 ```
 
@@ -569,7 +729,7 @@ list
 ```
      Here are the tasks in your list:
      1.[T][ ] read book
-     2.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+     2.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
 ```
 
 ## Test Case: Delete task 1
@@ -594,7 +754,7 @@ list
 **Expected Output:**
 ```
      Here are the tasks in your list:
-     1.[E][ ] project meeting (from: Mon 2pm to: 4pm)
+     1.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
 ```
 
 ## Test Case: Delete the last task
@@ -606,7 +766,7 @@ delete 1
 **Expected Output:**
 ```
      Noted. I've removed this task:
-       [E][ ] project meeting (from: Mon 2pm to: 4pm)
+       [E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
      Now you have 0 tasks in the list.
 ```
 
@@ -641,6 +801,116 @@ delete 1
 **Expected Output:**
 ```
      AYY!!! I don't have task number 1. You've got 0 task(s).
+```
+
+## Test Case: Add a deadline with a time
+**Aim:** `/by <yyyy-mm-dd> <HHmm>` pins the deadline to a time of day, shown after the date. The list is empty again at this point, so the count restarts at 1.
+**Input:**
+```
+deadline return book /by 2019-12-02 1800
+```
+**Expected Output:**
+```
+     Got it. I've added this task:
+       [D][ ] return book (by: Dec 02 2019, 6:00pm)
+     Now you have 1 tasks in the list.
+```
+
+## Test Case: Deadline with an impossible time
+**Aim:** `1860` has the HHmm shape but there is no 60th minute, so it is rejected — the same shape-plus-value check the date half gets.
+**Input:**
+```
+deadline return book /by 2019-12-02 1860
+```
+**Expected Output:**
+```
+     AYY!!! '2019-12-02 1860' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+```
+
+## Test Case: Deadline with a time in the wrong format
+**Aim:** A time must be typed as HHmm, so `6pm` is rejected even though the date beside it is valid.
+**Input:**
+```
+deadline return book /by 2019-12-02 6pm
+```
+**Expected Output:**
+```
+     AYY!!! '2019-12-02 6pm' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+```
+
+## Test Case: Add an event with times
+**Aim:** An event can carry a time at each end, letting it start and finish on the same day.
+**Input:**
+```
+event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
+```
+**Expected Output:**
+```
+     Got it. I've added this task:
+       [E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
+     Now you have 2 tasks in the list.
+```
+
+## Test Case: Event that ends earlier the same day
+**Aim:** Both ends fall on the same date, so only the times distinguish them — this is rejected, confirming the ordering check compares the time as well as the date.
+**Input:**
+```
+event project meeting /from 2019-12-05 1600 /to 2019-12-05 1400
+```
+**Expected Output:**
+```
+     AYY!!! An event can't end before it starts, bro.
+```
+
+## Test Case: List tasks that carry times
+**Aim:** `list` shows both timed tasks, confirming the two negative cases above added nothing.
+**Input:**
+```
+list
+```
+**Expected Output:**
+```
+     Here are the tasks in your list:
+     1.[D][ ] return book (by: Dec 02 2019, 6:00pm)
+     2.[E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
+```
+
+## Test Case: Query a day for a task that carries a time
+**Aim:** `on` still matches by day, ignoring the time of day, so a timed event is found by a plain date query.
+**Input:**
+```
+on 2019-12-05
+```
+**Expected Output:**
+```
+     Here are the tasks on Dec 05 2019:
+     1.[E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
+```
+
+## Test Case: Delete the timed deadline
+**Aim:** Removes the timed deadline, draining the list back toward empty so the plan leaves an empty save file behind.
+**Input:**
+```
+delete 1
+```
+**Expected Output:**
+```
+     Noted. I've removed this task:
+       [D][ ] return book (by: Dec 02 2019, 6:00pm)
+     Now you have 1 tasks in the list.
+```
+
+## Test Case: Delete the timed event
+**Aim:** Removes the last task, leaving the list — and so the save file — empty at the end of the run.
+**Input:**
+```
+delete 1
+```
+**Expected Output:**
+```
+     Noted. I've removed this task:
+       [E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
+     Now you have 0 tasks in the list.
 ```
 
 ## Test Case: Command word is case-sensitive

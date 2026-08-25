@@ -50,6 +50,23 @@ public class FF15 {
                             printMessage((i + 1) + "." + list.get(i));
                         }
                     }
+                    case ON -> {
+                        String query = argumentAfter(input, "on");
+                        if (query.isEmpty()) {
+                            throw new FF15Exception(
+                                    "Tell me when, e.g.: on 2019-12-02, on 2019-12, or on 2019");
+                        }
+                        DateRange range = DateRange.parse(query);
+                        ArrayList<Task> matches = tasksIn(list, range);
+                        if (matches.isEmpty()) {
+                            printMessage("You've got nothing on " + range.getLabel() + ", bro.");
+                        } else {
+                            printMessage("Here are the tasks on " + range.getLabel() + ":");
+                            for (int i = 0; i < matches.size(); i++) {
+                                printMessage((i + 1) + "." + matches.get(i));
+                            }
+                        }
+                    }
                     case MARK -> {
                         int number = parseTaskNumber(argumentAfter(input, "mark"), list.size());
                         Task task = list.get(number - 1);
@@ -88,7 +105,7 @@ public class FF15 {
                         String details = argumentAfter(input, "deadline");
                         int byIndex = details.indexOf(" /by");
                         if (byIndex == -1) {                                                                     // handle invalid date input for deadlines
-                            throw new FF15Exception("A deadline needs a /by, e.g.: deadline return book /by Sunday");
+                            throw new FF15Exception("A deadline needs a /by, e.g.: deadline return book /by 2019-12-02 1800");
                         }
                         String description = details.substring(0, byIndex).trim();
                         String by = details.substring(byIndex + " /by".length()).trim();
@@ -98,7 +115,7 @@ public class FF15 {
                         if (by.isEmpty()) {                                                                     // handle empty date input for deadlines
                             throw new FF15Exception("The /by date/time of a deadline can't be empty, bro.");
                         }
-                        Task task = new Deadline(description, by);
+                        Task task = new Deadline(description, TaskTime.parse(by));
                         list.add(task);
                         Storage.save(list);
                         printTaskAdded(task, list);
@@ -109,7 +126,7 @@ public class FF15 {
                         int toIndex = details.indexOf(" /to");
                         if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {                    // handle invalid date input for events
                             throw new FF15Exception(
-                                    "An event needs /from and /to, e.g.: event project meeting /from Mon 2pm /to 4pm");
+                                    "An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600");
                         }
                         String description = details.substring(0, fromIndex).trim();
                         String from = details.substring(fromIndex + " /from".length(), toIndex).trim();
@@ -120,7 +137,12 @@ public class FF15 {
                         if (from.isEmpty() || to.isEmpty()) {                                             // handle empty dates input for events
                             throw new FF15Exception("The /from and /to date/times of an event can't be empty, bro.");
                         }
-                        Task task = new Event(description, from, to);
+                        TaskTime fromDate = TaskTime.parse(from);
+                        TaskTime toDate = TaskTime.parse(to);
+                        if (toDate.isBefore(fromDate)) {                          // an event can't finish before it begins
+                            throw new FF15Exception("An event can't end before it starts, bro.");
+                        }
+                        Task task = new Event(description, fromDate, toDate);
                         list.add(task);
                         Storage.save(list);
                         printTaskAdded(task, list);
@@ -174,6 +196,20 @@ public class FF15 {
             throw new FF15Exception("I don't have task number " + number + ". You've got " + listSize + " task(s).");
         }
         return number;
+    }
+
+    /**
+     * Returns the tasks from {@code list} that fall within {@code range}, kept in
+     * list order. Todos never match, since they have no date attached.
+     */
+    private static ArrayList<Task> tasksIn(ArrayList<Task> list, DateRange range) {
+        ArrayList<Task> matches = new ArrayList<>();
+        for (Task task : list) {
+            if (task.occursIn(range)) {
+                matches.add(task);
+            }
+        }
+        return matches;
     }
 
     private static void printDivider(String divider) {         // helper to print line
