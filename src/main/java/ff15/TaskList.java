@@ -38,7 +38,7 @@ public class TaskList {
     /**
      * Returns the task the user knows as {@code number}, counting from 1.
      * The number is expected to have been range-checked already by
-     * {@link Parser#parseTaskNumber(String, Command, int)}.
+     * {@link Parser#parseTaskNumber(String, CommandWord, int)}.
      */
     public Task get(int number) {
         return tasks.get(number - 1);

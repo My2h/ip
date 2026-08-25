@@ -42,9 +42,9 @@ public class FF15 {
     /** Reads commands and carries them out until the user says bye. */
     public void run() {
         String input = ui.readCommand();
-        Command command = Command.match(input);
+        CommandWord command = CommandWord.match(input);
 
-        while (command != Command.BYE) {
+        while (command != CommandWord.BYE) {
             ui.startBlock();
             try {
                 execute(command, input);
@@ -55,7 +55,7 @@ public class FF15 {
             }
             ui.endBlock();
             input = ui.readCommand();
-            command = Command.match(input);
+            command = CommandWord.match(input);
         }
 
         ui.showGoodbye();
@@ -67,7 +67,7 @@ public class FF15 {
      * @throws FF15Exception if the command was typed wrongly
      * @throws IOException if the tasks could not be saved afterwards
      */
-    private void execute(Command command, String input) throws FF15Exception, IOException {
+    private void execute(CommandWord command, String input) throws FF15Exception, IOException {
         switch (command) {
             case LIST -> ui.showTaskList("Here are the tasks in your list:", tasks.asList());
             case ON -> {
@@ -80,19 +80,19 @@ public class FF15 {
                 }
             }
             case MARK -> {
-                Task task = tasks.get(Parser.parseTaskNumber(input, Command.MARK, tasks.size()));
+                Task task = tasks.get(Parser.parseTaskNumber(input, CommandWord.MARK, tasks.size()));
                 task.markAsDone();
                 storage.save(tasks);
                 ui.showTask("You are cooking! I've marked this task as done:", task);
             }
             case UNMARK -> {
-                Task task = tasks.get(Parser.parseTaskNumber(input, Command.UNMARK, tasks.size()));
+                Task task = tasks.get(Parser.parseTaskNumber(input, CommandWord.UNMARK, tasks.size()));
                 task.markAsNotDone();
                 storage.save(tasks);
                 ui.showTask("OK, I've marked this task as not done yet:", task);
             }
             case DELETE -> {
-                Task task = tasks.delete(Parser.parseTaskNumber(input, Command.DELETE, tasks.size()));
+                Task task = tasks.delete(Parser.parseTaskNumber(input, CommandWord.DELETE, tasks.size()));
                 storage.save(tasks);
                 ui.showTaskRemoved(task, tasks.size());
             }

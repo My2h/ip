@@ -17,7 +17,7 @@ public class Parser {
      * Returns whatever follows the command word in {@code input} (trimmed), or an
      * empty string if the command word was typed with nothing after it.
      */
-    private static String argumentAfter(String input, Command command) {
+    private static String argumentAfter(String input, CommandWord command) {
         String word = command.getWord();
         if (input.length() <= word.length()) {
             return "";
@@ -31,7 +31,7 @@ public class Parser {
      *
      * @param listSize how many tasks exist, used for the range check
      */
-    public static int parseTaskNumber(String input, Command command, int listSize) throws FF15Exception {
+    public static int parseTaskNumber(String input, CommandWord command, int listSize) throws FF15Exception {
         String arg = argumentAfter(input, command);
         if (arg.isEmpty()) {
             throw new FF15Exception("Bro Tell me which task number, e.g. mark 2.");
@@ -50,7 +50,7 @@ public class Parser {
 
     /** Builds the Todo described by {@code input}, which needs only a description. */
     public static Todo parseTodo(String input) throws FF15Exception {
-        String description = argumentAfter(input, Command.TODO);
+        String description = argumentAfter(input, CommandWord.TODO);
         if (description.isEmpty()) {
             throw new FF15Exception("The description of a todo can't be empty, bro.");
         }
@@ -59,7 +59,7 @@ public class Parser {
 
     /** Builds the Deadline described by {@code input}, which must carry a /by. */
     public static Deadline parseDeadline(String input) throws FF15Exception {
-        String details = argumentAfter(input, Command.DEADLINE);
+        String details = argumentAfter(input, CommandWord.DEADLINE);
         int byIndex = details.indexOf(" /by");
         if (byIndex == -1) {
             throw new FF15Exception("A deadline needs a /by, e.g.: deadline return book /by 2019-12-02 1800");
@@ -77,7 +77,7 @@ public class Parser {
 
     /** Builds the Event described by {@code input}, which must carry a /from followed by a /to. */
     public static Event parseEvent(String input) throws FF15Exception {
-        String details = argumentAfter(input, Command.EVENT);
+        String details = argumentAfter(input, CommandWord.EVENT);
         int fromIndex = details.indexOf(" /from");
         int toIndex = details.indexOf(" /to");
         if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
@@ -103,7 +103,7 @@ public class Parser {
 
     /** Builds the span of dates asked about by an {@code on} command. */
     public static DateRange parseDateQuery(String input) throws FF15Exception {
-        String query = argumentAfter(input, Command.ON);
+        String query = argumentAfter(input, CommandWord.ON);
         if (query.isEmpty()) {
             throw new FF15Exception("Tell me when, e.g.: on 2019-12-02, on 2019-12, or on 2019");
         }

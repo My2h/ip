@@ -1,9 +1,10 @@
 package ff15;
 
 /**
- * Represents the fixed set of command words FF15 understands.
+ * Represents the fixed set of command words FF15 understands. Recognising which
+ * word was typed is a parsing job; what each one then does lives elsewhere.
  */
-public enum Command {
+public enum CommandWord {
     LIST("list", false),
     ON("on", true),
     MARK("mark", true),
@@ -18,7 +19,7 @@ public enum Command {
     private final String word;
     private final boolean acceptsArguments;
 
-    Command(String word, boolean acceptsArguments) {
+    CommandWord(String word, boolean acceptsArguments) {
         this.word = word;
         this.acceptsArguments = acceptsArguments;
     }
@@ -33,8 +34,8 @@ public enum Command {
      * trailing space); the rest is left for the caller to parse as arguments.
      * Returns {@link #UNKNOWN} if nothing matches.
      */
-    public static Command match(String input) {
-        for (Command command : values()) {  // static method values() return all COMMAND enum types
+    public static CommandWord match(String input) {
+        for (CommandWord command : values()) {  // static method values() return all COMMAND enum types
             if (command == UNKNOWN) {
                 continue;
             }
