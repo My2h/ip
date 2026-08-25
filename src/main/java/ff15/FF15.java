@@ -1,228 +1,71 @@
 package ff15;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Scanner;
 
+/**
+ * The chatbot itself: it wires together the four parts of the program and runs
+ * the command loop.
+ *
+ * <p>{@link Ui} talks to the user, {@link Parser} makes sense of what they type,
+ * {@link TaskList} holds the tasks, and {@link Storage} keeps them on disk. This
+ * class owns one of each and does nothing but pass work between them.
+ */
 public class FF15 {
-    public static void main(String[] args) {
-        String banner = " _____ _____ _  ____  \n"
-                + "|  ___|  ___/ |/ ___| \n"
-                + "| |_  | |_  | |\\___ \\ \n"
-                + "|  _| |  _| | | ___) |\n"
-                + "|_|   |_|   |_||____/ \n";
-        String line = "____________________________________________________________";
+    /** Where the tasks are kept between sessions. */
+    private static final String DATA_FILE = "data/ff15.txt";
 
-        // Load whatever was saved by the previous session before greeting the user, so
-        // that the tasks are already in memory by the time the first command arrives.
-        ArrayList<Task> list = new ArrayList<>(); // Container To-Do List
-        String loadWarning = null;
+    private final Ui ui;
+    private final Storage storage;
+    private TaskList tasks;
+
+    /**
+     * Greets the user and loads the tasks saved at {@code filePath}. A missing
+     * file is normal and starts an empty list; a file that cannot be read or
+     * understood is reported, and the session starts empty rather than stopping.
+     */
+    public FF15(String filePath) {
+        ui = new Ui();
+        storage = new Storage(filePath);
+
+        ui.startBlock();
+        ui.showWelcome();
         try {
-            list = Storage.load();
+            tasks = new TaskList(storage.load());
         } catch (IOException | FF15Exception e) {
-            // A missing file is normal and loads as an empty list; anything else
-            // (unreadable or corrupted file) is reported and we start fresh.
-            loadWarning = "AYY!!! Couldn't read your saved tasks: " + e.getMessage();
+            ui.showLoadingError(e.getMessage());
+            tasks = new TaskList();
         }
+        ui.endBlock();
+    }
 
-        printDivider(line);
-        System.out.println(banner);
-        printMessage("Eh hello bro, I'm FF15 !");
-        printMessage("What can I do for you big man ?");
-        if (loadWarning != null) {
-            printMessage(loadWarning);
-            printMessage("Starting you off with an empty list.");
-        }
-        printDivider(line);
-        System.out.println();
-
-        Scanner scanner = new Scanner(System.in); // Scanner object to receive input
-        String input = scanner.nextLine();
-        Command command = Command.match(input);
-
-        while (command != Command.BYE) {
-            printDivider(line);
+    /**
+     * Reads commands and carries them out until the user says bye. Each command
+     * decides for itself what to do; this loop only frames the output, hands the
+     * command the three things it may need, and reports anything that went wrong.
+     */
+    public void run() {
+        boolean isExit = false;
+        while (!isExit) {
+            String input = ui.readCommand();
+            ui.startBlock();
             try {
-                switch (command) {
-                    case LIST -> {
-                        printMessage("Here are the tasks in your list:");
-                        for (int i = 0; i < list.size(); i++) {
-                            printMessage((i + 1) + "." + list.get(i));
-                        }
-                    }
-                    case ON -> {
-                        String query = argumentAfter(input, "on");
-                        if (query.isEmpty()) {
-                            throw new FF15Exception(
-                                    "Tell me when, e.g.: on 2019-12-02, on 2019-12, or on 2019");
-                        }
-                        DateRange range = DateRange.parse(query);
-                        ArrayList<Task> matches = tasksIn(list, range);
-                        if (matches.isEmpty()) {
-                            printMessage("You've got nothing on " + range.getLabel() + ", bro.");
-                        } else {
-                            printMessage("Here are the tasks on " + range.getLabel() + ":");
-                            for (int i = 0; i < matches.size(); i++) {
-                                printMessage((i + 1) + "." + matches.get(i));
-                            }
-                        }
-                    }
-                    case MARK -> {
-                        int number = parseTaskNumber(argumentAfter(input, "mark"), list.size());
-                        Task task = list.get(number - 1);
-                        task.markAsDone();
-                        Storage.save(list);
-                        printMessage("You are cooking! I've marked this task as done:");
-                        printMessage("  " + task);
-                    }
-                    case UNMARK -> {
-                        int number = parseTaskNumber(argumentAfter(input, "unmark"), list.size());
-                        Task task = list.get(number - 1);
-                        task.markAsNotDone();
-                        Storage.save(list);
-                        printMessage("OK, I've marked this task as not done yet:");
-                        printMessage("  " + task);
-                    }
-                    case DELETE -> {
-                        int number = parseTaskNumber(argumentAfter(input, "delete"), list.size());
-                        Task task = list.remove(number - 1);
-                        Storage.save(list);
-                        printMessage("Noted. I've removed this task:");
-                        printMessage("  " + task);
-                        printMessage("Now you have " + list.size() + " tasks in the list.");
-                    }
-                    case TODO -> {
-                        String description = argumentAfter(input, "todo");
-                        if (description.isEmpty()) {                                                           // handle empty description for todo
-                            throw new FF15Exception("The description of a todo can't be empty, bro.");
-                        }
-                        Task task = new Todo(description);
-                        list.add(task);
-                        Storage.save(list);
-                        printTaskAdded(task, list);
-                    }
-                    case DEADLINE -> {
-                        String details = argumentAfter(input, "deadline");
-                        int byIndex = details.indexOf(" /by");
-                        if (byIndex == -1) {                                                                     // handle invalid date input for deadlines
-                            throw new FF15Exception("A deadline needs a /by, e.g.: deadline return book /by 2019-12-02 1800");
-                        }
-                        String description = details.substring(0, byIndex).trim();
-                        String by = details.substring(byIndex + " /by".length()).trim();
-                        if (description.isEmpty()) {                                                            // handle empty description input for deadlines
-                            throw new FF15Exception("The description of a deadline can't be empty, bro.");
-                        }
-                        if (by.isEmpty()) {                                                                     // handle empty date input for deadlines
-                            throw new FF15Exception("The /by date/time of a deadline can't be empty, bro.");
-                        }
-                        Task task = new Deadline(description, TaskTime.parse(by));
-                        list.add(task);
-                        Storage.save(list);
-                        printTaskAdded(task, list);
-                    }
-                    case EVENT -> {
-                        String details = argumentAfter(input, "event");
-                        int fromIndex = details.indexOf(" /from");
-                        int toIndex = details.indexOf(" /to");
-                        if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {                    // handle invalid date input for events
-                            throw new FF15Exception(
-                                    "An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600");
-                        }
-                        String description = details.substring(0, fromIndex).trim();
-                        String from = details.substring(fromIndex + " /from".length(), toIndex).trim();
-                        String to = details.substring(toIndex + " /to".length()).trim();
-                        if (description.isEmpty()) {                                                      // handle empty description input for events
-                            throw new FF15Exception("The description of an event can't be empty bro.");
-                        }
-                        if (from.isEmpty() || to.isEmpty()) {                                             // handle empty dates input for events
-                            throw new FF15Exception("The /from and /to date/times of an event can't be empty, bro.");
-                        }
-                        TaskTime fromDate = TaskTime.parse(from);
-                        TaskTime toDate = TaskTime.parse(to);
-                        if (toDate.isBefore(fromDate)) {                          // an event can't finish before it begins
-                            throw new FF15Exception("An event can't end before it starts, bro.");
-                        }
-                        Task task = new Event(description, fromDate, toDate);
-                        list.add(task);
-                        Storage.save(list);
-                        printTaskAdded(task, list);
-                    }
-                    default -> throw new FF15Exception("I'm sorry big man, I don't know what that means :-(");
-                }
+                Command command = Parser.parse(input);
+                command.execute(tasks, ui, storage);
+                isExit = command.isExit();
             } catch (FF15Exception e) {
-                printMessage("AYY!!! " + e.getMessage());
+                ui.showError(e.getMessage());
             } catch (IOException e) {
-                printMessage("AYY!!! Couldn't save your tasks: " + e.getMessage());
+                ui.showError("Couldn't save your tasks: " + e.getMessage());
             }
-            printDivider(line);
-            System.out.println();
-            input = scanner.nextLine();
-            command = Command.match(input);
-        }
-
-        printDivider(line);
-        printMessage("Okok bye bye, see you again soon !");
-        printDivider(line);
-    }
-
-    /**
-     * Returns whatever follows the command word in {@code input} (trimmed), or an
-     * empty string if the command word was typed with nothing after it.
-     * remove command and obtain string
-     */
-    private static String argumentAfter(String input, String commandWord) {
-        if (input.length() <= commandWord.length()) {
-            return "";
-        }
-        return input.substring(commandWord.length() + 1).trim();
-    }
-
-    /**
-     * Parses a 1-based task number typed as an argument to mark/unmark, checking that
-     * it is present, numeric, and within range of the current list.
-     * for mark and unmark commands
-     */
-    private static int parseTaskNumber(String arg, int listSize) throws FF15Exception {
-        if (arg.isEmpty()) {
-            throw new FF15Exception("Bro Tell me which task number, e.g. mark 2.");
-        }
-        int number;
-        try {
-            number = Integer.parseInt(arg);
-        } catch (NumberFormatException e) {
-            throw new FF15Exception("'" + arg + "' aint looking like a task number.");
-        }
-        if (number < 1 || number > listSize) {
-            throw new FF15Exception("I don't have task number " + number + ". You've got " + listSize + " task(s).");
-        }
-        return number;
-    }
-
-    /**
-     * Returns the tasks from {@code list} that fall within {@code range}, kept in
-     * list order. Todos never match, since they have no date attached.
-     */
-    private static ArrayList<Task> tasksIn(ArrayList<Task> list, DateRange range) {
-        ArrayList<Task> matches = new ArrayList<>();
-        for (Task task : list) {
-            if (task.occursIn(range)) {
-                matches.add(task);
+            if (isExit) {
+                ui.endFinalBlock();
+            } else {
+                ui.endBlock();
             }
         }
-        return matches;
     }
 
-    private static void printDivider(String divider) {         // helper to print line
-        System.out.println("    " + divider);
-    }
-
-    private static void printMessage(String message) {         // helper to print message
-        System.out.println("     " + message);
-    }
-
-    private static void printTaskAdded(Task task, ArrayList<Task> list) {        // helper to print task message
-        printMessage("Got it. I've added this task:");
-        printMessage("  " + task);
-        printMessage("Now you have " + list.size() + " tasks in the list.");
+    public static void main(String[] args) {
+        new FF15(DATA_FILE).run();
     }
 }

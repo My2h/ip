@@ -9,25 +9,37 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
- * Saves the task list to a fixed location on disk, and loads it back again.
+ * Saves the task list to a file on disk, and loads it back again. The location
+ * is given when the Storage is created, so the class holds no opinion about
+ * where the data lives.
  */
 public class Storage {
-    private static final Path FILE_PATH = Paths.get("data", "ff15.txt");
+    private final Path filePath;
 
     /** Separator between the fields of one saved task, as written by {@link Task#toFileFormat()}. */
     private static final String FIELD_SEPARATOR = " | ";
 
     /**
+     * Creates a Storage reading and writing {@code filePath}, e.g. {@code data/ff15.txt}.
+     */
+    public Storage(String filePath) {
+        this.filePath = Paths.get(filePath);
+    }
+
+    /**
      * Writes {@code tasks} to the data file, one task per line, creating the
      * containing folder first if it does not already exist.
      */
-    public static void save(List<Task> tasks) throws IOException {
-        Files.createDirectories(FILE_PATH.getParent());
+    public void save(TaskList tasks) throws IOException {
+        Path folder = filePath.getParent();
+        if (folder != null) {                  // null when the file sits in the working directory
+            Files.createDirectories(folder);
+        }
         List<String> lines = new ArrayList<>();
-        for (Task task : tasks) {
+        for (Task task : tasks.asList()) {
             lines.add(task.toFileFormat());
         }
-        Files.write(FILE_PATH, lines);
+        Files.write(filePath, lines);
     }
 
     /**
@@ -38,12 +50,12 @@ public class Storage {
      * @throws IOException if the file exists but cannot be read
      * @throws FF15Exception if a line in the file is not in the expected save format
      */
-    public static ArrayList<Task> load() throws IOException, FF15Exception {
+    public ArrayList<Task> load() throws IOException, FF15Exception {
         ArrayList<Task> tasks = new ArrayList<>();
-        if (!Files.exists(FILE_PATH)) {
+        if (!Files.exists(filePath)) {
             return tasks;
         }
-        for (String line : Files.readAllLines(FILE_PATH)) {
+        for (String line : Files.readAllLines(filePath)) {
             if (line.isBlank()) {   // ignore stray empty lines rather than failing on them
                 continue;
             }

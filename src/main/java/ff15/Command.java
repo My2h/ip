@@ -1,48 +1,26 @@
 package ff15;
 
+import java.io.IOException;
+
 /**
- * Represents the fixed set of command words FF15 understands.
+ * One thing the user asked the chatbot to do.
+ *
+ * <p>{@link Parser} turns an input line into the matching subclass, carrying
+ * whatever that command needs (a task to add, a number to delete). The subclass
+ * then carries it out in {@link #execute}, so adding a new command means adding
+ * a class rather than another branch to a switch.
  */
-public enum Command {
-    LIST("list", false),
-    ON("on", true),
-    MARK("mark", true),
-    UNMARK("unmark", true),
-    DELETE("delete", true),
-    TODO("todo", true),
-    DEADLINE("deadline", true),
-    EVENT("event", true),
-    BYE("bye", false),
-    UNKNOWN("", false);
-
-    private final String word;
-    private final boolean acceptsArguments;
-
-    Command(String word, boolean acceptsArguments) {
-        this.word = word;
-        this.acceptsArguments = acceptsArguments;
-    }
-
-    public String getWord() {
-        return word;
-    }
-
+public abstract class Command {
     /**
-     * Matches {@code input} against a known command word. Commands that accept
-     * arguments also match when {@code input} starts with "{@code word} " (a
-     * trailing space); the rest is left for the caller to parse as arguments.
-     * Returns {@link #UNKNOWN} if nothing matches.
+     * Carries out this command, reporting the result through {@code ui}.
+     *
+     * @throws FF15Exception if the command cannot be carried out as asked
+     * @throws IOException if the tasks could not be saved afterwards
      */
-    public static Command match(String input) {
-        for (Command command : values()) {  // static method values() return all COMMAND enum types
-            if (command == UNKNOWN) {
-                continue;
-            }
-            if (input.equals(command.word)
-                    || (command.acceptsArguments && input.startsWith(command.word + " "))) {  // to check for empty mark cases, so empty mark != empty input
-                return command;
-            }
-        }
-        return UNKNOWN;
+    public abstract void execute(TaskList tasks, Ui ui, Storage storage) throws FF15Exception, IOException;
+
+    /** Returns whether the chatbot should stop after this command. Only exit says yes. */
+    public boolean isExit() {
+        return false;
     }
 }
