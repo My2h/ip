@@ -24,6 +24,24 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 # Project-specific requirements
 
+## Java coding standard
+
+All Java code in this project, under `src/main/java` and `src/test/java` alike,
+must follow the SE-EDU Java coding standard (intermediate level):
+https://se-education.org/guides/conventions/java/intermediate.html
+
+Invoke the `seedu-java-coding-standard` skill for the full rules before writing
+or reviewing Java code. Apply them as you write, not as a clean-up pass
+afterwards. Before reporting a code change as done, run the checker:
+
+```bash
+py .claude/skills/seedu-java-coding-standard/scripts/check-style.py
+```
+
+It exits non-zero on any violation. A clean run does not prove full compliance,
+since naming and comment rules still need a human read, but a dirty run always
+means something must be fixed.
+
 ## Java version:
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
