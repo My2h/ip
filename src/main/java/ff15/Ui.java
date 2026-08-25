@@ -26,6 +26,7 @@ public class Ui {
 
     private final Scanner scanner;
 
+    /** Creates a Ui that reads from standard input and writes to standard output. */
     public Ui() {
         this.scanner = new Scanner(System.in);
     }

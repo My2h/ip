@@ -13,10 +13,20 @@ import java.io.IOException;
 public class AddCommand extends Command {
     private final Task task;
 
+    /**
+     * Creates a command that will add {@code task} to the list.
+     *
+     * @param task the task the parser built from the user input
+     */
     public AddCommand(Task task) {
         this.task = task;
     }
 
+    /**
+     * Adds the task, saves the updated list, and reports what was added.
+     *
+     * @throws IOException if the updated list could not be saved
+     */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
         tasks.add(task);

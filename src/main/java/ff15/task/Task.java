@@ -5,9 +5,17 @@ package ff15.task;
  * Each task has a description and a done/not-done status.
  */
 public class Task {
+    /** What the user typed to describe this task. */
     protected String description;
+
+    /** Whether the user has marked this task as done. */
     protected boolean isDone;
 
+    /**
+     * Creates a task that starts out not done.
+     *
+     * @param description what the user typed to describe the task
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
@@ -20,10 +28,12 @@ public class Task {
         return (isDone ? "X" : " ");
     }
 
+    /** Marks this task as done. */
     public void markAsDone() {
         isDone = true;
     }
 
+    /** Marks this task as not done again. */
     public void markAsNotDone() {
         isDone = false;
     }
@@ -37,6 +47,7 @@ public class Task {
         return false;
     }
 
+    /** Returns this task as shown to the user, e.g. {@code [X] read book}. */
     @Override
     public String toString() {
         return "[" + getStatusIcon() + "] " + description;

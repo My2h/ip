@@ -6,9 +6,19 @@ package ff15.task;
  * {@link TaskTime}s so that the event can be compared against a {@link DateRange}.
  */
 public class Event extends Task {
+    /** When the event starts. */
     protected TaskTime from;
+
+    /** When the event ends. */
     protected TaskTime to;
 
+    /**
+     * Creates an event.
+     *
+     * @param description what the user typed to describe the task
+     * @param from the date, and optionally the time, the event starts
+     * @param to the date, and optionally the time, the event ends
+     */
     public Event(String description, TaskTime from, TaskTime to) {
         super(description);
         this.from = from;
@@ -25,12 +35,20 @@ public class Event extends Task {
         return range.overlaps(from.getDate(), to.getDate());
     }
 
+    /**
+     * Returns this task with both ends, e.g.
+     * {@code [E][ ] holiday (from: Dec 20 2019 to: Dec 26 2019)}.
+     */
     @Override
     public String toString() {
         return "[E]" + super.toString()
                 + " (from: " + from + " to: " + to + ")";
     }
 
+    /**
+     * Returns this task in save-file form, e.g.
+     * {@code E | 0 | holiday | 2019-12-20 | 2019-12-26}.
+     */
     @Override
     public String toFileFormat() {
         return "E | " + super.toFileFormat()

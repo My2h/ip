@@ -5,25 +5,43 @@ package ff15;
  * word was typed is a parsing job; what each one then does lives elsewhere.
  */
 public enum CommandWord {
+    /** Shows every task in the list. */
     LIST("list", false),
+    /** Shows the tasks falling on a given day, month, or year. */
     ON("on", true),
+    /** Marks a task as done. */
     MARK("mark", true),
+    /** Marks a task as not done again. */
     UNMARK("unmark", true),
+    /** Removes a task from the list. */
     DELETE("delete", true),
+    /** Adds a task with no date attached to it. */
     TODO("todo", true),
+    /** Adds a task due by a given date, optionally at a given time. */
     DEADLINE("deadline", true),
+    /** Adds a task running between two given dates or date/times. */
     EVENT("event", true),
+    /** Ends the session. */
     BYE("bye", false),
+    /** Anything the chatbot does not recognise. Has no word of its own. */
     UNKNOWN("", false);
 
     private final String word;
     private final boolean acceptsArguments;
 
+    /**
+     * Records the word the user types for this command, and whether anything
+     * is allowed to follow it on the same line.
+     *
+     * @param word what the user types to invoke this command
+     * @param acceptsArguments whether arguments may follow the word
+     */
     CommandWord(String word, boolean acceptsArguments) {
         this.word = word;
         this.acceptsArguments = acceptsArguments;
     }
 
+    /** Returns the word the user types to invoke this command. */
     public String getWord() {
         return word;
     }
