@@ -1,7 +1,7 @@
 package ff15;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 public class FF15 {
     public static void main(String[] args) {
@@ -9,10 +9,10 @@ public class FF15 {
 
         // Load whatever was saved by the previous session before greeting the user, so
         // that the tasks are already in memory by the time the first command arrives.
-        ArrayList<Task> list = new ArrayList<>(); // Container To-Do List
+        TaskList tasks = new TaskList();
         String loadWarning = null;
         try {
-            list = Storage.load();
+            tasks = new TaskList(Storage.load());
         } catch (IOException | FF15Exception e) {
             // A missing file is normal and loads as an empty list; anything else
             // (unreadable or corrupted file) is reported and we start fresh.
@@ -28,10 +28,10 @@ public class FF15 {
             ui.startBlock();
             try {
                 switch (command) {
-                    case LIST -> ui.showTaskList("Here are the tasks in your list:", list);
+                    case LIST -> ui.showTaskList("Here are the tasks in your list:", tasks.asList());
                     case ON -> {
                         DateRange range = Parser.parseDateQuery(input);
-                        ArrayList<Task> matches = tasksIn(list, range);
+                        List<Task> matches = tasks.tasksIn(range);
                         if (matches.isEmpty()) {
                             ui.showMessage("You've got nothing on " + range.getLabel() + ", bro.");
                         } else {
@@ -39,28 +39,28 @@ public class FF15 {
                         }
                     }
                     case MARK -> {
-                        int number = Parser.parseTaskNumber(input, Command.MARK, list.size());
-                        Task task = list.get(number - 1);
+                        int number = Parser.parseTaskNumber(input, Command.MARK, tasks.size());
+                        Task task = tasks.get(number);
                         task.markAsDone();
-                        Storage.save(list);
+                        Storage.save(tasks);
                         ui.showTask("You are cooking! I've marked this task as done:", task);
                     }
                     case UNMARK -> {
-                        int number = Parser.parseTaskNumber(input, Command.UNMARK, list.size());
-                        Task task = list.get(number - 1);
+                        int number = Parser.parseTaskNumber(input, Command.UNMARK, tasks.size());
+                        Task task = tasks.get(number);
                         task.markAsNotDone();
-                        Storage.save(list);
+                        Storage.save(tasks);
                         ui.showTask("OK, I've marked this task as not done yet:", task);
                     }
                     case DELETE -> {
-                        int number = Parser.parseTaskNumber(input, Command.DELETE, list.size());
-                        Task task = list.remove(number - 1);
-                        Storage.save(list);
-                        ui.showTaskRemoved(task, list.size());
+                        int number = Parser.parseTaskNumber(input, Command.DELETE, tasks.size());
+                        Task task = tasks.delete(number);
+                        Storage.save(tasks);
+                        ui.showTaskRemoved(task, tasks.size());
                     }
-                    case TODO -> addTask(Parser.parseTodo(input), list, ui);
-                    case DEADLINE -> addTask(Parser.parseDeadline(input), list, ui);
-                    case EVENT -> addTask(Parser.parseEvent(input), list, ui);
+                    case TODO -> addTask(Parser.parseTodo(input), tasks, ui);
+                    case DEADLINE -> addTask(Parser.parseDeadline(input), tasks, ui);
+                    case EVENT -> addTask(Parser.parseEvent(input), tasks, ui);
                     default -> throw new FF15Exception("I'm sorry big man, I don't know what that means :-(");
                 }
             } catch (FF15Exception e) {
@@ -81,23 +81,10 @@ public class FF15 {
      * Shared by the todo, deadline, and event commands, which differ only in how
      * the task was parsed, not in what happens to it afterwards.
      */
-    private static void addTask(Task task, ArrayList<Task> list, Ui ui) throws IOException {
-        list.add(task);
-        Storage.save(list);
-        ui.showTaskAdded(task, list.size());
+    private static void addTask(Task task, TaskList tasks, Ui ui) throws IOException {
+        tasks.add(task);
+        Storage.save(tasks);
+        ui.showTaskAdded(task, tasks.size());
     }
 
-    /**
-     * Returns the tasks from {@code list} that fall within {@code range}, kept in
-     * list order. Todos never match, since they have no date attached.
-     */
-    private static ArrayList<Task> tasksIn(ArrayList<Task> list, DateRange range) {
-        ArrayList<Task> matches = new ArrayList<>();
-        for (Task task : list) {
-            if (task.occursIn(range)) {
-                matches.add(task);
-            }
-        }
-        return matches;
-    }
 }
