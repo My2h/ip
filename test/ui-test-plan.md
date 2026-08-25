@@ -943,5 +943,5 @@ bye
 ```
 **Expected Output:**
 ```
-     Okok bye bye, see you again soon !
+     Okie bye bye, see you again soon !
 ```

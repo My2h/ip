@@ -69,7 +69,7 @@ public class Ui {
 
     /** Prints the farewell message. */
     public void showFarewell() {
-        showMessage("Okok bye bye, see you again soon !");
+        showMessage("Okie bye bye, see you again soon !");
     }
 
     /** Prints one line of the chatbot's reply. */
