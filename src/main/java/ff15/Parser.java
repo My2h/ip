@@ -13,6 +13,7 @@ import ff15.task.Deadline;
 import ff15.task.Event;
 import ff15.task.TaskTime;
 import ff15.task.Todo;
+
 /**
  * Deals with making sense of what the user typed: separating the arguments from
  * the command word, checking that the required parts are all there, and turning
@@ -112,8 +113,8 @@ public class Parser {
         int fromIndex = details.indexOf(" /from");
         int toIndex = details.indexOf(" /to");
         if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
-            throw new FF15Exception(
-                    "An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600");
+            throw new FF15Exception("An event needs /from and /to, e.g.: "
+                    + "event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600");
         }
         String description = details.substring(0, fromIndex).trim();
         String from = details.substring(fromIndex + " /from".length(), toIndex).trim();

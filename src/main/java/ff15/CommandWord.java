@@ -57,8 +57,12 @@ public enum CommandWord {
             if (command == UNKNOWN) {
                 continue;
             }
+            // Matches the word on its own, or the word followed by a space and
+            // arguments. Requiring that space keeps "marker" from being read as
+            // a "mark", while still letting a bare "mark" through so the parser
+            // can report the missing task number.
             if (input.equals(command.word)
-                    || (command.acceptsArguments && input.startsWith(command.word + " "))) {  // to check for empty mark cases, so empty mark != empty input
+                    || (command.acceptsArguments && input.startsWith(command.word + " "))) {
                 return command;
             }
         }

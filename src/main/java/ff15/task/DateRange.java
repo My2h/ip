@@ -1,11 +1,12 @@
 package ff15.task;
 
-import ff15.FF15Exception;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+
+import ff15.FF15Exception;
 
 /**
  * A span of dates the user asked about with the {@code on} command. How precise
@@ -72,7 +73,10 @@ public class DateRange {
         return !from.isAfter(end) && !to.isBefore(start);
     }
 
-    /** Returns how this span is named in output, e.g. {@code Dec 02 2019}, {@code Dec 2019}, or {@code 2019}. */
+    /**
+     * Returns how this span is named in output, e.g. {@code Dec 02 2019},
+     * {@code Dec 2019}, or {@code 2019}.
+     */
     public String getLabel() {
         return label;
     }
