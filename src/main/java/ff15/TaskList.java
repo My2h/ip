@@ -37,16 +37,30 @@ public class TaskList {
 
     /**
      * Returns the task the user knows as {@code number}, counting from 1.
-     * The number is expected to have been range-checked already by
-     * {@link Parser#parseTaskNumber(String, CommandWord, int)}.
+     *
+     * @throws FF15Exception if there is no such task
      */
-    public Task get(int number) {
+    public Task get(int number) throws FF15Exception {
+        checkNumber(number);
         return tasks.get(number - 1);
     }
 
-    /** Removes and returns the task the user knows as {@code number}, counting from 1. */
-    public Task delete(int number) {
+    /**
+     * Removes and returns the task the user knows as {@code number}, counting from 1.
+     *
+     * @throws FF15Exception if there is no such task
+     */
+    public Task delete(int number) throws FF15Exception {
+        checkNumber(number);
         return tasks.remove(number - 1);
+    }
+
+    /** Rejects a task number that does not name a task in this list. */
+    private void checkNumber(int number) throws FF15Exception {
+        if (number < 1 || number > tasks.size()) {
+            throw new FF15Exception("I don't have task number " + number
+                    + ". You've got " + tasks.size() + " task(s).");
+        }
     }
 
     /**

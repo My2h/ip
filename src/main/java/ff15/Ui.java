@@ -62,11 +62,14 @@ public class Ui {
         showMessage("Starting you off with an empty list.");
     }
 
-    /** Prints the farewell as the final block, with no blank line after it. */
-    public void showGoodbye() {
-        startBlock();
-        showMessage("Okok bye bye, see you again soon !");
+    /** Closes the final block. No blank line follows it, since the program is ending. */
+    public void endFinalBlock() {
         printDivider();
+    }
+
+    /** Prints the farewell message. */
+    public void showFarewell() {
+        showMessage("Okok bye bye, see you again soon !");
     }
 
     /** Prints one line of the chatbot's reply. */

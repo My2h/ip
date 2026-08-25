@@ -14,6 +14,28 @@ public class Parser {
     }
 
     /**
+     * Works out which command {@code input} asks for, and builds it ready to run.
+     *
+     * @throws FF15Exception if the command word is not recognised, or the rest of
+     *     the line does not give the command what it needs
+     */
+    public static Command parse(String input) throws FF15Exception {
+        CommandWord word = CommandWord.match(input);
+        return switch (word) {
+            case LIST -> new ListCommand();
+            case ON -> new OnCommand(parseDateQuery(input));
+            case MARK -> new MarkCommand(parseTaskNumber(input, CommandWord.MARK));
+            case UNMARK -> new UnmarkCommand(parseTaskNumber(input, CommandWord.UNMARK));
+            case DELETE -> new DeleteCommand(parseTaskNumber(input, CommandWord.DELETE));
+            case TODO -> new AddCommand(parseTodo(input));
+            case DEADLINE -> new AddCommand(parseDeadline(input));
+            case EVENT -> new AddCommand(parseEvent(input));
+            case BYE -> new ExitCommand();
+            case UNKNOWN -> throw new FF15Exception("I'm sorry big man, I don't know what that means :-(");
+        };
+    }
+
+    /**
      * Returns whatever follows the command word in {@code input} (trimmed), or an
      * empty string if the command word was typed with nothing after it.
      */
@@ -27,11 +49,10 @@ public class Parser {
 
     /**
      * Parses the 1-based task number given to mark, unmark, or delete, checking
-     * that it is present, numeric, and within range of the current list.
-     *
-     * @param listSize how many tasks exist, used for the range check
+     * that it is present and numeric. Whether it is in range is checked later by
+     * {@link TaskList}, which is the thing that knows how many tasks there are.
      */
-    public static int parseTaskNumber(String input, CommandWord command, int listSize) throws FF15Exception {
+    private static int parseTaskNumber(String input, CommandWord command) throws FF15Exception {
         String arg = argumentAfter(input, command);
         if (arg.isEmpty()) {
             throw new FF15Exception("Bro Tell me which task number, e.g. mark 2.");
@@ -42,14 +63,11 @@ public class Parser {
         } catch (NumberFormatException e) {
             throw new FF15Exception("'" + arg + "' aint looking like a task number.");
         }
-        if (number < 1 || number > listSize) {
-            throw new FF15Exception("I don't have task number " + number + ". You've got " + listSize + " task(s).");
-        }
         return number;
     }
 
     /** Builds the Todo described by {@code input}, which needs only a description. */
-    public static Todo parseTodo(String input) throws FF15Exception {
+    private static Todo parseTodo(String input) throws FF15Exception {
         String description = argumentAfter(input, CommandWord.TODO);
         if (description.isEmpty()) {
             throw new FF15Exception("The description of a todo can't be empty, bro.");
@@ -58,7 +76,7 @@ public class Parser {
     }
 
     /** Builds the Deadline described by {@code input}, which must carry a /by. */
-    public static Deadline parseDeadline(String input) throws FF15Exception {
+    private static Deadline parseDeadline(String input) throws FF15Exception {
         String details = argumentAfter(input, CommandWord.DEADLINE);
         int byIndex = details.indexOf(" /by");
         if (byIndex == -1) {
@@ -76,7 +94,7 @@ public class Parser {
     }
 
     /** Builds the Event described by {@code input}, which must carry a /from followed by a /to. */
-    public static Event parseEvent(String input) throws FF15Exception {
+    private static Event parseEvent(String input) throws FF15Exception {
         String details = argumentAfter(input, CommandWord.EVENT);
         int fromIndex = details.indexOf(" /from");
         int toIndex = details.indexOf(" /to");
@@ -102,7 +120,7 @@ public class Parser {
     }
 
     /** Builds the span of dates asked about by an {@code on} command. */
-    public static DateRange parseDateQuery(String input) throws FF15Exception {
+    private static DateRange parseDateQuery(String input) throws FF15Exception {
         String query = argumentAfter(input, CommandWord.ON);
         if (query.isEmpty()) {
             throw new FF15Exception("Tell me when, e.g.: on 2019-12-02, on 2019-12, or on 2019");
