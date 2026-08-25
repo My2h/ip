@@ -1,4 +1,4 @@
-package ff15;
+package ff15.task;
 
 /**
  * Represents a task that needs to be done before a specific date, optionally at

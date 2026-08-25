@@ -1,4 +1,4 @@
-package ff15;
+package ff15.task;
 
 /**
  * Represents a task that a user wants to keep track of.
