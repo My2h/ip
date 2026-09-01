@@ -15,7 +15,7 @@ public class OnCommand extends Command {
     /**
      * Creates a command that will report the tasks falling in one span of dates.
      *
-     * @param range the day, month, or year the user asked about
+     * @param range the day, month, or year the user asked about.
      */
     public OnCommand(DateRange range) {
         this.range = range;

@@ -13,8 +13,8 @@ public class Deadline extends Task {
     /**
      * Creates a deadline.
      *
-     * @param description what the user typed to describe the task
-     * @param by the date, and optionally the time, the task is due
+     * @param description what the user typed to describe the task.
+     * @param by the date, and optionally the time, the task is due.
      */
     public Deadline(String description, TaskTime by) {
         super(description);

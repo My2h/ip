@@ -14,7 +14,7 @@ public class FindCommand extends Command {
     /**
      * Creates a command that will report the tasks matching one keyword.
      *
-     * @param keyword the text to look for in each task description
+     * @param keyword the text to look for in each task description.
      */
     public FindCommand(String keyword) {
         this.keyword = keyword;

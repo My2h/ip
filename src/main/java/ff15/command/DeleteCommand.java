@@ -15,7 +15,7 @@ public class DeleteCommand extends Command {
     /**
      * Creates a command that will remove one task from the list.
      *
-     * @param number the task number the user typed, counting from 1
+     * @param number the task number the user typed, counting from 1.
      */
     public DeleteCommand(int number) {
         this.number = number;

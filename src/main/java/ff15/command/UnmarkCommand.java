@@ -15,7 +15,7 @@ public class UnmarkCommand extends Command {
     /**
      * Creates a command that will mark one task as not done again.
      *
-     * @param number the task number the user typed, counting from 1
+     * @param number the task number the user typed, counting from 1.
      */
     public UnmarkCommand(int number) {
         this.number = number;

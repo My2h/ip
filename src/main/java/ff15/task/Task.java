@@ -14,7 +14,7 @@ public class Task {
     /**
      * Creates a task that starts out not done.
      *
-     * @param description what the user typed to describe the task
+     * @param description what the user typed to describe the task.
      */
     public Task(String description) {
         this.description = description;
