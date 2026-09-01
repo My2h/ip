@@ -58,8 +58,7 @@ public class Ui {
      */
     public void showWelcome() {
         System.out.println(BANNER);
-        showMessage("Eh hello bro, I'm FF15 !");
-        showMessage("What can I do for you big man ?");
+        showMessage("Eh hello bro, I'm FF15 !", "What can I do for you big man ?");
     }
 
     /** Reports that the save file could not be read, and that the session starts empty. */
@@ -78,10 +77,16 @@ public class Ui {
         showMessage("Okie bye bye, see you again soon !");
     }
 
-    /** Prints one line of the chatbot's reply, and keeps a copy for {@link #drainTranscript()}. */
-    public void showMessage(String message) {
-        System.out.println("     " + message);
-        transcript.append(message).append(System.lineSeparator());
+    /**
+     * Prints one line of the chatbot's reply per message given, and keeps a copy
+     * of each for {@link #drainTranscript()}. Replies that run to several lines
+     * are one call rather than one call per line.
+     */
+    public void showMessage(String... messages) {
+        for (String message : messages) {
+            System.out.println("     " + message);
+            transcript.append(message).append(System.lineSeparator());
+        }
     }
 
     /**
@@ -111,8 +116,7 @@ public class Ui {
 
     /** Prints a heading followed by the single task it refers to. */
     public void showTask(String header, Task task) {
-        showMessage(header);
-        showMessage("  " + task);
+        showMessage(header, "  " + task);
     }
 
     /** Confirms a newly added task and how many tasks there are now. */

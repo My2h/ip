@@ -8,7 +8,7 @@ public class FF15Exception extends Exception {
     /**
      * Creates an exception carrying an explanation written for the user to read.
      *
-     * @param message the explanation shown in the chatbot reply
+     * @param message the explanation shown in the chatbot reply.
      */
     public FF15Exception(String message) {
         super(message);

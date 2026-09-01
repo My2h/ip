@@ -116,7 +116,7 @@ public class FF15 {
      * Starts the chatbot, reading any previously saved tasks from
      * {@code data/ff15.txt} relative to the working directory.
      *
-     * @param args ignored; the data file location is fixed
+     * @param args ignored; the data file location is fixed.
      */
     public static void main(String[] args) {
         new FF15(DATA_FILE).run();

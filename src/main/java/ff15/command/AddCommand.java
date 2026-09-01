@@ -17,7 +17,7 @@ public class AddCommand extends Command {
     /**
      * Creates a command that will add {@code task} to the list.
      *
-     * @param task the task the parser built from the user input
+     * @param task the task the parser built from the user input.
      */
     public AddCommand(Task task) {
         this.task = task;

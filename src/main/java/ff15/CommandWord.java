@@ -35,8 +35,8 @@ public enum CommandWord {
      * Records the word the user types for this command, and whether anything
      * is allowed to follow it on the same line.
      *
-     * @param word what the user types to invoke this command
-     * @param acceptsArguments whether arguments may follow the word
+     * @param word what the user types to invoke this command.
+     * @param acceptsArguments whether arguments may follow the word.
      */
     CommandWord(String word, boolean acceptsArguments) {
         this.word = word;
