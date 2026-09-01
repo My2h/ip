@@ -177,8 +177,7 @@ public class ParserTest {
     @Test
     public void parse_mark_marksTheTaskTheUserNumbered() throws Exception {
         TaskList tasks = new TaskList();
-        tasks.add(new Todo("a"));
-        tasks.add(new Todo("b"));
+        tasks.add(new Todo("a"), new Todo("b"));
         run(tasks, "mark 2");
         assertEquals("[T][ ] a", tasks.get(1).toString());
         assertEquals("[T][X] b", tasks.get(2).toString());
@@ -196,8 +195,7 @@ public class ParserTest {
     @Test
     public void parse_delete_removesTheTaskTheUserNumbered() throws Exception {
         TaskList tasks = new TaskList();
-        tasks.add(new Todo("a"));
-        tasks.add(new Todo("b"));
+        tasks.add(new Todo("a"), new Todo("b"));
         run(tasks, "delete 1");
         assertEquals(1, tasks.size());
         assertEquals("[T][ ] b", tasks.get(1).toString());
@@ -308,8 +306,7 @@ public class ParserTest {
     @Test
     public void parse_find_reportsTheMatchingTasks() throws Exception {
         TaskList tasks = new TaskList();
-        tasks.add(new Todo("read book"));
-        tasks.add(new Todo("buy milk"));
+        tasks.add(new Todo("read book"), new Todo("buy milk"));
 
         String printed = runCapturing(tasks, "find book");
 

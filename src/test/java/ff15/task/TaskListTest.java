@@ -123,10 +123,10 @@ public class TaskListTest {
     @Test
     public void tasksIn_mixedTasks_returnsOnlyTheDatedMatchesInListOrder() throws FF15Exception {
         TaskList tasks = new TaskList();
-        tasks.add(new Todo("no date at all"));
-        tasks.add(new Deadline("due that day", TaskTime.parse("2019-12-02")));
-        tasks.add(new Deadline("due another day", TaskTime.parse("2019-12-09")));
-        tasks.add(new Event("running through", TaskTime.parse("2019-12-01"), TaskTime.parse("2019-12-05")));
+        tasks.add(new Todo("no date at all"),
+                new Deadline("due that day", TaskTime.parse("2019-12-02")),
+                new Deadline("due another day", TaskTime.parse("2019-12-09")),
+                new Event("running through", TaskTime.parse("2019-12-01"), TaskTime.parse("2019-12-05")));
 
         List<Task> matches = tasks.tasksIn(DateRange.parse("2019-12-02"));
 
@@ -138,8 +138,8 @@ public class TaskListTest {
     @Test
     public void tasksIn_nothingMatches_returnsEmptyList() throws FF15Exception {
         TaskList tasks = new TaskList();
-        tasks.add(new Todo("no date at all"));
-        tasks.add(new Deadline("due later", TaskTime.parse("2020-06-01")));
+        tasks.add(new Todo("no date at all"),
+                new Deadline("due later", TaskTime.parse("2020-06-01")));
         assertTrue(tasks.tasksIn(DateRange.parse("2019-12-02")).isEmpty());
     }
 
@@ -160,9 +160,9 @@ public class TaskListTest {
     @Test
     public void find_matchingDescriptions_returnsThemInListOrder() throws FF15Exception {
         TaskList tasks = new TaskList();
-        tasks.add(new Todo("read book"));
-        tasks.add(new Todo("buy milk"));
-        tasks.add(new Deadline("return book", TaskTime.parse("2019-12-02")));
+        tasks.add(new Todo("read book"),
+                new Todo("buy milk"),
+                new Deadline("return book", TaskTime.parse("2019-12-02")));
 
         List<Task> matches = tasks.find("book");
 

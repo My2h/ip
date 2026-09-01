@@ -32,9 +32,9 @@ public class TaskList {
         return tasks.size();
     }
 
-    /** Adds {@code task} to the end of the list. */
-    public void add(Task task) {
-        tasks.add(task);
+    /** Adds {@code tasksToAdd} to the end of the list, keeping the order given. */
+    public void add(Task... tasksToAdd) {
+        Collections.addAll(tasks, tasksToAdd);
     }
 
     /**
