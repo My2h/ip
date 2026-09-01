@@ -27,6 +27,9 @@ public class Ui {
 
     private final Scanner scanner;
 
+    /** What has been shown since the last drain, for callers that display it themselves. */
+    private final StringBuilder transcript = new StringBuilder();
+
     /** Creates a Ui that reads from standard input and writes to standard output. */
     public Ui() {
         this.scanner = new Scanner(System.in);
@@ -75,9 +78,22 @@ public class Ui {
         showMessage("Okie bye bye, see you again soon !");
     }
 
-    /** Prints one line of the chatbot's reply. */
+    /** Prints one line of the chatbot's reply, and keeps a copy for {@link #drainTranscript()}. */
     public void showMessage(String message) {
         System.out.println("     " + message);
+        transcript.append(message).append(System.lineSeparator());
+    }
+
+    /**
+     * Returns everything shown since this was last called, and forgets it. Only
+     * the message text is kept, without the indentation and divider lines the
+     * console session frames it with, so the words can be put straight into a
+     * dialog box. The console session never calls this.
+     */
+    public String drainTranscript() {
+        String shown = transcript.toString().strip();
+        transcript.setLength(0);
+        return shown;
     }
 
     /** Prints something that went wrong, tagged so it stands out from ordinary replies. */

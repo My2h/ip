@@ -21,8 +21,10 @@ Pass a different plan file as the sole argument if the user names one other
 than `test/ui-test-plan.md`. The script:
 
 1. Finds the class with `public static void main` under `src/main/java` and
-   compiles all files there with `javac` into a throwaway temp directory
-   (never into the source tree).
+   compiles it with `javac` into a throwaway temp directory (never into the
+   source tree). Classes that import `javafx.*` are left out of both steps:
+   a console test plan cannot drive a window, and compiling the GUI would
+   need the JavaFX jars, which this script deliberately does without.
 2. Launches that program once and, for each test case in order, sends its
    input line (if any), reads the program's response, and compares it
    line-for-line against the case's expected output. The startup case (no

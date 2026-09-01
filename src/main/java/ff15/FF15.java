@@ -21,6 +21,11 @@ public class FF15 {
     private final Storage storage;
     private TaskList tasks;
 
+    /** Greets the user and loads the tasks kept in the default save file. */
+    public FF15() {
+        this(DATA_FILE);
+    }
+
     /**
      * Greets the user and loads the tasks saved at {@code filePath}. A missing
      * file is normal and starts an empty list; a file that cannot be read or
@@ -66,6 +71,32 @@ public class FF15 {
                 ui.endBlock();
             }
         }
+    }
+
+    /**
+     * Returns the greeting for a new session, which the constructor has already
+     * put together: the welcome, plus a loading error if the save file could not
+     * be read.
+     */
+    public String getStartupMessage() {
+        return ui.drainTranscript();
+    }
+
+    /**
+     * Carries out one command and returns what the chatbot would have said. This
+     * is the same work the loop in {@link #run()} does for one line of input,
+     * with the reply handed back instead of being left on the console.
+     */
+    public String getResponse(String input) {
+        try {
+            Command command = Parser.parse(input);
+            command.execute(tasks, ui, storage);
+        } catch (FF15Exception e) {
+            ui.showError(e.getMessage());
+        } catch (IOException e) {
+            ui.showError("Couldn't save your tasks: " + e.getMessage());
+        }
+        return ui.drainTranscript();
     }
 
     /**
