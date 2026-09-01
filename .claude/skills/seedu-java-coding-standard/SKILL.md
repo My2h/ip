@@ -14,7 +14,18 @@ afterwards.
 
 ## Check compliance
 
-From the repository root:
+Checkstyle is the authority. From the repository root:
+
+```bash
+./gradlew checkstyleMain checkstyleTest
+```
+
+It runs the official SE-EDU configuration in `config/checkstyle/`, and is wired
+into `check`, so `./gradlew build` fails on any violation. Reports land in
+`build/reports/checkstyle/`. Where this document and that configuration
+disagree, the configuration wins.
+
+For a quicker scan that needs no Gradle:
 
 ```bash
 py .claude/skills/seedu-java-coding-standard/scripts/check-style.py
@@ -67,11 +78,11 @@ run always means something must be fixed.
 * Group imports in this order, separated by blank lines, and sort
   alphabetically inside each group:
   1. static imports
-  2. `java.*`
-  3. `javax.*`
-  4. everything else, which here means this project's own `ff15.*` packages
-     and third-party packages such as `org.junit.*`
-  5. `javafx.*`
+  2. `java.*` and `javax.*`
+  3. `org.*`, which here means `org.junit.*`
+  4. `com.*`
+  5. everything else, which here means this project's own `ff15.*` packages
+     and `javafx.*`
 * Leave a blank line between the import block and the type declaration.
 * Attach array brackets to the type: `int[] values`, not `int values[]`.
 * Declare variables in the smallest scope that works, and initialise them where
