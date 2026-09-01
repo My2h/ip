@@ -1,6 +1,8 @@
 package ff15.gui;
 
 import ff15.FF15;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -8,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 /**
  * Controller for the main window. It owns the controls declared in
@@ -51,6 +54,24 @@ public class MainWindow extends AnchorPane {
         dialogContainer.getChildren().add(DialogBox.getUserDialog(input, userImage));
         showFf15Reply(ff15.getResponse(input));
         userInput.clear();
+
+        if (ff15.isFinished()) {
+            endSession();
+        }
+    }
+
+    /**
+     * Closes the window once the user has said goodbye. The controls are disabled
+     * straight away so nothing more can be typed, but the window lingers for a
+     * moment first, otherwise it vanishes before the farewell can be read.
+     */
+    private void endSession() {
+        userInput.setDisable(true);
+        sendButton.setDisable(true);
+
+        PauseTransition farewellPause = new PauseTransition(Duration.seconds(1.5));
+        farewellPause.setOnFinished(event -> Platform.exit());
+        farewellPause.play();
     }
 
     /** Adds one of FF15's replies to the conversation. */

@@ -21,6 +21,9 @@ public class FF15 {
     private final Storage storage;
     private TaskList tasks;
 
+    /** Whether the last command handed to {@link #getResponse(String)} ended the session. */
+    private boolean isFinished;
+
     /** Greets the user and loads the tasks kept in the default save file. */
     public FF15() {
         this(DATA_FILE);
@@ -83,6 +86,15 @@ public class FF15 {
     }
 
     /**
+     * Returns whether the last command carried out ended the session, so a caller
+     * showing a window knows when to shut it. The console session reads the same
+     * answer from the command itself, in {@link #run()}.
+     */
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    /**
      * Carries out one command and returns what the chatbot would have said. This
      * is the same work the loop in {@link #run()} does for one line of input,
      * with the reply handed back instead of being left on the console.
@@ -91,6 +103,7 @@ public class FF15 {
         try {
             Command command = Parser.parse(input);
             command.execute(tasks, ui, storage);
+            isFinished = command.isExit();
         } catch (FF15Exception e) {
             ui.showError(e.getMessage());
         } catch (IOException e) {
