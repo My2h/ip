@@ -1,0 +1,80 @@
+/* Window shell: deep violet gradient that shifts across the diagonal. */
+.root {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #140a2e, #221052, #2e1466);
+    -fx-font-family: "Segoe UI Variable", "Segoe UI", sans-serif;
+}
+
+/* Let the gradient show through the chat log. */
+.scroll-pane,
+.scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane {
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
+/* Slim, translucent scroll bar with no end buttons. */
+.scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+}
+
+.scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+
+.scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(255, 255, 255, 0.22);
+    -fx-background-radius: 1em;
+}
+
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.42);
+}
+
+.scroll-bar .increment-button,
+.scroll-bar .decrement-button {
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
+/* Composer: frosted pill that lights up on focus. */
+.text-field {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-background-radius: 22;
+    -fx-border-color: rgba(255, 255, 255, 0.16);
+    -fx-border-radius: 22;
+    -fx-border-width: 1;
+    -fx-text-fill: #f2eeff;
+    -fx-prompt-text-fill: rgba(242, 238, 255, 0.38);
+    -fx-font-size: 15px;
+    -fx-padding: 0 18 0 18;
+}
+
+.text-field:focused {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-border-color: #ff4ecd;
+}
+
+/* Send button: gradient pill with a glow that intensifies on hover. */
+.button {
+    -fx-background-color: linear-gradient(to bottom right, #7b5cff, #ff4ecd);
+    -fx-background-radius: 22;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 205, 0.45), 14, 0.2, 0, 3);
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom right, #8f74ff, #ff6fd8);
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 205, 0.7), 20, 0.35, 0, 4);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom right, #6a4be0, #e0399f);
+    -fx-effect: dropshadow(gaussian, rgba(255, 78, 205, 0.3), 8, 0.2, 0, 1);
+}

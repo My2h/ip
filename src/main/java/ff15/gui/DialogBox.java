@@ -42,12 +42,16 @@ public class DialogBox extends HBox {
         displayPicture.setImage(image);
     }
 
-    /** Moves the picture to the left of the words rather than the right. */
+    /**
+     * Moves the picture to the left of the words rather than the right, and
+     * restyles the bubble so FF15's replies do not look like the user's messages.
+     */
     private void flip() {
         ObservableList<Node> children = FXCollections.observableArrayList(getChildren());
         Collections.reverse(children);
         getChildren().setAll(children);
         setAlignment(Pos.TOP_LEFT);
+        dialog.getStyleClass().add("reply-label");
     }
 
     /** Returns a dialog box for something the user typed. */
