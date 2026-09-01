@@ -8,8 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 
-import ff15.FF15Exception;
 import org.junit.jupiter.api.Test;
+
+import ff15.FF15Exception;
 
 /**
  * Tests how {@link DateRange} decides which span the user asked about, and which

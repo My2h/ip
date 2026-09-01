@@ -21,13 +21,13 @@ PUBLIC_FIELD = re.compile(r'^\s*public\s+(?!static\s+final\b)(?!\w+\s*\()[\w<>\[
 def import_group(name, is_static):
     if is_static:
         return 0
-    if name.startswith('java.'):
+    if name.startswith('java.') or name.startswith('javax.'):
         return 1
-    if name.startswith('javax.'):
+    if name.startswith('org.'):
         return 2
-    if name.startswith('javafx.'):
-        return 4
-    return 3
+    if name.startswith('com.'):
+        return 3
+    return 4
 
 roots = sys.argv[1:] or ['src/main/java', 'src/test/java']
 findings = []
@@ -81,7 +81,7 @@ for root in roots:
         groups = [g for _, g, _ in imports]
         if groups != sorted(groups):
             findings.append((path, imports[0][0] if imports else 1,
-                             'import groups out of order (static, java, javax, third-party, javafx)'))
+                             'import groups out of order (static, java/javax, org.*, com.*, then the rest)'))
         for a, b in zip(imports, imports[1:]):
             if a[1] == b[1] and a[2] > b[2]:
                 findings.append((path, b[0], 'imports not alphabetical within group: %s after %s'

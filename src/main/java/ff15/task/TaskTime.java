@@ -32,7 +32,7 @@ public class TaskTime {
     private static final DateTimeFormatter TIME_DISPLAY = DateTimeFormatter.ofPattern("h:mma");
 
     private final LocalDateTime moment;
-    private final boolean hasTime;   // false when the user typed a date only
+    private final boolean hasTime; // false when the user typed a date only
 
     private TaskTime(LocalDateTime moment, boolean hasTime) {
         this.moment = moment;

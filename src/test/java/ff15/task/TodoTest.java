@@ -3,8 +3,9 @@ package ff15.task;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import ff15.FF15Exception;
 import org.junit.jupiter.api.Test;
+
+import ff15.FF15Exception;
 
 /** Tests how a {@link Todo} shows itself to the user and to the save file. */
 public class TodoTest {

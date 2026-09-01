@@ -7,8 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.LocalDate;
 
-import ff15.FF15Exception;
 import org.junit.jupiter.api.Test;
+
+import ff15.FF15Exception;
 
 /**
  * Tests the parsing, comparison, and two output forms of {@link TaskTime}.

@@ -8,8 +8,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import ff15.FF15Exception;
 import org.junit.jupiter.api.Test;
+
+import ff15.FF15Exception;
 
 /**
  * Tests the collection behaviour of {@link TaskList}.

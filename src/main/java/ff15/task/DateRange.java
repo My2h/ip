@@ -37,15 +37,15 @@ public class DateRange {
     public static DateRange parse(String text) throws FF15Exception {
         String[] parts = text.split("-");
         try {
-            if (parts.length == 3) {                        // yyyy-mm-dd: one day
+            if (parts.length == 3) { // yyyy-mm-dd: one day
                 LocalDate day = LocalDate.parse(text);
                 return new DateRange(day, day, TaskTime.formatDate(day));
             }
-            if (parts.length == 2) {                        // yyyy-mm: first to last day of that month
+            if (parts.length == 2) { // yyyy-mm: first to last day of that month
                 YearMonth month = YearMonth.parse(text);
                 return new DateRange(month.atDay(1), month.atEndOfMonth(), month.format(MONTH_DISPLAY));
             }
-            if (parts.length == 1) {                        // yyyy: first to last day of that year
+            if (parts.length == 1) { // yyyy: first to last day of that year
                 Year year = Year.parse(text);
                 return new DateRange(year.atDay(1), year.atMonth(12).atEndOfMonth(), year.toString());
             }

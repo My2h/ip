@@ -4,8 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ff15.FF15Exception;
 import org.junit.jupiter.api.Test;
+
+import ff15.FF15Exception;
 
 /**
  * Tests how an {@link Event} displays itself, saves itself, and answers whether it
