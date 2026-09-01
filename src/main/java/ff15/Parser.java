@@ -25,7 +25,7 @@ import ff15.task.Todo;
  * half-understood. Holds only static helpers and is never instantiated.
  */
 public class Parser {
-    private Parser() {   // a private constructor stops anyone writing "new Parser()"
+    private Parser() { // a private constructor stops anyone writing "new Parser()"
     }
 
     /**
@@ -129,7 +129,7 @@ public class Parser {
         }
         TaskTime fromTime = TaskTime.parse(from);
         TaskTime toTime = TaskTime.parse(to);
-        if (toTime.isBefore(fromTime)) {                          // an event can't finish before it begins
+        if (toTime.isBefore(fromTime)) { // an event can't finish before it begins
             throw new FF15Exception("An event can't end before it starts, bro.");
         }
         return new Event(description, fromTime, toTime);

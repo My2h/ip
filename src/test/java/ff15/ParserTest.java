@@ -12,6 +12,9 @@ import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
 import ff15.command.AddCommand;
 import ff15.command.Command;
 import ff15.command.DeleteCommand;
@@ -24,8 +27,6 @@ import ff15.command.UnmarkCommand;
 import ff15.task.Task;
 import ff15.task.TaskList;
 import ff15.task.Todo;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 /**
  * Tests {@link Parser#parse(String)}: which command a line of input turns into,
@@ -280,8 +281,8 @@ public class ParserTest {
 
     @Test
     public void parse_eventWithToBeforeFrom_throwsException() {
-        assertThrows(FF15Exception.class,
-                () -> Parser.parse("event meeting /to 2019-12-06 /from 2019-12-05"));
+        assertThrows(FF15Exception.class, () ->
+                Parser.parse("event meeting /to 2019-12-06 /from 2019-12-05"));
     }
 
     @Test
@@ -292,10 +293,10 @@ public class ParserTest {
 
     @Test
     public void parse_eventEndingBeforeItStarts_throwsException() {
-        assertThrows(FF15Exception.class,
-                () -> Parser.parse("event meeting /from 2019-12-06 /to 2019-12-05"));
-        assertThrows(FF15Exception.class,
-                () -> Parser.parse("event meeting /from 2019-12-05 1600 /to 2019-12-05 1400"));
+        assertThrows(FF15Exception.class, () ->
+                Parser.parse("event meeting /from 2019-12-06 /to 2019-12-05"));
+        assertThrows(FF15Exception.class, () ->
+                Parser.parse("event meeting /from 2019-12-05 1600 /to 2019-12-05 1400"));
     }
 
     @Test

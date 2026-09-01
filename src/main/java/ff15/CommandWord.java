@@ -55,7 +55,7 @@ public enum CommandWord {
      * Returns {@link #UNKNOWN} if nothing matches.
      */
     public static CommandWord match(String input) {
-        for (CommandWord command : values()) {  // static method values() return all COMMAND enum types
+        for (CommandWord command : values()) { // static method values() return all COMMAND enum types
             if (command == UNKNOWN) {
                 continue;
             }

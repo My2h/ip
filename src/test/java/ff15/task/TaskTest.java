@@ -3,8 +3,9 @@ package ff15.task;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import ff15.FF15Exception;
 import org.junit.jupiter.api.Test;
+
+import ff15.FF15Exception;
 
 /**
  * Tests the keyword search that {@link Task} offers to the {@code find} command.

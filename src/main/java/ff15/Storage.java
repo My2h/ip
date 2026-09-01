@@ -21,10 +21,10 @@ import ff15.task.Todo;
  * where the data lives.
  */
 public class Storage {
-    private final Path filePath;
-
     /** Separator between the fields of one saved task, as written by {@link Task#toFileFormat()}. */
     private static final String FIELD_SEPARATOR = " | ";
+
+    private final Path filePath;
 
     /**
      * Creates a Storage reading and writing {@code filePath}, e.g. {@code data/ff15.txt}.
@@ -39,7 +39,7 @@ public class Storage {
      */
     public void save(TaskList tasks) throws IOException {
         Path folder = filePath.getParent();
-        if (folder != null) {                  // null when the file sits in the working directory
+        if (folder != null) { // null when the file sits in the working directory
             Files.createDirectories(folder);
         }
         List<String> lines = new ArrayList<>();
@@ -63,7 +63,7 @@ public class Storage {
             return tasks;
         }
         for (String line : Files.readAllLines(filePath)) {
-            if (line.isBlank()) {   // ignore stray empty lines rather than failing on them
+            if (line.isBlank()) { // ignore stray empty lines rather than failing on them
                 continue;
             }
             tasks.add(parseTask(line));
@@ -79,7 +79,7 @@ public class Storage {
     private static Task parseTask(String line) throws FF15Exception {
         // Pattern.quote treats the separator as plain text, since "|" means "or" in a regex.
         String[] fields = line.split(Pattern.quote(FIELD_SEPARATOR));
-        requireFieldCount(fields, 3, line);      // every task saves at least: type, done flag, description
+        requireFieldCount(fields, 3, line); // every task saves at least: type, done flag, description
         String type = fields[0];
         boolean isDone = fields[1].equals("1");
         String description = fields[2];
@@ -88,11 +88,11 @@ public class Storage {
         switch (type) {
             case "T" -> task = new Todo(description);
             case "D" -> {
-                requireFieldCount(fields, 4, line);      // plus the /by date
+                requireFieldCount(fields, 4, line); // plus the /by date
                 task = new Deadline(description, TaskTime.parse(fields[3]));
             }
             case "E" -> {
-                requireFieldCount(fields, 5, line);      // plus the /from and /to date/times
+                requireFieldCount(fields, 5, line); // plus the /from and /to date/times
                 task = new Event(description, TaskTime.parse(fields[3]), TaskTime.parse(fields[4]));
             }
             default -> throw new FF15Exception("I don't recognise the task type '" + type
