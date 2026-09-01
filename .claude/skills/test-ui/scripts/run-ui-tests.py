@@ -61,10 +61,25 @@ def parse_plan(plan_path):
 
 
 PACKAGE_RE = re.compile(r"^\s*package\s+([\w.]+)\s*;", re.MULTILINE)
+JAVAFX_IMPORT_RE = re.compile(r"^\s*import\s+javafx\.", re.MULTILINE)
+
+
+def console_sources(src_dir):
+    """
+    Return the sources that make up the console program: everything under src_dir
+    except the JavaFX classes. A console test plan cannot drive a window, and
+    compiling the GUI would need the JavaFX jars this script deliberately does
+    without -- plain javac, no build tool.
+    """
+    return [
+        java_file
+        for java_file in sorted(src_dir.rglob("*.java"))
+        if not JAVAFX_IMPORT_RE.search(java_file.read_text(encoding="utf-8"))
+    ]
 
 
 def find_main_class(src_dir):
-    for java_file in sorted(src_dir.rglob("*.java")):
+    for java_file in console_sources(src_dir):
         text = java_file.read_text(encoding="utf-8")
         if re.search(r"public\s+static\s+void\s+main\s*\(", text):
             package_match = PACKAGE_RE.search(text)
@@ -75,7 +90,7 @@ def find_main_class(src_dir):
 
 
 def compile_program(src_dir, build_dir):
-    java_files = [str(p) for p in src_dir.rglob("*.java")]
+    java_files = [str(p) for p in console_sources(src_dir)]
     result = subprocess.run(
         ["javac", "-d", str(build_dir), *java_files],
         capture_output=True, text=True,
