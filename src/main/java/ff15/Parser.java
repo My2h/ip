@@ -57,6 +57,10 @@ public class Parser {
      */
     private static String argumentAfter(String input, CommandWord command) {
         String word = command.getWord();
+        // Only ever reached once CommandWord.match has matched this word, and the
+        // substring arithmetic below is nonsense if that is not so.
+        assert input.startsWith(word)
+                : "argumentAfter needs input starting with '" + word + "', got: " + input;
         if (input.length() <= word.length()) {
             return "";
         }

@@ -23,6 +23,9 @@ public class DateRange {
     private final String label;
 
     private DateRange(LocalDate start, LocalDate end, String label) {
+        // includes() and overlaps() both read the span as start-then-end, and quietly
+        // match nothing at all if the two are the wrong way round.
+        assert !start.isAfter(end) : "a date range must not end before it starts: " + start + " to " + end;
         this.start = start;
         this.end = end;
         this.label = label;

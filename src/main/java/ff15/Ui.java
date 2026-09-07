@@ -83,6 +83,8 @@ public class Ui {
      * are one call rather than one call per line.
      */
     public void showMessage(String... messages) {
+        // Varargs makes showMessage() with no arguments legal, which would show nothing.
+        assert messages.length > 0 : "showMessage was called with nothing to show";
         for (String message : messages) {
             System.out.println("     " + message);
             transcript.append(message).append(System.lineSeparator());

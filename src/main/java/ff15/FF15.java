@@ -109,7 +109,11 @@ public class FF15 {
         } catch (IOException e) {
             ui.showError("Couldn't save your tasks: " + e.getMessage());
         }
-        return ui.drainTranscript();
+        String reply = ui.drainTranscript();
+        // An empty reply would surface in the GUI as an empty speech bubble, so every
+        // path above must leave the user something to read.
+        assert !reply.isEmpty() : "no reply was produced for the input: " + input;
+        return reply;
     }
 
     /**
