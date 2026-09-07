@@ -72,7 +72,3 @@ jar {
 shadowJar {
     archiveFileName = 'ff15.jar'
 }
-
-run {
-    standardInput = System.in
-}

@@ -6,10 +6,10 @@ package ff15.task;
  */
 public class Task {
     /** What the user typed to describe this task. */
-    protected String description;
+    private final String description;
 
     /** Whether the user has marked this task as done. */
-    protected boolean isDone;
+    private boolean isDone;
 
     /**
      * Creates a task that starts out not done.

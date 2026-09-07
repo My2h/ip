@@ -43,7 +43,7 @@ public class TaskTime {
      * Turns text typed by the user, or read back from the save file, into a
      * date and an optional time. A space in {@code text} means a time follows.
      *
-     * @throws FF15Exception if {@code text} is not a real date, or a real date and time
+     * @throws FF15Exception if {@code text} is not a real date, or a real date and time.
      */
     public static TaskTime parse(String text) throws FF15Exception {
         try {

@@ -24,6 +24,15 @@ public class Storage {
     /** Separator between the fields of one saved task, as written by {@link Task#toFileFormat()}. */
     private static final String FIELD_SEPARATOR = " | ";
 
+    /** Fields every saved task carries: type letter, done flag, and description. */
+    private static final int COMMON_FIELD_COUNT = 3;
+
+    /** Fields a saved deadline carries: the common ones, plus its /by date. */
+    private static final int DEADLINE_FIELD_COUNT = 4;
+
+    /** Fields a saved event carries: the common ones, plus its /from and /to date/times. */
+    private static final int EVENT_FIELD_COUNT = 5;
+
     private final Path filePath;
 
     /**
@@ -54,8 +63,8 @@ public class Storage {
      * Returns an empty list if the data file does not exist yet, which is the
      * normal situation on the very first run.
      *
-     * @throws IOException if the file exists but cannot be read
-     * @throws FF15Exception if a line in the file is not in the expected save format
+     * @throws IOException if the file exists but cannot be read.
+     * @throws FF15Exception if a line in the file is not in the expected save format.
      */
     public ArrayList<Task> load() throws IOException, FF15Exception {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -79,8 +88,9 @@ public class Storage {
     private static Task parseTask(String line) throws FF15Exception {
         // Pattern.quote treats the separator as plain text, since "|" means "or" in a regex.
         String[] fields = line.split(Pattern.quote(FIELD_SEPARATOR));
-        requireFieldCount(fields, 3, line); // every task saves at least: type, done flag, description
-        assert fields.length >= 3 : "requireFieldCount let through a short saved line: " + line;
+        requireFieldCount(fields, COMMON_FIELD_COUNT, line);
+        assert fields.length >= COMMON_FIELD_COUNT
+                : "requireFieldCount let through a short saved line: " + line;
         String type = fields[0];
         boolean isDone = fields[1].equals("1");
         String description = fields[2];
@@ -89,11 +99,11 @@ public class Storage {
         switch (type) {
             case "T" -> task = new Todo(description);
             case "D" -> {
-                requireFieldCount(fields, 4, line); // plus the /by date
+                requireFieldCount(fields, DEADLINE_FIELD_COUNT, line);
                 task = new Deadline(description, TaskTime.parse(fields[3]));
             }
             case "E" -> {
-                requireFieldCount(fields, 5, line); // plus the /from and /to date/times
+                requireFieldCount(fields, EVENT_FIELD_COUNT, line);
                 task = new Event(description, TaskTime.parse(fields[3]), TaskTime.parse(fields[4]));
             }
             default -> throw new FF15Exception("I don't recognise the task type '" + type

@@ -24,8 +24,8 @@ public class UnmarkCommand extends Command {
     /**
      * Marks the numbered task as not done, saves the list, and shows the updated task.
      *
-     * @throws FF15Exception if the number does not name a task in the list
-     * @throws IOException if the updated list could not be saved
+     * @throws FF15Exception if the number does not name a task in the list.
+     * @throws IOException if the updated list could not be saved.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws FF15Exception, IOException {
