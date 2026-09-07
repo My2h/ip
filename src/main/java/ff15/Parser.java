@@ -123,7 +123,10 @@ public class Parser {
         String details = argumentAfter(input, CommandWord.EVENT);
         int fromIndex = details.indexOf(FROM_MARKER);
         int toIndex = details.indexOf(TO_MARKER);
-        if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
+        boolean isFromMissing = fromIndex == -1;
+        boolean isToMissing = toIndex == -1;
+        boolean isToBeforeFrom = toIndex < fromIndex;
+        if (isFromMissing || isToMissing || isToBeforeFrom) {
             throw new FF15Exception("An event needs /from and /to, e.g.: "
                     + "event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600");
         }
