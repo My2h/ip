@@ -54,8 +54,8 @@ public class Storage {
      * Returns an empty list if the data file does not exist yet, which is the
      * normal situation on the very first run.
      *
-     * @throws IOException if the file exists but cannot be read
-     * @throws FF15Exception if a line in the file is not in the expected save format
+     * @throws IOException if the file exists but cannot be read.
+     * @throws FF15Exception if a line in the file is not in the expected save format.
      */
     public ArrayList<Task> load() throws IOException, FF15Exception {
         ArrayList<Task> tasks = new ArrayList<>();

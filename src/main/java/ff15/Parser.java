@@ -32,7 +32,7 @@ public class Parser {
      * Works out which command {@code input} asks for, and builds it ready to run.
      *
      * @throws FF15Exception if the command word is not recognised, or the rest of
-     *     the line does not give the command what it needs
+     *     the line does not give the command what it needs.
      */
     public static Command parse(String input) throws FF15Exception {
         CommandWord word = CommandWord.match(input);

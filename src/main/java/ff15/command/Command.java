@@ -19,8 +19,8 @@ public abstract class Command {
     /**
      * Carries out this command, reporting the result through {@code ui}.
      *
-     * @throws FF15Exception if the command cannot be carried out as asked
-     * @throws IOException if the tasks could not be saved afterwards
+     * @throws FF15Exception if the command cannot be carried out as asked.
+     * @throws IOException if the tasks could not be saved afterwards.
      */
     public abstract void execute(TaskList tasks, Ui ui, Storage storage) throws FF15Exception, IOException;
 

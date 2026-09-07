@@ -40,7 +40,7 @@ public class TaskList {
     /**
      * Returns the task the user knows as {@code number}, counting from 1.
      *
-     * @throws FF15Exception if there is no such task
+     * @throws FF15Exception if there is no such task.
      */
     public Task get(int number) throws FF15Exception {
         checkNumber(number);
@@ -50,7 +50,7 @@ public class TaskList {
     /**
      * Removes and returns the task the user knows as {@code number}, counting from 1.
      *
-     * @throws FF15Exception if there is no such task
+     * @throws FF15Exception if there is no such task.
      */
     public Task delete(int number) throws FF15Exception {
         checkNumber(number);

@@ -25,8 +25,8 @@ public class DeleteCommand extends Command {
      * Removes the numbered task, saves the list, and reports what was removed
      * along with how many tasks are left.
      *
-     * @throws FF15Exception if the number does not name a task in the list
-     * @throws IOException if the updated list could not be saved
+     * @throws FF15Exception if the number does not name a task in the list.
+     * @throws IOException if the updated list could not be saved.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws FF15Exception, IOException {

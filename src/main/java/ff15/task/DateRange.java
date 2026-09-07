@@ -32,7 +32,7 @@ public class DateRange {
      * Builds a span from what the user typed after {@code on}. The number of
      * dash-separated parts decides whether it names a day, a month, or a year.
      *
-     * @throws FF15Exception if {@code text} is not a day, month, or year
+     * @throws FF15Exception if {@code text} is not a day, month, or year.
      */
     public static DateRange parse(String text) throws FF15Exception {
         String[] parts = text.split("-");

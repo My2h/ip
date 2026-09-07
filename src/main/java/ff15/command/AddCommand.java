@@ -26,7 +26,7 @@ public class AddCommand extends Command {
     /**
      * Adds the task, saves the updated list, and reports what was added.
      *
-     * @throws IOException if the updated list could not be saved
+     * @throws IOException if the updated list could not be saved.
      */
     @Override
     public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
