@@ -58,6 +58,8 @@ test {
 
 application {
     mainClass = 'ff15.gui.Launcher'
+    // Assertions are off unless asked for, and these document real invariants.
+    applicationDefaultJvmArgs = ['-ea']
 }
 
 jar {
