@@ -90,8 +90,10 @@
     </module>
 
     <module name="PackageName">
-      <!-- Validates identifiers for package names against the supplied expression. -->
-      <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]{1,})*$"/>
+      <!-- Validates identifiers for package names against the supplied expression.
+           Widened from the SE-EDU original, which allowed digits only after the
+           first segment, so that the root package ff15 is accepted. -->
+      <property name="format" value="^[a-z][a-z0-9]*(\.[a-z][a-z0-9]{1,})*$"/>
       <property name="severity" value="warning"/>
     </module>
 
