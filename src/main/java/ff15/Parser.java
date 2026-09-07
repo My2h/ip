@@ -25,6 +25,15 @@ import ff15.task.Todo;
  * half-understood. Holds only static helpers and is never instantiated.
  */
 public class Parser {
+    /** Marks off the date a deadline is due, e.g. {@code deadline return book /by 2019-12-02}. */
+    private static final String BY_MARKER = " /by";
+
+    /** Marks off the date an event starts. */
+    private static final String FROM_MARKER = " /from";
+
+    /** Marks off the date an event ends. */
+    private static final String TO_MARKER = " /to";
+
     private Parser() { // a private constructor stops anyone writing "new Parser()"
     }
 
@@ -94,12 +103,12 @@ public class Parser {
     /** Builds the Deadline described by {@code input}, which must carry a /by. */
     private static Deadline parseDeadline(String input) throws FF15Exception {
         String details = argumentAfter(input, CommandWord.DEADLINE);
-        int byIndex = details.indexOf(" /by");
+        int byIndex = details.indexOf(BY_MARKER);
         if (byIndex == -1) {
             throw new FF15Exception("A deadline needs a /by, e.g.: deadline return book /by 2019-12-02 1800");
         }
         String description = details.substring(0, byIndex).trim();
-        String by = details.substring(byIndex + " /by".length()).trim();
+        String by = details.substring(byIndex + BY_MARKER.length()).trim();
         if (description.isEmpty()) {
             throw new FF15Exception("The description of a deadline can't be empty, bro.");
         }
@@ -112,15 +121,15 @@ public class Parser {
     /** Builds the Event described by {@code input}, which must carry a /from followed by a /to. */
     private static Event parseEvent(String input) throws FF15Exception {
         String details = argumentAfter(input, CommandWord.EVENT);
-        int fromIndex = details.indexOf(" /from");
-        int toIndex = details.indexOf(" /to");
+        int fromIndex = details.indexOf(FROM_MARKER);
+        int toIndex = details.indexOf(TO_MARKER);
         if (fromIndex == -1 || toIndex == -1 || toIndex < fromIndex) {
             throw new FF15Exception("An event needs /from and /to, e.g.: "
                     + "event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600");
         }
         String description = details.substring(0, fromIndex).trim();
-        String from = details.substring(fromIndex + " /from".length(), toIndex).trim();
-        String to = details.substring(toIndex + " /to".length()).trim();
+        String from = details.substring(fromIndex + FROM_MARKER.length(), toIndex).trim();
+        String to = details.substring(toIndex + TO_MARKER.length()).trim();
         if (description.isEmpty()) {
             throw new FF15Exception("The description of an event can't be empty bro.");
         }
