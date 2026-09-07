@@ -80,6 +80,7 @@ public class Storage {
         // Pattern.quote treats the separator as plain text, since "|" means "or" in a regex.
         String[] fields = line.split(Pattern.quote(FIELD_SEPARATOR));
         requireFieldCount(fields, 3, line); // every task saves at least: type, done flag, description
+        assert fields.length >= 3 : "requireFieldCount let through a short saved line: " + line;
         String type = fields[0];
         boolean isDone = fields[1].equals("1");
         String description = fields[2];

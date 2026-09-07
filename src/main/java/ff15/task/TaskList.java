@@ -34,6 +34,8 @@ public class TaskList {
 
     /** Adds {@code tasksToAdd} to the end of the list, keeping the order given. */
     public void add(Task... tasksToAdd) {
+        // Varargs makes add() with no arguments legal, which would silently do nothing.
+        assert tasksToAdd.length > 0 : "add was called with no tasks to add";
         Collections.addAll(tasks, tasksToAdd);
     }
 
@@ -44,7 +46,10 @@ public class TaskList {
      */
     public Task get(int number) throws FF15Exception {
         checkNumber(number);
-        return tasks.get(number - 1);
+        int index = number - 1;
+        assert index >= 0 && index < tasks.size()
+                : "checkNumber let through an out-of-range task number: " + number;
+        return tasks.get(index);
     }
 
     /**
@@ -54,7 +59,10 @@ public class TaskList {
      */
     public Task delete(int number) throws FF15Exception {
         checkNumber(number);
-        return tasks.remove(number - 1);
+        int index = number - 1;
+        assert index >= 0 && index < tasks.size()
+                : "checkNumber let through an out-of-range task number: " + number;
+        return tasks.remove(index);
     }
 
     /** Rejects a task number that does not name a task in this list. */
