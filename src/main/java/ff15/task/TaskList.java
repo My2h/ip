@@ -3,6 +3,7 @@ package ff15.task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import ff15.FF15Exception;
 
@@ -70,13 +71,11 @@ public class TaskList {
      * Todos never match, since they have no date attached.
      */
     public List<Task> tasksIn(DateRange range) {
-        List<Task> matches = new ArrayList<>();
-        for (Task task : tasks) {
-            if (task.occursIn(range)) {
-                matches.add(task);
-            }
-        }
-        return matches;
+        // Collected into an ArrayList rather than with toList(), because callers are
+        // handed a copy they are free to modify.
+        return tasks.stream()
+                .filter(task -> task.occursIn(range))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**
@@ -87,13 +86,9 @@ public class TaskList {
      * @return the matching tasks, empty when nothing matches.
      */
     public List<Task> find(String keyword) {
-        List<Task> matches = new ArrayList<>();
-        for (Task task : tasks) {
-            if (task.hasKeyword(keyword)) {
-                matches.add(task);
-            }
-        }
-        return matches;
+        return tasks.stream()
+                .filter(task -> task.hasKeyword(keyword))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     /**

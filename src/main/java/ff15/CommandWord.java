@@ -1,5 +1,7 @@
 package ff15;
 
+import java.util.Arrays;
+
 /**
  * Represents the fixed set of command words FF15 understands. Recognising which
  * word was typed is a parsing job; what each one then does lives elsewhere.
@@ -55,19 +57,21 @@ public enum CommandWord {
      * Returns {@link #UNKNOWN} if nothing matches.
      */
     public static CommandWord match(String input) {
-        for (CommandWord command : values()) { // static method values() return all COMMAND enum types
-            if (command == UNKNOWN) {
-                continue;
-            }
-            // Matches the word on its own, or the word followed by a space and
-            // arguments. Requiring that space keeps "marker" from being read as
-            // a "mark", while still letting a bare "mark" through so the parser
-            // can report the missing task number.
-            if (input.equals(command.word)
-                    || (command.acceptsArguments && input.startsWith(command.word + " "))) {
-                return command;
-            }
-        }
-        return UNKNOWN;
+        return Arrays.stream(values())
+                .filter(command -> command != UNKNOWN)
+                .filter(command -> command.matches(input))
+                .findFirst()
+                .orElse(UNKNOWN);
+    }
+
+    /**
+     * Returns whether {@code input} invokes this command: the word on its own, or
+     * the word followed by a space and arguments. Requiring that space keeps
+     * "marker" from being read as a "mark", while still letting a bare "mark"
+     * through so the parser can report the missing task number.
+     */
+    private boolean matches(String input) {
+        return input.equals(word)
+                || (acceptsArguments && input.startsWith(word + " "));
     }
 }

@@ -42,10 +42,9 @@ public class Storage {
         if (folder != null) { // null when the file sits in the working directory
             Files.createDirectories(folder);
         }
-        List<String> lines = new ArrayList<>();
-        for (Task task : tasks.asList()) {
-            lines.add(task.toFileFormat());
-        }
+        List<String> lines = tasks.asList().stream()
+                .map(Task::toFileFormat)
+                .toList();
         Files.write(filePath, lines);
     }
 
