@@ -13,6 +13,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import ff15.contact.Contact;
+import ff15.contact.ContactList;
 import ff15.task.Deadline;
 import ff15.task.Event;
 import ff15.task.Task;
@@ -33,12 +35,14 @@ public class StorageTest {
     @TempDir
     Path tempDir;
 
+    /** Returns a Storage keeping tasks at {@code pathParts} and contacts alongside them. */
     private Storage storageAt(String... pathParts) {
-        Path path = tempDir;
-        for (String part : pathParts) {
-            path = path.resolve(part);
-        }
-        return new Storage(path.toString());
+        return new Storage(fileAt(pathParts).toString(), fileAt("contacts.txt").toString());
+    }
+
+    /** Returns a Storage keeping contacts at {@code contactPathParts}. */
+    private Storage contactStorageAt(String... contactPathParts) {
+        return new Storage(fileAt("ff15.txt").toString(), fileAt(contactPathParts).toString());
     }
 
     private Path fileAt(String... pathParts) {
@@ -53,6 +57,12 @@ public class StorageTest {
     private Storage givenSaveFile(String... lines) throws IOException {
         Files.write(fileAt("ff15.txt"), List.of(lines));
         return storageAt("ff15.txt");
+    }
+
+    /** Writes {@code lines} straight into a contacts file, standing in for an earlier run. */
+    private Storage givenContactFile(String... lines) throws IOException {
+        Files.write(fileAt("contacts.txt"), List.of(lines));
+        return contactStorageAt("contacts.txt");
     }
 
     // --- writing and reading back --------------------------------------------
@@ -211,5 +221,63 @@ public class StorageTest {
     public void load_damagedLineAfterAGoodOne_throwsRatherThanKeepingHalfTheFile() throws Exception {
         Storage storage = givenSaveFile("T | 0 | read book", "D | 0 | broken");
         assertThrows(FF15Exception.class, storage::load);
+    }
+
+    // --- contacts -------------------------------------------------------------
+
+    @Test
+    public void loadContacts_fileDoesNotExist_returnsEmptyList() throws Exception {
+        assertTrue(contactStorageAt("never-written.txt").loadContacts().isEmpty());
+    }
+
+    @Test
+    public void saveContacts_thenLoad_returnsTheSameContacts() throws Exception {
+        ContactList original = new ContactList();
+        original.add(new Contact("John", "91234567", "john@example.com"),
+                new Contact("Mary", "98765432", ""),
+                new Contact("Alex", "", ""));
+        Storage storage = contactStorageAt("contacts.txt");
+
+        storage.saveContacts(original);
+        ContactList reloaded = new ContactList(storage.loadContacts());
+
+        assertEquals(3, reloaded.size());
+        assertEquals("John (phone: 91234567, email: john@example.com)", reloaded.get(1).toString());
+        assertEquals("Mary (phone: 98765432)", reloaded.get(2).toString());
+        assertEquals("Alex", reloaded.get(3).toString());
+    }
+
+    @Test
+    public void loadContacts_nameOnlyLine_keepsTheTrailingEmptyFields() throws Exception {
+        ContactList contacts = new ContactList(givenContactFile("Alex |  | ").loadContacts());
+        assertEquals(1, contacts.size());
+        assertEquals("Alex", contacts.get(1).toString());
+    }
+
+    @Test
+    public void loadContacts_blankLines_areSkipped() throws Exception {
+        Storage storage = givenContactFile("John | 91234567 | ", "", "   ", "Mary |  | ");
+        assertEquals(2, storage.loadContacts().size());
+    }
+
+    @Test
+    public void loadContacts_lineMissingFields_throwsException() throws Exception {
+        Storage storage = givenContactFile("John | 91234567");
+        assertThrows(FF15Exception.class, storage::loadContacts);
+    }
+
+    @Test
+    public void saveContacts_emptyList_writesAnEmptyFile() throws Exception {
+        Storage storage = contactStorageAt("contacts.txt");
+        storage.saveContacts(new ContactList());
+        assertTrue(Files.exists(fileAt("contacts.txt")));
+        assertTrue(Files.readAllLines(fileAt("contacts.txt")).isEmpty());
+    }
+
+    @Test
+    public void loadContacts_missingContactFile_leavesTaskLoadingUnaffected() throws Exception {
+        Storage storage = givenSaveFile("T | 0 | read book");
+        assertEquals(1, storage.load().size());
+        assertTrue(storage.loadContacts().isEmpty());
     }
 }

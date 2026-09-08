@@ -2,6 +2,7 @@ package ff15.command;
 
 import ff15.Storage;
 import ff15.Ui;
+import ff15.contact.ContactList;
 import ff15.task.TaskList;
 
 /** Says goodbye and ends the session. */
@@ -11,7 +12,7 @@ public class ExitCommand extends Command {
      * command that changes the list saves as it goes.
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public void execute(TaskList tasks, ContactList contacts, Ui ui, Storage storage) {
         ui.showFarewell();
     }
 

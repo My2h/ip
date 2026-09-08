@@ -3,6 +3,7 @@ package ff15;
 import java.util.List;
 import java.util.Scanner;
 
+import ff15.contact.Contact;
 import ff15.task.Task;
 
 /**
@@ -65,6 +66,12 @@ public class Ui {
     public void showLoadingError(String reason) {
         showError("Couldn't read your saved tasks: " + reason);
         showMessage("Starting you off with an empty list.");
+    }
+
+    /** Reports that the contacts file could not be read, and that the session starts empty. */
+    public void showContactLoadingError(String reason) {
+        showError("Couldn't read your saved contacts: " + reason);
+        showMessage("Starting you off with an empty contact list.");
     }
 
     /** Closes the final block. No blank line follows it, since the program is ending. */
@@ -133,8 +140,32 @@ public class Ui {
         showTaskCount(taskCount);
     }
 
+    /** Prints a heading followed by the contacts under it, numbered from 1. */
+    public void showContactList(String header, List<Contact> contacts) {
+        showMessage(header);
+        for (int i = 0; i < contacts.size(); i++) {
+            showMessage((i + 1) + "." + contacts.get(i));
+        }
+    }
+
+    /** Confirms a newly added contact and how many contacts there are now. */
+    public void showContactAdded(Contact contact, int contactCount) {
+        showMessage("Got it. I've added this contact:", "  " + contact);
+        showContactCount(contactCount);
+    }
+
+    /** Confirms a deleted contact and how many contacts are left. */
+    public void showContactRemoved(Contact contact, int contactCount) {
+        showMessage("Noted. I've removed this contact:", "  " + contact);
+        showContactCount(contactCount);
+    }
+
     private void showTaskCount(int taskCount) {
         showMessage("Now you have " + taskCount + " tasks in the list.");
+    }
+
+    private void showContactCount(int contactCount) {
+        showMessage("Now you have " + contactCount + " contacts in the list.");
     }
 
     private void printDivider() {

@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import ff15.Storage;
 import ff15.Ui;
+import ff15.contact.ContactList;
 import ff15.task.Task;
 import ff15.task.TaskList;
 
@@ -29,7 +30,7 @@ public class AddCommand extends Command {
      * @throws IOException if the updated list could not be saved.
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws IOException {
+    public void execute(TaskList tasks, ContactList contacts, Ui ui, Storage storage) throws IOException {
         tasks.add(task);
         storage.save(tasks);
         ui.showTaskAdded(task, tasks.size());

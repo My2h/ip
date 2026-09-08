@@ -24,6 +24,7 @@ import ff15.command.ListCommand;
 import ff15.command.MarkCommand;
 import ff15.command.OnCommand;
 import ff15.command.UnmarkCommand;
+import ff15.contact.ContactList;
 import ff15.task.Task;
 import ff15.task.TaskList;
 import ff15.task.Todo;
@@ -43,32 +44,48 @@ public class ParserTest {
     @TempDir
     Path tempDir;
 
+    /** Returns a Storage writing both save files into the test's temporary folder. */
+    private Storage storage() {
+        return new Storage(tempDir.resolve("tasks.txt").toString(),
+                tempDir.resolve("contacts.txt").toString());
+    }
+
+    /** Parses and runs {@code input} against {@code tasks} and an empty contact list. */
+    private void run(TaskList tasks, String input) throws Exception {
+        run(tasks, new ContactList(), input);
+    }
+
     /**
-     * Parses {@code input} and runs it against {@code tasks}, saving into the test's
+     * Parses {@code input} and runs it against both lists, saving into the test's
      * temporary folder and throwing away whatever the Ui prints.
      */
-    private void run(TaskList tasks, String input) throws Exception {
+    private void run(TaskList tasks, ContactList contacts, String input) throws Exception {
         PrintStream realOut = System.out;
         System.setOut(new PrintStream(OutputStream.nullOutputStream()));
         try {
             Command command = Parser.parse(input);
-            command.execute(tasks, new Ui(), new Storage(tempDir.resolve("tasks.txt").toString()));
+            command.execute(tasks, contacts, new Ui(), storage());
         } finally {
             System.setOut(realOut);
         }
     }
 
+    /** Parses and runs {@code input} against {@code tasks}, returning what the Ui printed. */
+    private String runCapturing(TaskList tasks, String input) throws Exception {
+        return runCapturing(tasks, new ContactList(), input);
+    }
+
     /**
-     * Parses and runs {@code input} against {@code tasks}, returning everything the
+     * Parses and runs {@code input} against both lists, returning everything the
      * Ui printed while doing so.
      */
-    private String runCapturing(TaskList tasks, String input) throws Exception {
+    private String runCapturing(TaskList tasks, ContactList contacts, String input) throws Exception {
         PrintStream realOut = System.out;
         ByteArrayOutputStream captured = new ByteArrayOutputStream();
         System.setOut(new PrintStream(captured, true, StandardCharsets.UTF_8));
         try {
             Command command = Parser.parse(input);
-            command.execute(tasks, new Ui(), new Storage(tempDir.resolve("tasks.txt").toString()));
+            command.execute(tasks, contacts, new Ui(), storage());
         } finally {
             System.setOut(realOut);
         }
