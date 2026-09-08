@@ -5,6 +5,7 @@ import java.io.IOException;
 import ff15.FF15Exception;
 import ff15.Storage;
 import ff15.Ui;
+import ff15.contact.ContactList;
 import ff15.task.TaskList;
 
 /**
@@ -17,12 +18,14 @@ import ff15.task.TaskList;
  */
 public abstract class Command {
     /**
-     * Carries out this command, reporting the result through {@code ui}.
+     * Carries out this command, reporting the result through {@code ui}. Every
+     * command is handed both lists, and uses whichever one it works on.
      *
      * @throws FF15Exception if the command cannot be carried out as asked.
-     * @throws IOException if the tasks could not be saved afterwards.
+     * @throws IOException if the tasks or contacts could not be saved afterwards.
      */
-    public abstract void execute(TaskList tasks, Ui ui, Storage storage) throws FF15Exception, IOException;
+    public abstract void execute(TaskList tasks, ContactList contacts, Ui ui, Storage storage)
+            throws FF15Exception, IOException;
 
     /** Returns whether the chatbot should stop after this command. Only exit says yes. */
     public boolean isExit() {

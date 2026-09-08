@@ -3,40 +3,48 @@ package ff15;
 import java.io.IOException;
 
 import ff15.command.Command;
+import ff15.contact.ContactList;
 import ff15.task.TaskList;
 
 /**
- * The chatbot itself: it wires together the four parts of the program and runs
- * the command loop.
+ * The chatbot itself: it wires together the parts of the program and runs the
+ * command loop.
  *
  * <p>{@link Ui} talks to the user, {@link Parser} makes sense of what they type,
- * {@link TaskList} holds the tasks, and {@link Storage} keeps them on disk. This
- * class owns one of each and does nothing but pass work between them.
+ * {@link TaskList} holds the tasks, {@link ContactList} holds the contacts, and
+ * {@link Storage} keeps both on disk. This class owns one of each and does
+ * nothing but pass work between them.
  */
 public class FF15 {
     /** Where the tasks are kept between sessions. */
     private static final String DATA_FILE = "data/ff15.txt";
 
+    /** Where the contacts are kept between sessions. */
+    private static final String CONTACT_FILE = "data/contacts.txt";
+
     private final Ui ui;
     private final Storage storage;
     private TaskList tasks;
+    private ContactList contacts;
 
     /** Whether the last command handed to {@link #getResponse(String)} ended the session. */
     private boolean isFinished;
 
-    /** Greets the user and loads the tasks kept in the default save file. */
+    /** Greets the user and loads the tasks and contacts kept in the default save files. */
     public FF15() {
-        this(DATA_FILE);
+        this(DATA_FILE, CONTACT_FILE);
     }
 
     /**
-     * Greets the user and loads the tasks saved at {@code filePath}. A missing
-     * file is normal and starts an empty list; a file that cannot be read or
-     * understood is reported, and the session starts empty rather than stopping.
+     * Greets the user and loads the tasks saved at {@code filePath} and the
+     * contacts saved at {@code contactFilePath}. A missing file is normal and
+     * starts an empty list; a file that cannot be read or understood is reported,
+     * and the session starts empty rather than stopping. The two files are read
+     * independently, so an unreadable one does not cost the user the other.
      */
-    public FF15(String filePath) {
+    public FF15(String filePath, String contactFilePath) {
         ui = new Ui();
-        storage = new Storage(filePath);
+        storage = new Storage(filePath, contactFilePath);
 
         ui.startBlock();
         ui.showWelcome();
@@ -45,6 +53,12 @@ public class FF15 {
         } catch (IOException | FF15Exception e) {
             ui.showLoadingError(e.getMessage());
             tasks = new TaskList();
+        }
+        try {
+            contacts = new ContactList(storage.loadContacts());
+        } catch (IOException | FF15Exception e) {
+            ui.showContactLoadingError(e.getMessage());
+            contacts = new ContactList();
         }
         ui.endBlock();
     }
@@ -61,7 +75,7 @@ public class FF15 {
             ui.startBlock();
             try {
                 Command command = Parser.parse(input);
-                command.execute(tasks, ui, storage);
+                command.execute(tasks, contacts, ui, storage);
                 isExit = command.isExit();
             } catch (FF15Exception e) {
                 ui.showError(e.getMessage());
@@ -102,7 +116,7 @@ public class FF15 {
     public String getResponse(String input) {
         try {
             Command command = Parser.parse(input);
-            command.execute(tasks, ui, storage);
+            command.execute(tasks, contacts, ui, storage);
             isFinished = command.isExit();
         } catch (FF15Exception e) {
             ui.showError(e.getMessage());
@@ -123,6 +137,6 @@ public class FF15 {
      * @param args ignored; the data file location is fixed.
      */
     public static void main(String[] args) {
-        new FF15(DATA_FILE).run();
+        new FF15().run();
     }
 }

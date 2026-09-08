@@ -83,6 +83,18 @@ public class CommandWordTest {
     public void getWord_eachCommand_returnsTheWordTheUserTypes() {
         assertEquals("list", CommandWord.LIST.getWord());
         assertEquals("deadline", CommandWord.DEADLINE.getWord());
+        assertEquals("contact", CommandWord.CONTACT.getWord());
         assertEquals("", CommandWord.UNKNOWN.getWord());
+    }
+
+    @Test
+    public void match_contactWithSubCommand_returnsContact() {
+        assertEquals(CommandWord.CONTACT, CommandWord.match("contact add John"));
+        assertEquals(CommandWord.CONTACT, CommandWord.match("contact list"));
+    }
+
+    @Test
+    public void match_wordThatMerelyStartsWithContact_returnsUnknown() {
+        assertEquals(CommandWord.UNKNOWN, CommandWord.match("contacts"));
     }
 }

@@ -24,25 +24,29 @@ rather than being masked by a later positive case.
 
 ## Preconditions
 
-The program loads its saved tasks from `data/ff15.txt` on startup, so the
-plan assumes that file is **empty or absent** before the run — otherwise the
-first `list` case would show leftover tasks. Delete it before running:
+The program loads its saved tasks from `data/ff15.txt` and its saved contacts
+from `data/contacts.txt` on startup, so the plan assumes both files are
+**empty or absent** before the run — otherwise the first `list` and
+`contact list` cases would show leftover entries. Delete them before running:
 
 ```bash
-rm -f data/ff15.txt
+rm -f data/ff15.txt data/contacts.txt
 ```
 
-A complete run ends with every task deleted, so the file is left empty and
-the next run starts clean. A run that stops early (at a failing case) leaves
-tasks behind, so delete the file again before re-running.
+A complete run ends with every task and every contact deleted, so both files
+are left empty and the next run starts clean. A run that stops early (at a
+failing case) leaves entries behind, so delete the files again before
+re-running.
 
-If the file exists but is corrupted (an unknown task type, or a line missing
-fields), the startup block prints two extra lines after the greeting — e.g.
-`AYY!!! Couldn't read your saved tasks: ...` followed by
-`Starting you off with an empty list.` — and the session continues with an
-empty list. That case can't be covered here, since the runner starts the
-program itself and each plan runs as one session; check it by hand by
-writing a bad line into `data/ff15.txt` and starting the program.
+If either file exists but is corrupted (an unknown task type, or a line
+missing fields), the startup block prints two extra lines after the greeting
+— e.g. `AYY!!! Couldn't read your saved tasks: ...` followed by
+`Starting you off with an empty list.`, or the contacts equivalent — and the
+session continues with that list empty. The two files are read independently,
+so a damaged one does not cost the user the other. Those cases can't be
+covered here, since the runner starts the program itself and each plan runs as
+one session; check them by hand by writing a bad line into `data/ff15.txt` or
+`data/contacts.txt` and starting the program.
 
 ## Test Case: Startup
 **Aim:** The program prints its banner and greeting before any input is given.
@@ -1056,6 +1060,336 @@ Todo not a command
 **Expected Output:**
 ```
      AYY!!! I'm sorry big man, I don't know what that means :-(
+```
+
+## Test Case: Contact list on an empty contact list
+
+**Aim:** `contact list` on a fresh contact list prints its heading and nothing under it, confirming no contact survived from an earlier run.
+**Input:**
+```
+contact list
+```
+**Expected Output:**
+```
+     Here are the contacts in your list:
+```
+
+## Test Case: Contact with no sub-command
+
+**Aim:** `contact` on its own says which four things can follow it.
+**Input:**
+```
+contact
+```
+**Expected Output:**
+```
+     AYY!!! Tell me what to do with your contacts, bro. Try: contact add, contact list, contact delete, or contact find
+```
+
+## Test Case: Contact with an unknown sub-command
+
+**Aim:** A word that isn't one of the four is rejected, and the message names the valid ones.
+**Input:**
+```
+contact mark 1
+```
+**Expected Output:**
+```
+     AYY!!! I can't 'mark' a contact, bro. Try: contact add, contact list, contact delete, or contact find
+```
+
+## Test Case: Word that merely starts with "contact"
+
+**Aim:** `contacts` isn't `contact` followed by a space, so it should be unknown rather than a contact command with a strange sub-command.
+**Input:**
+```
+contacts
+```
+**Expected Output:**
+```
+     AYY!!! I'm sorry big man, I don't know what that means :-(
+```
+
+## Test Case: Contact add with no name
+
+**Aim:** `contact add` with nothing after it is rejected, since a name is the one required field.
+**Input:**
+```
+contact add
+```
+**Expected Output:**
+```
+     AYY!!! A contact needs a name, e.g.: contact add John /phone 91234567
+```
+
+## Test Case: Contact add with a marker but no name
+
+**Aim:** `contact add /phone ...` is a missing name, not a contact named `/phone ...`, because a marker is recognised even when it opens the line.
+**Input:**
+```
+contact add /phone 91234567
+```
+**Expected Output:**
+```
+     AYY!!! A contact needs a name, e.g.: contact add John /phone 91234567
+```
+
+## Test Case: Contact add with an empty /phone
+
+**Aim:** A `/phone` given with nothing after it is rejected rather than stored as blank.
+**Input:**
+```
+contact add John /phone
+```
+**Expected Output:**
+```
+     AYY!!! The /phone of a contact can't be empty, bro.
+```
+
+## Test Case: Contact add with an unusable phone
+
+**Aim:** A phone number containing letters is rejected, and the message says which characters are allowed.
+**Input:**
+```
+contact add John /phone hello
+```
+**Expected Output:**
+```
+     AYY!!! 'hello' aint looking like a phone number. Digits, spaces, +, -, and brackets only.
+```
+
+## Test Case: Contact add with an unusable email
+
+**Aim:** An email without an `@` is rejected.
+**Input:**
+```
+contact add John /email nope
+```
+**Expected Output:**
+```
+     AYY!!! 'nope' aint looking like an email. It needs one @ with something on both sides.
+```
+
+## Test Case: List after the rejected contacts
+
+**Aim:** `contact list` still shows nothing, confirming none of the rejected commands left a stray contact behind.
+**Input:**
+```
+contact list
+```
+**Expected Output:**
+```
+     Here are the contacts in your list:
+```
+
+## Test Case: Add a contact with every field
+
+**Aim:** `contact add <name> /phone <phone> /email <email>` stores all three and confirms with the contact count.
+**Input:**
+```
+contact add John /phone 91234567 /email john@example.com
+```
+**Expected Output:**
+```
+     Got it. I've added this contact:
+       John (phone: 91234567, email: john@example.com)
+     Now you have 1 contacts in the list.
+```
+
+## Test Case: Add a contact with the markers reversed
+
+**Aim:** `/email` before `/phone` reads the same way, since the markers are order-independent.
+**Input:**
+```
+contact add Mary /email mary@example.com /phone 98765432
+```
+**Expected Output:**
+```
+     Got it. I've added this contact:
+       Mary (phone: 98765432, email: mary@example.com)
+     Now you have 2 contacts in the list.
+```
+
+## Test Case: Add a contact with a name only
+
+**Aim:** Both optional fields may be left out, and the display then shows just the name, with no empty brackets.
+**Input:**
+```
+contact add Alex Tan
+```
+**Expected Output:**
+```
+     Got it. I've added this contact:
+       Alex Tan
+     Now you have 3 contacts in the list.
+```
+
+## Test Case: Contact list after adding three
+
+**Aim:** `contact list` numbers the contacts from 1 and shows each with only the fields it has.
+**Input:**
+```
+contact list
+```
+**Expected Output:**
+```
+     Here are the contacts in your list:
+     1.John (phone: 91234567, email: john@example.com)
+     2.Mary (phone: 98765432, email: mary@example.com)
+     3.Alex Tan
+```
+
+## Test Case: Contact list with an argument
+
+**Aim:** `contact list` takes nothing after it, so an argument is rejected rather than ignored.
+**Input:**
+```
+contact list everything
+```
+**Expected Output:**
+```
+     AYY!!! 'contact list' doesn't need anything after it, bro.
+```
+
+## Test Case: Contact find by name
+
+**Aim:** `contact find <keyword>` matches names regardless of capitalisation.
+**Input:**
+```
+contact find JOHN
+```
+**Expected Output:**
+```
+     Here are the matching contacts in your list:
+     1.John (phone: 91234567, email: john@example.com)
+```
+
+## Test Case: Contact find never matches a phone or email
+
+**Aim:** Searching for part of a stored phone number finds nothing, documenting that only the name is searched.
+**Input:**
+```
+contact find 9123
+```
+**Expected Output:**
+```
+     You've got no contacts matching '9123', bro.
+```
+
+## Test Case: Contact find without a keyword
+
+**Aim:** `contact find` with nothing to search for is rejected.
+**Input:**
+```
+contact find
+```
+**Expected Output:**
+```
+     AYY!!! Tell me which contact to look for, e.g.: contact find john
+```
+
+## Test Case: Task find never matches a contact
+
+**Aim:** `find john` searches only task descriptions, so it finds nothing even though a contact named John exists.
+**Input:**
+```
+find john
+```
+**Expected Output:**
+```
+     You've got nothing matching 'john', bro.
+```
+
+## Test Case: Contacts never appear in the task list
+
+**Aim:** `list` shows the empty task list, confirming the two collections are kept apart.
+**Input:**
+```
+list
+```
+**Expected Output:**
+```
+     Here are the tasks in your list:
+```
+
+## Test Case: Contact delete with a number past the end
+
+**Aim:** A contact number nobody has is rejected, and the message says how many there are.
+**Input:**
+```
+contact delete 9
+```
+**Expected Output:**
+```
+     AYY!!! I don't have contact number 9. You've got 3 contact(s).
+```
+
+## Test Case: Contact delete with something that isn't a number
+
+**Aim:** A word where a contact number belongs is rejected.
+**Input:**
+```
+contact delete two
+```
+**Expected Output:**
+```
+     AYY!!! 'two' aint looking like a contact number.
+```
+
+## Test Case: Contact delete
+
+**Aim:** `contact delete <number>` removes the contact the user numbered and reports how many are left.
+**Input:**
+```
+contact delete 2
+```
+**Expected Output:**
+```
+     Noted. I've removed this contact:
+       Mary (phone: 98765432, email: mary@example.com)
+     Now you have 2 contacts in the list.
+```
+
+## Test Case: Contact list after deleting
+
+**Aim:** The remaining contacts are renumbered from 1, so the deleted contact's number is reused.
+**Input:**
+```
+contact list
+```
+**Expected Output:**
+```
+     Here are the contacts in your list:
+     1.John (phone: 91234567, email: john@example.com)
+     2.Alex Tan
+```
+
+## Test Case: Delete the first remaining contact
+
+**Aim:** Starts draining the contact list so the plan still leaves an empty contacts file behind.
+**Input:**
+```
+contact delete 1
+```
+**Expected Output:**
+```
+     Noted. I've removed this contact:
+       John (phone: 91234567, email: john@example.com)
+     Now you have 1 contacts in the list.
+```
+
+## Test Case: Delete the last remaining contact
+
+**Aim:** Removes the final contact, returning the contact list to empty before the closing cases.
+**Input:**
+```
+contact delete 1
+```
+**Expected Output:**
+```
+     Noted. I've removed this contact:
+       Alex Tan
+     Now you have 0 contacts in the list.
 ```
 
 ## Test Case: Leading whitespace on a command

@@ -4,6 +4,7 @@ import java.util.List;
 
 import ff15.Storage;
 import ff15.Ui;
+import ff15.contact.ContactList;
 import ff15.task.Task;
 import ff15.task.TaskList;
 
@@ -22,7 +23,7 @@ public class FindCommand extends Command {
 
     /** Shows the tasks matching the keyword, or says there are none. */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) {
+    public void execute(TaskList tasks, ContactList contacts, Ui ui, Storage storage) {
         List<Task> matches = tasks.find(keyword);
         if (matches.isEmpty()) {
             ui.showMessage("You've got nothing matching '" + keyword + "', bro.");

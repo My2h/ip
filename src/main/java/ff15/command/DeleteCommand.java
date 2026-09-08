@@ -5,6 +5,7 @@ import java.io.IOException;
 import ff15.FF15Exception;
 import ff15.Storage;
 import ff15.Ui;
+import ff15.contact.ContactList;
 import ff15.task.Task;
 import ff15.task.TaskList;
 
@@ -29,7 +30,8 @@ public class DeleteCommand extends Command {
      * @throws IOException if the updated list could not be saved.
      */
     @Override
-    public void execute(TaskList tasks, Ui ui, Storage storage) throws FF15Exception, IOException {
+    public void execute(TaskList tasks, ContactList contacts, Ui ui, Storage storage)
+            throws FF15Exception, IOException {
         Task task = tasks.delete(number);
         storage.save(tasks);
         ui.showTaskRemoved(task, tasks.size());

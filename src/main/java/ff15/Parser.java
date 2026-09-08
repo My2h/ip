@@ -2,6 +2,10 @@ package ff15;
 
 import ff15.command.AddCommand;
 import ff15.command.Command;
+import ff15.command.ContactAddCommand;
+import ff15.command.ContactDeleteCommand;
+import ff15.command.ContactFindCommand;
+import ff15.command.ContactListCommand;
 import ff15.command.DeleteCommand;
 import ff15.command.ExitCommand;
 import ff15.command.FindCommand;
@@ -9,6 +13,7 @@ import ff15.command.ListCommand;
 import ff15.command.MarkCommand;
 import ff15.command.OnCommand;
 import ff15.command.UnmarkCommand;
+import ff15.contact.Contact;
 import ff15.task.DateRange;
 import ff15.task.Deadline;
 import ff15.task.Event;
@@ -34,6 +39,27 @@ public class Parser {
     /** Marks off the date an event ends. */
     private static final String TO_MARKER = " /to";
 
+    /** Marks off a contact's phone number, e.g. {@code contact add John /phone 91234567}. */
+    private static final String PHONE_MARKER = " /phone";
+
+    /** Marks off a contact's email address. */
+    private static final String EMAIL_MARKER = " /email";
+
+    /** The word that follows {@code contact} to add one. */
+    private static final String CONTACT_ADD = "add";
+
+    /** The word that follows {@code contact} to list them all. */
+    private static final String CONTACT_LIST = "list";
+
+    /** The word that follows {@code contact} to remove one. */
+    private static final String CONTACT_DELETE = "delete";
+
+    /** The word that follows {@code contact} to search them by name. */
+    private static final String CONTACT_FIND = "find";
+
+    /** The characters a phone number may be written with. */
+    private static final String PHONE_PATTERN = "[0-9 +\\-()]+";
+
     private Parser() { // a private constructor stops anyone writing "new Parser()"
     }
 
@@ -55,6 +81,7 @@ public class Parser {
             case DEADLINE -> new AddCommand(parseDeadline(input));
             case EVENT -> new AddCommand(parseEvent(input));
             case FIND -> new FindCommand(parseKeyword(input));
+            case CONTACT -> parseContactCommand(input);
             case BYE -> new ExitCommand();
             case UNKNOWN -> throw new FF15Exception("I'm sorry big man, I don't know what that means :-(");
         };
@@ -158,6 +185,133 @@ public class Parser {
             throw new FF15Exception("Tell me what to look for, e.g.: find book");
         }
         return keyword;
+    }
+
+    /**
+     * Builds the contact command asked for by {@code input}, deciding from the
+     * word that follows {@code contact} which of the four it is.
+     */
+    private static Command parseContactCommand(String input) throws FF15Exception {
+        String details = argumentAfter(input, CommandWord.CONTACT);
+        if (details.isEmpty()) {
+            throw new FF15Exception("Tell me what to do with your contacts, bro. "
+                    + "Try: contact add, contact list, contact delete, or contact find");
+        }
+        String subCommand = details.split(" ", 2)[0];
+        String rest = details.substring(subCommand.length()).trim();
+        return switch (subCommand) {
+            case CONTACT_ADD -> new ContactAddCommand(parseContact(rest));
+            case CONTACT_LIST -> parseContactList(rest);
+            case CONTACT_DELETE -> new ContactDeleteCommand(parseContactNumber(rest));
+            case CONTACT_FIND -> new ContactFindCommand(parseContactKeyword(rest));
+            default -> throw new FF15Exception("I can't '" + subCommand + "' a contact, bro. "
+                    + "Try: contact add, contact list, contact delete, or contact find");
+        };
+    }
+
+    /**
+     * Builds the Contact described by {@code details}, which starts with a name
+     * and may then carry a /phone, an /email, or both, in either order.
+     */
+    private static Contact parseContact(String details) throws FF15Exception {
+        // The markers carry a leading space so that a name may contain "/phone". Padding
+        // the line lets one be found when it opens the line too, so that
+        // "contact add /phone 123" is a missing name rather than a contact called "/phone 123".
+        String padded = " " + details;
+        int phoneIndex = padded.indexOf(PHONE_MARKER);
+        int emailIndex = padded.indexOf(EMAIL_MARKER);
+
+        String name = padded.substring(0, firstMarkerAt(padded.length(), phoneIndex, emailIndex)).trim();
+        if (name.isEmpty()) {
+            throw new FF15Exception("A contact needs a name, e.g.: contact add John /phone 91234567");
+        }
+
+        String phone = valueAfter(padded, phoneIndex, PHONE_MARKER, emailIndex);
+        String email = valueAfter(padded, emailIndex, EMAIL_MARKER, phoneIndex);
+        requirePhone(phone, phoneIndex);
+        requireEmail(email, emailIndex);
+        return new Contact(name, phone, email);
+    }
+
+    /**
+     * Returns the earliest of {@code markerIndices} that is present, or
+     * {@code fallback} when none of them is, which is where the name ends.
+     */
+    private static int firstMarkerAt(int fallback, int... markerIndices) {
+        int earliest = fallback;
+        for (int index : markerIndices) {
+            if (index != -1 && index < earliest) {
+                earliest = index;
+            }
+        }
+        return earliest;
+    }
+
+    /**
+     * Returns the text following {@code marker}, stopping at {@code otherIndex} if
+     * the other marker comes later on the line. Returns an empty string when this
+     * marker was not given at all.
+     */
+    private static String valueAfter(String details, int markerIndex, String marker, int otherIndex) {
+        if (markerIndex == -1) {
+            return "";
+        }
+        int start = markerIndex + marker.length();
+        int end = otherIndex > markerIndex ? otherIndex : details.length();
+        return details.substring(start, end).trim();
+    }
+
+    /** Rejects a /phone that was given but is empty or not written like a phone number. */
+    private static void requirePhone(String phone, int phoneIndex) throws FF15Exception {
+        if (phoneIndex != -1 && phone.isEmpty()) {
+            throw new FF15Exception("The /phone of a contact can't be empty, bro.");
+        }
+        if (!phone.isEmpty() && !phone.matches(PHONE_PATTERN)) {
+            throw new FF15Exception("'" + phone + "' aint looking like a phone number. "
+                    + "Digits, spaces, +, -, and brackets only.");
+        }
+    }
+
+    /** Rejects an /email that was given but is empty or has no single @ inside it. */
+    private static void requireEmail(String email, int emailIndex) throws FF15Exception {
+        if (emailIndex != -1 && email.isEmpty()) {
+            throw new FF15Exception("The /email of a contact can't be empty, bro.");
+        }
+        int at = email.indexOf('@');
+        boolean hasTextBothSides = at > 0 && at < email.length() - 1;
+        boolean hasOneAt = at == email.lastIndexOf('@');
+        if (!email.isEmpty() && !(hasTextBothSides && hasOneAt)) {
+            throw new FF15Exception("'" + email + "' aint looking like an email. "
+                    + "It needs one @ with something on both sides.");
+        }
+    }
+
+    /** Builds the command that lists every contact, which takes nothing after it. */
+    private static Command parseContactList(String rest) throws FF15Exception {
+        if (!rest.isEmpty()) {
+            throw new FF15Exception("'contact list' doesn't need anything after it, bro.");
+        }
+        return new ContactListCommand();
+    }
+
+    /** Parses the 1-based contact number given to {@code contact delete}. */
+    private static int parseContactNumber(String rest) throws FF15Exception {
+        if (rest.isEmpty()) {
+            throw new FF15Exception("Bro tell me which contact number, e.g. contact delete 2.");
+        }
+        try {
+            return Integer.parseInt(rest);
+        } catch (NumberFormatException e) {
+            throw new FF15Exception("'" + rest + "' aint looking like a contact number.");
+        }
+    }
+
+    /** Returns the keyword a {@code contact find} command should search names for. */
+    private static String parseContactKeyword(String rest) throws FF15Exception {
+        if (rest.isEmpty()) {
+            throw new FF15Exception("Tell me which contact to look for, e.g.: contact find john");
+        }
+        return rest;
     }
 
     /** Builds the span of dates asked about by an {@code on} command. */

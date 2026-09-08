@@ -25,6 +25,8 @@ public enum CommandWord {
     EVENT("event", true),
     /** Shows the tasks whose description contains a given keyword. */
     FIND("find", true),
+    /** Adds, lists, deletes, or searches contacts, according to the word that follows. */
+    CONTACT("contact", true),
     /** Ends the session. */
     BYE("bye", false),
     /** Anything the chatbot does not recognise. Has no word of its own. */
