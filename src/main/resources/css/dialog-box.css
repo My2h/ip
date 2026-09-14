@@ -1,14 +1,21 @@
-/* Your messages: gradient bubble with the tail on the bottom right. */
+/* Shared shape of every bubble; the two sides then diverge below. */
 .label {
+    -fx-font-size: 14px;
+    -fx-padding: 10 15 10 15;
+}
+
+/* Your messages: a solid accent bubble, tail on the bottom right, no picture.
+   The person typing does not need to be shown their own face. */
+.user-label {
     -fx-background-color: linear-gradient(to bottom right, #7b5cff, #ff4ecd);
     -fx-background-radius: 20 20 4 20;
     -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-padding: 10 15 10 15;
     -fx-effect: dropshadow(gaussian, rgba(123, 92, 255, 0.45), 12, 0.15, 0, 3);
 }
 
-/* Duke's replies: frosted glass, tail on the bottom left. */
+/* FF15's replies: a quiet frosted panel beside its face, tail on the bottom
+   left. Muted on purpose, so the program reads as the other party rather than
+   as a second copy of you. */
 .reply-label {
     -fx-background-color: rgba(255, 255, 255, 0.09);
     -fx-background-radius: 20 20 20 4;

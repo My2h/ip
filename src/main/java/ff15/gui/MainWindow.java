@@ -27,7 +27,6 @@ public class MainWindow extends AnchorPane {
     @FXML
     private Button sendButton;
 
-    private final Image userImage = new Image(this.getClass().getResourceAsStream("/images/troll-face.png"));
     private final Image ff15Image = new Image(this.getClass().getResourceAsStream("/images/michael-scott.png"));
 
     private FF15 ff15;
@@ -51,7 +50,7 @@ public class MainWindow extends AnchorPane {
     @FXML
     private void handleUserInput() {
         String input = userInput.getText();
-        dialogContainer.getChildren().add(DialogBox.getUserDialog(input, userImage));
+        dialogContainer.getChildren().add(DialogBox.getUserDialog(input));
         showFf15Reply(ff15.getResponse(input));
         userInput.clear();
 
