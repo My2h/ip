@@ -70,6 +70,17 @@ public class DialogBox extends HBox {
     }
 
     /**
+     * Returns a dialog box for an error FF15 reported. It is laid out like any
+     * other reply, but styled to stand out, since an error is the one reply the
+     * user must not skim past.
+     */
+    public static DialogBox getErrorDialog(String text, Image image) {
+        DialogBox box = getFf15Dialog(text, image);
+        box.dialog.getStyleClass().add("error-label");
+        return box;
+    }
+
+    /**
      * Shows {@code image} as a small circle. The picture is cropped to its central
      * square first, so a portrait that is taller than it is wide still fills the
      * circle instead of leaving flat edges top and bottom.

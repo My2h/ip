@@ -73,8 +73,11 @@ public class MainWindow extends AnchorPane {
         farewellPause.play();
     }
 
-    /** Adds one of FF15's replies to the conversation. */
+    /** Adds one of FF15's replies to the conversation, drawn to stand out if it reported an error. */
     private void showFf15Reply(String reply) {
-        dialogContainer.getChildren().add(DialogBox.getFf15Dialog(reply, ff15Image));
+        DialogBox box = ff15.isLastReplyError()
+                ? DialogBox.getErrorDialog(reply, ff15Image)
+                : DialogBox.getFf15Dialog(reply, ff15Image);
+        dialogContainer.getChildren().add(box);
     }
 }
