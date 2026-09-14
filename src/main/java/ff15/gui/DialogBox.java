@@ -5,10 +5,12 @@ import java.io.IOException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Circle;
 
 /**
  * One turn of the conversation. The two sides are deliberately not symmetric:
@@ -21,6 +23,9 @@ import javafx.scene.layout.HBox;
  * every dialog box in the window.
  */
 public class DialogBox extends HBox {
+    /** How wide and tall FF15's face is shown, in pixels. Small on purpose: it is a marker, not a portrait. */
+    private static final double AVATAR_SIZE = 36.0;
+
     @FXML
     private Label dialog;
     @FXML
@@ -49,14 +54,36 @@ public class DialogBox extends HBox {
         return box;
     }
 
-    /** Returns a dialog box for something FF15 replied: left-aligned, beside its face. */
+    /**
+     * Returns a dialog box for something FF15 replied: left-aligned, beside its
+     * face. The face sits at the bottom of the bubble, where the bubble's tail
+     * points, so a long reply reads as coming from it rather than floating above it.
+     */
     public static DialogBox getFf15Dialog(String text, Image image) {
         DialogBox box = new DialogBox(text);
-        box.displayPicture.setImage(image);
+        box.showAsCircle(image);
         box.getChildren().setAll(box.displayPicture, box.dialog);
-        box.setAlignment(Pos.TOP_LEFT);
+        box.setAlignment(Pos.BOTTOM_LEFT);
         box.getStyleClass().add("reply-box");
         box.dialog.getStyleClass().add("reply-label");
         return box;
+    }
+
+    /**
+     * Shows {@code image} as a small circle. The picture is cropped to its central
+     * square first, so a portrait that is taller than it is wide still fills the
+     * circle instead of leaving flat edges top and bottom.
+     */
+    private void showAsCircle(Image image) {
+        double side = Math.min(image.getWidth(), image.getHeight());
+        double left = (image.getWidth() - side) / 2;
+        double top = (image.getHeight() - side) / 2;
+        displayPicture.setViewport(new Rectangle2D(left, top, side, side));
+        displayPicture.setImage(image);
+        displayPicture.setFitWidth(AVATAR_SIZE);
+        displayPicture.setFitHeight(AVATAR_SIZE);
+
+        double radius = AVATAR_SIZE / 2;
+        displayPicture.setClip(new Circle(radius, radius, radius));
     }
 }

@@ -25,7 +25,3 @@
     -fx-text-fill: #ece8ff;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 10, 0.1, 0, 3);
 }
-
-#displayPicture {
-    -fx-effect: dropshadow(gaussian, rgba(123, 92, 255, 0.5), 14, 0.25, 0, 4);
-}
