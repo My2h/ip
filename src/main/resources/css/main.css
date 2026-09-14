@@ -1,10 +1,12 @@
-/* Window shell: deep violet gradient that shifts across the diagonal. */
+/* Window shell: near-black slate with a faint warm lift toward the bottom, so
+   long sessions are easy on the eyes and the accent colours have room to pop. */
 .root {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #140a2e, #221052, #2e1466);
-    -fx-font-family: "Segoe UI Variable", "Segoe UI", sans-serif;
+    -fx-background-color: linear-gradient(from 0% 0% to 0% 100%, #0b0f19, #111827);
+    -fx-font-family: "Inter", "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    -fx-font-size: 13.5px;
 }
 
-/* Let the gradient show through the chat log. */
+/* Let the background show through the chat log. */
 .scroll-pane,
 .scroll-pane .viewport {
     -fx-background-color: transparent;
@@ -15,10 +17,10 @@
     -fx-padding: 0;
 }
 
-/* Slim, translucent scroll bar with no end buttons. */
+/* A hairline scroll bar with no end buttons, so it costs almost no width. */
 .scroll-bar:vertical {
     -fx-background-color: transparent;
-    -fx-pref-width: 8;
+    -fx-pref-width: 6;
 }
 
 .scroll-bar:vertical .track {
@@ -26,12 +28,12 @@
 }
 
 .scroll-bar:vertical .thumb {
-    -fx-background-color: rgba(255, 255, 255, 0.22);
+    -fx-background-color: rgba(255, 255, 255, 0.18);
     -fx-background-radius: 1em;
 }
 
 .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.42);
+    -fx-background-color: rgba(255, 255, 255, 0.36);
 }
 
 .scroll-bar .increment-button,
@@ -40,41 +42,46 @@
     -fx-opacity: 0;
 }
 
-/* Composer: frosted pill that lights up on focus. */
+/* Composer: a low pill that brightens and takes the accent when focused. */
 .text-field {
-    -fx-background-color: rgba(255, 255, 255, 0.07);
-    -fx-background-radius: 22;
-    -fx-border-color: rgba(255, 255, 255, 0.16);
-    -fx-border-radius: 22;
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-background-radius: 20;
+    -fx-border-color: rgba(255, 255, 255, 0.12);
+    -fx-border-radius: 20;
     -fx-border-width: 1;
-    -fx-text-fill: #f2eeff;
-    -fx-prompt-text-fill: rgba(242, 238, 255, 0.38);
-    -fx-font-size: 15px;
-    -fx-padding: 0 18 0 18;
+    -fx-text-fill: #f3f4f6;
+    -fx-prompt-text-fill: rgba(243, 244, 246, 0.38);
+    -fx-font-size: 14px;
+    -fx-padding: 0 16 0 16;
 }
 
 .text-field:focused {
-    -fx-background-color: rgba(255, 255, 255, 0.12);
-    -fx-border-color: #ff4ecd;
+    -fx-background-color: rgba(255, 255, 255, 0.10);
+    -fx-border-color: #a3e635;
 }
 
-/* Send button: gradient pill with a glow that intensifies on hover. */
+/* Send button: the lime-to-mint accent, with dark text so it reads at a glance. */
 .button {
-    -fx-background-color: linear-gradient(to bottom right, #7b5cff, #ff4ecd);
-    -fx-background-radius: 22;
-    -fx-text-fill: white;
-    -fx-font-size: 14px;
+    -fx-background-color: linear-gradient(to bottom right, #a3e635, #2dd4bf);
+    -fx-background-radius: 20;
+    -fx-text-fill: #0b0f19;
+    -fx-font-size: 13.5px;
     -fx-font-weight: bold;
     -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(255, 78, 205, 0.45), 14, 0.2, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(163, 230, 53, 0.35), 12, 0.2, 0, 2);
 }
 
 .button:hover {
-    -fx-background-color: linear-gradient(to bottom right, #8f74ff, #ff6fd8);
-    -fx-effect: dropshadow(gaussian, rgba(255, 78, 205, 0.7), 20, 0.35, 0, 4);
+    -fx-background-color: linear-gradient(to bottom right, #bef264, #5eead4);
+    -fx-effect: dropshadow(gaussian, rgba(163, 230, 53, 0.55), 16, 0.3, 0, 3);
 }
 
 .button:pressed {
-    -fx-background-color: linear-gradient(to bottom right, #6a4be0, #e0399f);
-    -fx-effect: dropshadow(gaussian, rgba(255, 78, 205, 0.3), 8, 0.2, 0, 1);
+    -fx-background-color: linear-gradient(to bottom right, #84cc16, #14b8a6);
+    -fx-effect: dropshadow(gaussian, rgba(163, 230, 53, 0.25), 6, 0.2, 0, 1);
+}
+
+.button:disabled,
+.text-field:disabled {
+    -fx-opacity: 0.45;
 }

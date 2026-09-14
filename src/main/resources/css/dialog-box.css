@@ -1,29 +1,30 @@
-/* Shared shape of every bubble; the two sides then diverge below. */
+/* Shared shape of every bubble: compact padding and a slightly open line height,
+   since replies often run to several lines of task listings. */
 .label {
-    -fx-font-size: 14px;
-    -fx-padding: 10 15 10 15;
+    -fx-font-size: 13.5px;
+    -fx-line-spacing: 2px;
+    -fx-padding: 8 12 8 12;
 }
 
-/* Your messages: a solid accent bubble, tail on the bottom right, no picture.
-   The person typing does not need to be shown their own face. */
+/* Your messages: the lime-to-mint accent, tail on the bottom right, no picture.
+   Dark text on the bright bubble reads better than white would. */
 .user-label {
-    -fx-background-color: linear-gradient(to bottom right, #7b5cff, #ff4ecd);
-    -fx-background-radius: 20 20 4 20;
-    -fx-text-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(123, 92, 255, 0.45), 12, 0.15, 0, 3);
+    -fx-background-color: linear-gradient(to bottom right, #a3e635, #2dd4bf);
+    -fx-background-radius: 16 16 4 16;
+    -fx-text-fill: #0b0f19;
+    -fx-effect: dropshadow(gaussian, rgba(163, 230, 53, 0.30), 10, 0.15, 0, 2);
 }
 
-/* FF15's replies: a quiet frosted panel beside its face, tail on the bottom
-   left. Muted on purpose, so the program reads as the other party rather than
-   as a second copy of you. */
+/* FF15's replies: a quiet panel beside its face, tail on the bottom left.
+   Muted on purpose, so the program reads as the other party rather than as a
+   second copy of you. */
 .reply-label {
-    -fx-background-color: rgba(255, 255, 255, 0.09);
-    -fx-background-radius: 20 20 20 4;
-    -fx-border-color: rgba(255, 255, 255, 0.16);
-    -fx-border-radius: 20 20 20 4;
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-background-radius: 16 16 16 4;
+    -fx-border-color: rgba(255, 255, 255, 0.12);
+    -fx-border-radius: 16 16 16 4;
     -fx-border-width: 1;
-    -fx-text-fill: #ece8ff;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.35), 10, 0.1, 0, 3);
+    -fx-text-fill: #e5e7eb;
 }
 
 /* An error from FF15: same panel, but in warning colours with a firmer edge,
@@ -34,5 +35,5 @@
     -fx-border-color: #fb7185;
     -fx-border-width: 1.5;
     -fx-text-fill: #ffe4e8;
-    -fx-effect: dropshadow(gaussian, rgba(251, 113, 133, 0.45), 12, 0.2, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(251, 113, 133, 0.40), 10, 0.2, 0, 2);
 }

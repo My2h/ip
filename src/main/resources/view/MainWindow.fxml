@@ -9,16 +9,16 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="400.0" stylesheets="@../css/main.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ff15.gui.MainWindow">
   <children>
-    <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" hvalue="1.0" vvalue="1.0" AnchorPane.bottomAnchor="72.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <ScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" hvalue="1.0" vvalue="1.0" AnchorPane.bottomAnchor="58.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
       <content>
-        <VBox fx:id="dialogContainer" spacing="12.0">
+        <VBox fx:id="dialogContainer" spacing="8.0">
           <padding>
-            <Insets bottom="16.0" left="12.0" right="12.0" top="16.0" />
+            <Insets bottom="10.0" left="10.0" right="10.0" top="12.0" />
           </padding>
         </VBox>
       </content>
     </ScrollPane>
-    <TextField fx:id="userInput" onAction="#handleUserInput" prefHeight="44.0" promptText="Message FF15..." AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="100.0" />
-    <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleUserInput" prefHeight="44.0" prefWidth="78.0" text="Send" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="14.0" />
+    <TextField fx:id="userInput" onAction="#handleUserInput" prefHeight="40.0" promptText="Message FF15..." AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="88.0" />
+    <Button fx:id="sendButton" mnemonicParsing="false" onAction="#handleUserInput" prefHeight="40.0" prefWidth="70.0" text="Send" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
   </children>
 </AnchorPane>
