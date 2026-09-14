@@ -61,7 +61,7 @@ one session; check them by hand by writing a bad line into `data/ff15.txt` or
 |  _| |  _| | | ___) |
 |_|   |_|   |_||____/ 
 
-     Eh hello bro, I'm FF15 !
+     Whazzup, I'm FF15 !
      What can I do for you big man ?
 ```
 
