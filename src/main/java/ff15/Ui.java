@@ -59,7 +59,7 @@ public class Ui {
      */
     public void showWelcome() {
         System.out.println(BANNER);
-        showMessage("Eh hello bro, I'm FF15 !", "What can I do for you big man ?");
+        showMessage("Whazzup, I'm FF15 !", "What can I do for you big man ?");
     }
 
     /** Reports that the save file could not be read, and that the session starts empty. */

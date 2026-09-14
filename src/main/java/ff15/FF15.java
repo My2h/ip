@@ -30,6 +30,9 @@ public class FF15 {
     /** Whether the last command handed to {@link #getResponse(String)} ended the session. */
     private boolean isFinished;
 
+    /** Whether the last reply from {@link #getResponse(String)} was an error rather than a result. */
+    private boolean isLastReplyError;
+
     /** Greets the user and loads the tasks and contacts kept in the default save files. */
     public FF15() {
         this(DATA_FILE, CONTACT_FILE);
@@ -109,19 +112,31 @@ public class FF15 {
     }
 
     /**
+     * Returns whether the last reply from {@link #getResponse(String)} reported
+     * an error, so a caller showing a window can draw it to catch the eye rather
+     * than letting it pass as one more reply.
+     */
+    public boolean isLastReplyError() {
+        return isLastReplyError;
+    }
+
+    /**
      * Carries out one command and returns what the chatbot would have said. This
      * is the same work the loop in {@link #run()} does for one line of input,
      * with the reply handed back instead of being left on the console.
      */
     public String getResponse(String input) {
+        isLastReplyError = false;
         try {
             Command command = Parser.parse(input);
             command.execute(tasks, contacts, ui, storage);
             isFinished = command.isExit();
         } catch (FF15Exception e) {
             ui.showError(e.getMessage());
+            isLastReplyError = true;
         } catch (IOException e) {
             ui.showError("Couldn't save your tasks: " + e.getMessage());
+            isLastReplyError = true;
         }
         String reply = ui.drainTranscript();
         // An empty reply would surface in the GUI as an empty speech bubble, so every
