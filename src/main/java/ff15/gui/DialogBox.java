@@ -26,6 +26,12 @@ public class DialogBox extends HBox {
     /** How wide and tall FF15's face is shown, in pixels. Small on purpose: it is a marker, not a portrait. */
     private static final double AVATAR_SIZE = 36.0;
 
+    /**
+     * How much of the row a bubble may take before wrapping. Under the full width, so
+     * a long message still reads as a bubble on one side rather than a bar across both.
+     */
+    private static final double BUBBLE_SHARE = 0.82;
+
     @FXML
     private Label dialog;
     @FXML
@@ -48,6 +54,7 @@ public class DialogBox extends HBox {
     public static DialogBox getUserDialog(String text) {
         DialogBox box = new DialogBox(text);
         box.getChildren().remove(box.displayPicture);
+        box.dialog.maxWidthProperty().bind(box.widthProperty().multiply(BUBBLE_SHARE));
         box.setAlignment(Pos.TOP_RIGHT);
         box.getStyleClass().add("user-box");
         box.dialog.getStyleClass().add("user-label");
@@ -63,6 +70,9 @@ public class DialogBox extends HBox {
         DialogBox box = new DialogBox(text);
         box.showAsCircle(image);
         box.getChildren().setAll(box.displayPicture, box.dialog);
+        // The face and the gap after it come off the row before the bubble's share is taken.
+        box.dialog.maxWidthProperty().bind(
+                box.widthProperty().subtract(AVATAR_SIZE + box.getSpacing()).multiply(BUBBLE_SHARE));
         box.setAlignment(Pos.BOTTOM_LEFT);
         box.getStyleClass().add("reply-box");
         box.dialog.getStyleClass().add("reply-label");

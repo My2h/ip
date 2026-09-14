@@ -26,8 +26,9 @@ public class Main extends Application {
 
             stage.setScene(new Scene(root));
             stage.setTitle("FF15");
-            stage.setMinHeight(220);
-            stage.setMinWidth(417);
+            // Free to grow; the floor keeps the composer and a few lines of chat usable.
+            stage.setMinWidth(360);
+            stage.setMinHeight(400);
 
             fxmlLoader.<MainWindow>getController().setFf15(ff15);
             stage.show();
