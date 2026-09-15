@@ -61,8 +61,8 @@ one session; check them by hand by writing a bad line into `data/ff15.txt` or
 |  _| |  _| | | ___) |
 |_|   |_|   |_||____/ 
 
-     Whazzup, I'm FF15 !
-     What can I do for you big man ?
+     Hi. I'm FF15. Assistant Regional Manager. ...Assistant TO the Regional Manager. Which is you.
+     What can I do for you, boss?
 ```
 
 ## Test Case: Unknown command
@@ -1411,5 +1411,5 @@ bye
 ```
 **Expected Output:**
 ```
-     Okie bye bye, see you again soon !
+     See ya tomorrow, boss.
 ```

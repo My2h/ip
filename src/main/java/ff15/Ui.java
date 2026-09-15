@@ -59,7 +59,8 @@ public class Ui {
      */
     public void showWelcome() {
         System.out.println(BANNER);
-        showMessage("Whazzup, I'm FF15 !", "What can I do for you big man ?");
+        showMessage("Hi. I'm FF15. Assistant Regional Manager. ...Assistant TO the Regional Manager. Which is you.",
+                "What can I do for you, boss?");
     }
 
     /** Reports that the save file could not be read, and that the session starts empty. */
@@ -81,7 +82,7 @@ public class Ui {
 
     /** Prints the farewell message. */
     public void showFarewell() {
-        showMessage("Okie bye bye, see you again soon !");
+        showMessage("See ya tomorrow, boss.");
     }
 
     /**
