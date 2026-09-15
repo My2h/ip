@@ -33,18 +33,18 @@ public enum CommandWord {
     UNKNOWN("", false);
 
     private final String word;
-    private final boolean acceptsArguments;
+    private final boolean canTakeArguments;
 
     /**
      * Records the word the user types for this command, and whether anything
      * is allowed to follow it on the same line.
      *
      * @param word what the user types to invoke this command.
-     * @param acceptsArguments whether arguments may follow the word.
+     * @param canTakeArguments whether arguments may follow the word.
      */
-    CommandWord(String word, boolean acceptsArguments) {
+    CommandWord(String word, boolean canTakeArguments) {
         this.word = word;
-        this.acceptsArguments = acceptsArguments;
+        this.canTakeArguments = canTakeArguments;
     }
 
     /** Returns the word the user types to invoke this command. */
@@ -74,6 +74,6 @@ public enum CommandWord {
      */
     private boolean matches(String input) {
         return input.equals(word)
-                || (acceptsArguments && input.startsWith(word + " "));
+                || (canTakeArguments && input.startsWith(word + " "));
     }
 }
