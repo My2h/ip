@@ -25,18 +25,23 @@ import javafx.util.Duration;
  */
 public class MainWindow extends AnchorPane {
     /**
-     * Hints shown in the empty composer, one at a time, in this order. Each is a
-     * nudge to type something, dressed up as office small talk.
+     * Hints shown in the empty composer, one at a time, in this order. They
+     * alternate between something Michael would say and something that actually
+     * shows what to type, so the jokes never leave a new user without a clue.
      */
     private static final String[] PROMPTS = {
-        "Type here... your manager isn't watching.",
         "That's what she said. No wait, type a command.",
-        "todo something, deadline anything, event whatever.",
+        "Try: todo read book",
+        "I'm not superstitious, but I am a little stitious.",
+        "Try: deadline report /by 2026-09-20",
+        "Would I rather be feared or loved? Both.",
+        "Try: event party /from 2026-09-20 1800 /to 2026-09-20 2200",
         "Ask me anything. Except about the Dundies.",
-        "Pretend to work here. I won't tell HR.",
+        "Try: list, mark 1, delete 1",
+        "Sometimes I'll start a sentence and I don't even know where it's going.",
+        "Try: contact add Pam /phone 91234567",
         "Bears. Beets. Battlestar Galactica. Also, tasks.",
-        "I DECLARE... a new task.",
-        "Reply-all responsibly.",
+        "Try: find book, or on 2026-09",
     };
 
     /** Shown once the user has said goodbye and the composer has shut. */

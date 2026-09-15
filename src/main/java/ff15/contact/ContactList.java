@@ -69,8 +69,8 @@ public class ContactList {
     /** Rejects a contact number that does not name a contact in this list. */
     private void checkNumber(int number) throws FF15Exception {
         if (number < 1 || number > contacts.size()) {
-            throw new FF15Exception("I don't have contact number " + number
-                    + ". You've got " + contacts.size() + " contact(s).");
+            throw new FF15Exception("Contact " + number + "? There are " + contacts.size()
+                    + ". And I know all of them personally.");
         }
     }
 

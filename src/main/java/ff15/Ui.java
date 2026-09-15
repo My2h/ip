@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Scanner;
 
 import ff15.contact.Contact;
+import ff15.task.Event;
 import ff15.task.Task;
+import ff15.task.Todo;
 
 /**
  * Deals with everything the user sees and types: reading commands from the
@@ -59,19 +61,20 @@ public class Ui {
      */
     public void showWelcome() {
         System.out.println(BANNER);
-        showMessage("Whazzup, I'm FF15 !", "What can I do for you big man ?");
+        showMessage("Hi. I'm FF15. Assistant Regional Manager. ...Assistant TO the Regional Manager. Which is you.",
+                "What can I do for you, boss?");
     }
 
     /** Reports that the save file could not be read, and that the session starts empty. */
     public void showLoadingError(String reason) {
         showError("Couldn't read your saved tasks: " + reason);
-        showMessage("Starting you off with an empty list.");
+        showMessage("Starting you off with an empty list. Call the IT guy, what's his name?");
     }
 
     /** Reports that the contacts file could not be read, and that the session starts empty. */
     public void showContactLoadingError(String reason) {
         showError("Couldn't read your saved contacts: " + reason);
-        showMessage("Starting you off with an empty contact list.");
+        showMessage("Starting you off with an empty contact list. Call the IT guy, what's his name?");
     }
 
     /** Closes the final block. No blank line follows it, since the program is ending. */
@@ -81,7 +84,7 @@ public class Ui {
 
     /** Prints the farewell message. */
     public void showFarewell() {
-        showMessage("Okie bye bye, see you again soon !");
+        showMessage("See ya tomorrow, boss.");
     }
 
     /**
@@ -112,7 +115,7 @@ public class Ui {
 
     /** Prints something that went wrong, tagged so it stands out from ordinary replies. */
     public void showError(String message) {
-        showMessage("AYY!!! " + message);
+        showMessage("No. GOD. NO. " + message);
     }
 
     /** Prints a heading followed by the tasks under it, numbered from 1. */
@@ -128,15 +131,27 @@ public class Ui {
         showMessage(header, "  " + task);
     }
 
-    /** Confirms a newly added task and how many tasks there are now. */
+    /**
+     * Confirms a newly added task and how many tasks there are now. Michael
+     * cannot hear "todo" without saying it, and cannot hear of an event without
+     * asking; a deadline gets a plain acknowledgement, since he does not rate them.
+     */
     public void showTaskAdded(Task task, int taskCount) {
-        showTask("Got it. I've added this task:", task);
+        String header;
+        if (task instanceof Todo) {
+            header = "That's what she said. Also, added:";
+        } else if (task instanceof Event) {
+            header = "Am I invited? ...I'm invited. Added:";
+        } else {
+            header = "Got it. Added:";
+        }
+        showTask(header, task);
         showTaskCount(taskCount);
     }
 
     /** Confirms a deleted task and how many tasks are left. */
     public void showTaskRemoved(Task task, int taskCount) {
-        showTask("Noted. I've removed this task:", task);
+        showTask("Gone. Like Toby, if I had my way. Removed:", task);
         showTaskCount(taskCount);
     }
 
@@ -150,13 +165,13 @@ public class Ui {
 
     /** Confirms a newly added contact and how many contacts there are now. */
     public void showContactAdded(Contact contact, int contactCount) {
-        showMessage("Got it. I've added this contact:", "  " + contact);
+        showMessage("New friend. I'm friends with everyone. Added:", "  " + contact);
         showContactCount(contactCount);
     }
 
     /** Confirms a deleted contact and how many contacts are left. */
     public void showContactRemoved(Contact contact, int contactCount) {
-        showMessage("Noted. I've removed this contact:", "  " + contact);
+        showMessage("Dead to me. Removed:", "  " + contact);
         showContactCount(contactCount);
     }
 
@@ -165,7 +180,7 @@ public class Ui {
     }
 
     private void showContactCount(int contactCount) {
-        showMessage("Now you have " + contactCount + " contacts in the list.");
+        showMessage(contactCount + " contacts. I know everyone. Everyone knows me.");
     }
 
     private void printDivider() {

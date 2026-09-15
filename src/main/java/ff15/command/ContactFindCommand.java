@@ -26,9 +26,9 @@ public class ContactFindCommand extends Command {
     public void execute(TaskList tasks, ContactList contacts, Ui ui, Storage storage) {
         List<Contact> matches = contacts.find(keyword);
         if (matches.isEmpty()) {
-            ui.showMessage("You've got no contacts matching '" + keyword + "', bro.");
+            ui.showMessage("No '" + keyword + "' here. Is this someone from corporate?");
         } else {
-            ui.showContactList("Here are the matching contacts in your list:", matches);
+            ui.showContactList("Found them. This is my office, I know everyone:", matches);
         }
     }
 }

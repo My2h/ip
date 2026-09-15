@@ -53,7 +53,7 @@ public class TaskTime {
             // No time given: keep the date and remember that the time is unknown.
             return new TaskTime(LocalDate.parse(text, DATE_INPUT).atStartOfDay(), false);
         } catch (DateTimeParseException e) {
-            throw new FF15Exception("'" + text + "' isn't a date I understand. "
+            throw new FF15Exception("'" + text + "' isn't a date. I know dates. I've been on a lot of dates. "
                     + "Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, "
                     + "e.g. 2019-12-02 or 2019-12-02 1800");
         }

@@ -83,7 +83,8 @@ public class Parser {
             case FIND -> new FindCommand(parseKeyword(input));
             case CONTACT -> parseContactCommand(input);
             case BYE -> new ExitCommand();
-            case UNKNOWN -> throw new FF15Exception("I'm sorry big man, I don't know what that means :-(");
+            case UNKNOWN -> throw new FF15Exception(
+                    "I don't know what that means. Is this a Jim thing? Is Jim doing a thing?");
         };
     }
 
@@ -111,13 +112,13 @@ public class Parser {
     private static int parseTaskNumber(String input, CommandWord command) throws FF15Exception {
         String arg = argumentAfter(input, command);
         if (arg.isEmpty()) {
-            throw new FF15Exception("Bro Tell me which task number, e.g. mark 2.");
+            throw new FF15Exception("Which one? Use your words. Like, a number. e.g. mark 2");
         }
         int number;
         try {
             number = Integer.parseInt(arg);
         } catch (NumberFormatException e) {
-            throw new FF15Exception("'" + arg + "' aint looking like a task number.");
+            throw new FF15Exception("'" + arg + "' is not a number. I know numbers. I run a branch.");
         }
         return number;
     }
@@ -126,7 +127,7 @@ public class Parser {
     private static Todo parseTodo(String input) throws FF15Exception {
         String description = argumentAfter(input, CommandWord.TODO);
         if (description.isEmpty()) {
-            throw new FF15Exception("The description of a todo can't be empty, bro.");
+            throw new FF15Exception("A todo with nothing in it. That's what she-- no. Tell me what to do.");
         }
         return new Todo(description);
     }
@@ -136,15 +137,16 @@ public class Parser {
         String details = argumentAfter(input, CommandWord.DEADLINE);
         int byIndex = details.indexOf(BY_MARKER);
         if (byIndex == -1) {
-            throw new FF15Exception("A deadline needs a /by, e.g.: deadline return book /by 2019-12-02 1800");
+            throw new FF15Exception("When? Deadlines need a /by, e.g.: deadline return book /by 2019-12-02 1800");
         }
         String description = details.substring(0, byIndex).trim();
         String by = details.substring(byIndex + BY_MARKER.length()).trim();
         if (description.isEmpty()) {
-            throw new FF15Exception("The description of a deadline can't be empty, bro.");
+            throw new FF15Exception(
+                    "A deadline needs a description. I'm a manager, not a mind reader. Which I also am.");
         }
         if (by.isEmpty()) {
-            throw new FF15Exception("The /by date/time of a deadline can't be empty, bro.");
+            throw new FF15Exception("A /by with nothing after it. When is it due? Use your words.");
         }
         return new Deadline(description, TaskTime.parse(by));
     }
@@ -158,22 +160,22 @@ public class Parser {
         boolean isToMissing = toIndex == -1;
         boolean isToBeforeFrom = toIndex < fromIndex;
         if (isFromMissing || isToMissing || isToBeforeFrom) {
-            throw new FF15Exception("An event needs /from and /to, e.g.: "
-                    + "event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600");
+            throw new FF15Exception("An event needs a /from and a /to. Otherwise how do I know when to show up? "
+                    + "e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600");
         }
         String description = details.substring(0, fromIndex).trim();
         String from = details.substring(fromIndex + FROM_MARKER.length(), toIndex).trim();
         String to = details.substring(toIndex + TO_MARKER.length()).trim();
         if (description.isEmpty()) {
-            throw new FF15Exception("The description of an event can't be empty bro.");
+            throw new FF15Exception("An event needs a description. I'm a manager, not a mind reader. Which I also am.");
         }
         if (from.isEmpty() || to.isEmpty()) {
-            throw new FF15Exception("The /from and /to date/times of an event can't be empty, bro.");
+            throw new FF15Exception("A /from or /to with nothing after it. When do I show up?");
         }
         TaskTime fromTime = TaskTime.parse(from);
         TaskTime toTime = TaskTime.parse(to);
         if (toTime.isBefore(fromTime)) { // an event can't finish before it begins
-            throw new FF15Exception("An event can't end before it starts, bro.");
+            throw new FF15Exception("It ends before it starts? That's not an event. That's a Ryan.");
         }
         return new Event(description, fromTime, toTime);
     }
@@ -182,7 +184,7 @@ public class Parser {
     private static String parseKeyword(String input) throws FF15Exception {
         String keyword = argumentAfter(input, CommandWord.FIND);
         if (keyword.isEmpty()) {
-            throw new FF15Exception("Tell me what to look for, e.g.: find book");
+            throw new FF15Exception("Look for what? Give me a word. e.g.: find book");
         }
         return keyword;
     }
@@ -194,7 +196,7 @@ public class Parser {
     private static Command parseContactCommand(String input) throws FF15Exception {
         String details = argumentAfter(input, CommandWord.CONTACT);
         if (details.isEmpty()) {
-            throw new FF15Exception("Tell me what to do with your contacts, bro. "
+            throw new FF15Exception("Tell me what to do with your contacts. "
                     + "Try: contact add, contact list, contact delete, or contact find");
         }
         String subCommand = details.split(" ", 2)[0];
@@ -204,7 +206,7 @@ public class Parser {
             case CONTACT_LIST -> parseContactList(rest);
             case CONTACT_DELETE -> new ContactDeleteCommand(parseContactNumber(rest));
             case CONTACT_FIND -> new ContactFindCommand(parseContactKeyword(rest));
-            default -> throw new FF15Exception("I can't '" + subCommand + "' a contact, bro. "
+            default -> throw new FF15Exception("I can't '" + subCommand + "' a contact. Nobody can. "
                     + "Try: contact add, contact list, contact delete, or contact find");
         };
     }
@@ -223,7 +225,8 @@ public class Parser {
 
         String name = padded.substring(0, firstMarkerAt(padded.length(), phoneIndex, emailIndex)).trim();
         if (name.isEmpty()) {
-            throw new FF15Exception("A contact needs a name, e.g.: contact add John /phone 91234567");
+            throw new FF15Exception("A contact needs a name. Everyone has a name. Even Toby. "
+                    + "e.g.: contact add John /phone 91234567");
         }
 
         String phone = valueAfter(padded, phoneIndex, PHONE_MARKER, emailIndex);
@@ -264,10 +267,10 @@ public class Parser {
     /** Rejects a /phone that was given but is empty or not written like a phone number. */
     private static void requirePhone(String phone, int phoneIndex) throws FF15Exception {
         if (phoneIndex != -1 && phone.isEmpty()) {
-            throw new FF15Exception("The /phone of a contact can't be empty, bro.");
+            throw new FF15Exception("A /phone with nothing after it. What's the number?");
         }
         if (!phone.isEmpty() && !phone.matches(PHONE_PATTERN)) {
-            throw new FF15Exception("'" + phone + "' aint looking like a phone number. "
+            throw new FF15Exception("'" + phone + "' is not a phone number. I know phones. I have a Blackberry. "
                     + "Digits, spaces, +, -, and brackets only.");
         }
     }
@@ -275,13 +278,13 @@ public class Parser {
     /** Rejects an /email that was given but is empty or has no single @ inside it. */
     private static void requireEmail(String email, int emailIndex) throws FF15Exception {
         if (emailIndex != -1 && email.isEmpty()) {
-            throw new FF15Exception("The /email of a contact can't be empty, bro.");
+            throw new FF15Exception("An /email with nothing after it. What's the email?");
         }
         int at = email.indexOf('@');
         boolean hasTextBothSides = at > 0 && at < email.length() - 1;
         boolean hasOneAt = at == email.lastIndexOf('@');
         if (!email.isEmpty() && !(hasTextBothSides && hasOneAt)) {
-            throw new FF15Exception("'" + email + "' aint looking like an email. "
+            throw new FF15Exception("'" + email + "' is not an email. I've sent emails. Reply-all emails. "
                     + "It needs one @ with something on both sides.");
         }
     }
@@ -289,7 +292,7 @@ public class Parser {
     /** Builds the command that lists every contact, which takes nothing after it. */
     private static Command parseContactList(String rest) throws FF15Exception {
         if (!rest.isEmpty()) {
-            throw new FF15Exception("'contact list' doesn't need anything after it, bro.");
+            throw new FF15Exception("'contact list' doesn't need anything after it. Just 'contact list'. Simple.");
         }
         return new ContactListCommand();
     }
@@ -297,19 +300,19 @@ public class Parser {
     /** Parses the 1-based contact number given to {@code contact delete}. */
     private static int parseContactNumber(String rest) throws FF15Exception {
         if (rest.isEmpty()) {
-            throw new FF15Exception("Bro tell me which contact number, e.g. contact delete 2.");
+            throw new FF15Exception("Which contact? Use your words. Like, a number. e.g. contact delete 2");
         }
         try {
             return Integer.parseInt(rest);
         } catch (NumberFormatException e) {
-            throw new FF15Exception("'" + rest + "' aint looking like a contact number.");
+            throw new FF15Exception("'" + rest + "' is not a number. I know numbers. I run a branch.");
         }
     }
 
     /** Returns the keyword a {@code contact find} command should search names for. */
     private static String parseContactKeyword(String rest) throws FF15Exception {
         if (rest.isEmpty()) {
-            throw new FF15Exception("Tell me which contact to look for, e.g.: contact find john");
+            throw new FF15Exception("Look for who? Give me a name. e.g.: contact find john");
         }
         return rest;
     }
@@ -318,7 +321,7 @@ public class Parser {
     private static DateRange parseDateQuery(String input) throws FF15Exception {
         String query = argumentAfter(input, CommandWord.ON);
         if (query.isEmpty()) {
-            throw new FF15Exception("Tell me when, e.g.: on 2019-12-02, on 2019-12, or on 2019");
+            throw new FF15Exception("When? Tell me when. e.g.: on 2019-12-02, on 2019-12, or on 2019");
         }
         return DateRange.parse(query);
     }

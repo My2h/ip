@@ -26,9 +26,9 @@ public class FindCommand extends Command {
     public void execute(TaskList tasks, ContactList contacts, Ui ui, Storage storage) {
         List<Task> matches = tasks.find(keyword);
         if (matches.isEmpty()) {
-            ui.showMessage("You've got nothing matching '" + keyword + "', bro.");
+            ui.showMessage("Nothing matching '" + keyword + "'. I looked. I looked so hard.");
         } else {
-            ui.showTaskList("Here are the matching tasks in your list:", matches);
+            ui.showTaskList("Found them. I'm basically a detective. Michael Scarn:", matches);
         }
     }
 }

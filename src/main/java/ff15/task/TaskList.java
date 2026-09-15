@@ -69,8 +69,8 @@ public class TaskList {
     /** Rejects a task number that does not name a task in this list. */
     private void checkNumber(int number) throws FF15Exception {
         if (number < 1 || number > tasks.size()) {
-            throw new FF15Exception("I don't have task number " + number
-                    + ". You've got " + tasks.size() + " task(s).");
+            throw new FF15Exception("Task " + number + "? There are " + tasks.size()
+                    + ". I'm not a magician. Well, I'm a bit of a magician.");
         }
     }
 
