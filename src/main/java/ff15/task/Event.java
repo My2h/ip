@@ -28,8 +28,11 @@ public class Event extends Task {
     /** Two events are the same when they match as tasks and run between the same times. */
     @Override
     public boolean isSameAs(Task other) {
+        if (!super.isSameAs(other)) { // settles whether other is an Event at all, before the cast
+            return false;
+        }
         Event that = (Event) other;
-        return super.isSameAs(other) && from.equals(that.from) && to.equals(that.to);
+        return from.equals(that.from) && to.equals(that.to);
     }
 
     /**

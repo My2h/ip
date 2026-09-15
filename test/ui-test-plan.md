@@ -969,6 +969,32 @@ on 2019-12-05
      1.[E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
 ```
 
+## Test Case: Add a todo that shares an event's description
+**Aim:** A todo is compared against the event already in the list before it is added. They share a description but not a kind, so it is a different task and goes in, rather than being refused or crashing on the comparison.
+**Input:**
+```
+todo project meeting
+```
+**Expected Output:**
+```
+     That's what she said. Also, added:
+       [T][ ] project meeting
+     Now you have 3 tasks in the list.
+```
+
+## Test Case: Delete the todo namesake
+**Aim:** Removes the todo just added, so the two timed tasks are back to being the whole list for the deletions that follow.
+**Input:**
+```
+delete 3
+```
+**Expected Output:**
+```
+     Gone. Like Toby, if I had my way. Removed:
+       [T][ ] project meeting
+     Now you have 2 tasks in the list.
+```
+
 ## Test Case: Delete the timed deadline
 **Aim:** Removes the timed deadline, draining the list back toward empty so the plan leaves an empty save file behind.
 **Input:**

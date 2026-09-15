@@ -114,6 +114,13 @@ public class EventTest {
     }
 
     @Test
+    public void isSameAs_taskOfAnotherKind_isFalseRatherThanCrashing() throws FF15Exception {
+        Event event = new Event("meeting", TaskTime.parse("2019-12-05"), TaskTime.parse("2019-12-07"));
+        assertFalse(event.isSameAs(new Todo("meeting")));
+        assertFalse(event.isSameAs(new Deadline("meeting", TaskTime.parse("2019-12-07"))));
+    }
+
+    @Test
     public void isSameAs_sameDescriptionDifferentStart_isFalse() throws FF15Exception {
         Event a = new Event("meeting", TaskTime.parse("2019-12-05"), TaskTime.parse("2019-12-07"));
         Event b = new Event("meeting", TaskTime.parse("2019-12-06"), TaskTime.parse("2019-12-07"));
