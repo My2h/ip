@@ -253,4 +253,10 @@ public class TaskListTest {
         TaskList tasks = listOf("a", "b", "b");
         assertEquals(2, tasks.findSame(new Todo("b")).getAsInt());
     }
+
+    @Test
+    public void add_noArguments_tripsTheGuard() {
+        // Varargs makes add() with nothing legal; the assertion is what stops it passing silently.
+        assertThrows(AssertionError.class, () -> new TaskList().add());
+    }
 }

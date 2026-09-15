@@ -103,4 +103,11 @@ public class DeadlineTest {
         Deadline b = new Deadline("return book", TaskTime.parse("2019-12-02 0000"));
         assertFalse(a.isSameAs(b));
     }
+
+    @Test
+    public void isSameAs_differentDescriptionSameDate_isFalse() throws FF15Exception {
+        Deadline a = new Deadline("return book", TaskTime.parse("2019-12-02"));
+        Deadline b = new Deadline("return the book", TaskTime.parse("2019-12-02"));
+        assertFalse(a.isSameAs(b));
+    }
 }
