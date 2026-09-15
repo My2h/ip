@@ -249,6 +249,17 @@ public class TaskListTest {
     }
 
     @Test
+    public void findSame_listHoldsEveryKind_comparesAcrossKinds() throws FF15Exception {
+        // The task asked about is compared against each task already there, whatever its kind.
+        TaskList tasks = new TaskList();
+        tasks.add(new Event("a", TaskTime.parse("2019-12-05"), TaskTime.parse("2019-12-06")),
+                new Deadline("a", TaskTime.parse("2019-12-05")), new Todo("a"));
+        assertEquals(3, tasks.findSame(new Todo("a")).getAsInt());
+        assertEquals(2, tasks.findSame(new Deadline("a", TaskTime.parse("2019-12-05"))).getAsInt());
+        assertTrue(tasks.findSame(new Deadline("a", TaskTime.parse("2019-12-06"))).isEmpty());
+    }
+
+    @Test
     public void findSame_twoMatches_returnsTheFirst() {
         TaskList tasks = listOf("a", "b", "b");
         assertEquals(2, tasks.findSame(new Todo("b")).getAsInt());
