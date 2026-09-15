@@ -95,7 +95,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Nothing on the list. Just like Toby's contribution to this office.
 ```
 
 ## Test Case: Todo with no description
@@ -128,7 +128,7 @@ todo read book
 ```
 **Expected Output:**
 ```
-     Got it. I've added this task:
+     That's what she said. Also, added:
        [T][ ] read book
      Now you have 1 tasks in the list.
 ```
@@ -141,7 +141,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Here's what we're working with, people:
      1.[T][ ] read book
 ```
 
@@ -219,7 +219,7 @@ deadline return book /by 2019-12-02
 ```
 **Expected Output:**
 ```
-     Got it. I've added this task:
+     Got it. Added:
        [D][ ] return book (by: Dec 02 2019)
      Now you have 2 tasks in the list.
 ```
@@ -232,7 +232,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Here's what we're working with, people:
      1.[T][ ] read book
      2.[D][ ] return book (by: Dec 02 2019)
 ```
@@ -344,7 +344,7 @@ event project meeting /from 2019-12-05 /to 2019-12-07
 ```
 **Expected Output:**
 ```
-     Got it. I've added this task:
+     Am I invited? ...I'm invited. Added:
        [E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
      Now you have 3 tasks in the list.
 ```
@@ -357,7 +357,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Here's what we're working with, people:
      1.[T][ ] read book
      2.[D][ ] return book (by: Dec 02 2019)
      3.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
@@ -371,7 +371,7 @@ on 2019-12-02
 ```
 **Expected Output:**
 ```
-     Here are the tasks on Dec 02 2019:
+     On Dec 02 2019 we've got:
      1.[D][ ] return book (by: Dec 02 2019)
 ```
 
@@ -383,7 +383,7 @@ on 2019-12-06
 ```
 **Expected Output:**
 ```
-     Here are the tasks on Dec 06 2019:
+     On Dec 06 2019 we've got:
      1.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
 ```
 
@@ -395,7 +395,7 @@ on 2019-12
 ```
 **Expected Output:**
 ```
-     Here are the tasks on Dec 2019:
+     On Dec 2019 we've got:
      1.[D][ ] return book (by: Dec 02 2019)
      2.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
 ```
@@ -408,7 +408,7 @@ on 2019
 ```
 **Expected Output:**
 ```
-     Here are the tasks on 2019:
+     On 2019 we've got:
      1.[D][ ] return book (by: Dec 02 2019)
      2.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
 ```
@@ -421,7 +421,7 @@ on 2020-01-01
 ```
 **Expected Output:**
 ```
-     You've got nothing on Jan 01 2020, bro.
+     Nothing on Jan 01 2020. Conference room is free. I'm calling a meeting.
 ```
 
 ## Test Case: Query with no date at all
@@ -564,7 +564,7 @@ mark 1
 ```
 **Expected Output:**
 ```
-     You are cooking! I've marked this task as done:
+     Boom. Done. That's a Dundie right there:
        [T][X] read book
 ```
 
@@ -576,7 +576,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Here's what we're working with, people:
      1.[T][X] read book
      2.[D][ ] return book (by: Dec 02 2019)
      3.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
@@ -634,7 +634,7 @@ unmark 1
 ```
 **Expected Output:**
 ```
-     OK, I've marked this task as not done yet:
+     Un-done. Like me and Jan. Anyway:
        [T][ ] read book
 ```
 
@@ -646,7 +646,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Here's what we're working with, people:
      1.[T][ ] read book
      2.[D][ ] return book (by: Dec 02 2019)
      3.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
@@ -704,7 +704,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Here's what we're working with, people:
      1.[T][ ] read book
      2.[D][ ] return book (by: Dec 02 2019)
      3.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
@@ -718,7 +718,7 @@ delete 2
 ```
 **Expected Output:**
 ```
-     Noted. I've removed this task:
+     Gone. Like Toby, if I had my way. Removed:
        [D][ ] return book (by: Dec 02 2019)
      Now you have 2 tasks in the list.
 ```
@@ -731,7 +731,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Here's what we're working with, people:
      1.[T][ ] read book
      2.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
 ```
@@ -744,7 +744,7 @@ delete 1
 ```
 **Expected Output:**
 ```
-     Noted. I've removed this task:
+     Gone. Like Toby, if I had my way. Removed:
        [T][ ] read book
      Now you have 1 tasks in the list.
 ```
@@ -757,7 +757,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Here's what we're working with, people:
      1.[E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
 ```
 
@@ -769,7 +769,7 @@ delete 1
 ```
 **Expected Output:**
 ```
-     Noted. I've removed this task:
+     Gone. Like Toby, if I had my way. Removed:
        [E][ ] project meeting (from: Dec 05 2019 to: Dec 07 2019)
      Now you have 0 tasks in the list.
 ```
@@ -782,7 +782,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Nothing on the list. Just like Toby's contribution to this office.
 ```
 
 ## Test Case: Mark on an empty list
@@ -815,7 +815,7 @@ deadline return book /by 2019-12-02 1800
 ```
 **Expected Output:**
 ```
-     Got it. I've added this task:
+     Got it. Added:
        [D][ ] return book (by: Dec 02 2019, 6:00pm)
      Now you have 1 tasks in the list.
 ```
@@ -850,7 +850,7 @@ event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 **Expected Output:**
 ```
-     Got it. I've added this task:
+     Am I invited? ...I'm invited. Added:
        [E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
      Now you have 2 tasks in the list.
 ```
@@ -874,7 +874,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Here's what we're working with, people:
      1.[D][ ] return book (by: Dec 02 2019, 6:00pm)
      2.[E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
 ```
@@ -887,7 +887,7 @@ on 2019-12-05
 ```
 **Expected Output:**
 ```
-     Here are the tasks on Dec 05 2019:
+     On Dec 05 2019 we've got:
      1.[E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
 ```
 
@@ -899,7 +899,7 @@ delete 1
 ```
 **Expected Output:**
 ```
-     Noted. I've removed this task:
+     Gone. Like Toby, if I had my way. Removed:
        [D][ ] return book (by: Dec 02 2019, 6:00pm)
      Now you have 1 tasks in the list.
 ```
@@ -912,7 +912,7 @@ delete 1
 ```
 **Expected Output:**
 ```
-     Noted. I've removed this task:
+     Gone. Like Toby, if I had my way. Removed:
        [E][ ] project meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 4:00pm)
      Now you have 0 tasks in the list.
 ```
@@ -926,7 +926,7 @@ todo read book
 ```
 **Expected Output:**
 ```
-     Got it. I've added this task:
+     That's what she said. Also, added:
        [T][ ] read book
      Now you have 1 tasks in the list.
 ```
@@ -940,7 +940,7 @@ deadline return book /by 2019-06-06
 ```
 **Expected Output:**
 ```
-     Got it. I've added this task:
+     Got it. Added:
        [D][ ] return book (by: Jun 06 2019)
      Now you have 2 tasks in the list.
 ```
@@ -954,7 +954,7 @@ mark 1
 ```
 **Expected Output:**
 ```
-     You are cooking! I've marked this task as done:
+     Boom. Done. That's a Dundie right there:
        [T][X] read book
 ```
 
@@ -967,7 +967,7 @@ mark 2
 ```
 **Expected Output:**
 ```
-     You are cooking! I've marked this task as done:
+     Boom. Done. That's a Dundie right there:
        [D][X] return book (by: Jun 06 2019)
 ```
 
@@ -980,7 +980,7 @@ find book
 ```
 **Expected Output:**
 ```
-     Here are the matching tasks in your list:
+     Found them. I'm basically a detective. Michael Scarn:
      1.[T][X] read book
      2.[D][X] return book (by: Jun 06 2019)
 ```
@@ -994,7 +994,7 @@ find BOOK
 ```
 **Expected Output:**
 ```
-     Here are the matching tasks in your list:
+     Found them. I'm basically a detective. Michael Scarn:
      1.[T][X] read book
      2.[D][X] return book (by: Jun 06 2019)
 ```
@@ -1008,7 +1008,7 @@ find milk
 ```
 **Expected Output:**
 ```
-     You've got nothing matching 'milk', bro.
+     Nothing matching 'milk'. I looked. I looked so hard.
 ```
 
 ## Test Case: Find without a keyword
@@ -1032,7 +1032,7 @@ delete 1
 ```
 **Expected Output:**
 ```
-     Noted. I've removed this task:
+     Gone. Like Toby, if I had my way. Removed:
        [T][X] read book
      Now you have 1 tasks in the list.
 ```
@@ -1046,7 +1046,7 @@ delete 1
 ```
 **Expected Output:**
 ```
-     Noted. I've removed this task:
+     Gone. Like Toby, if I had my way. Removed:
        [D][X] return book (by: Jun 06 2019)
      Now you have 0 tasks in the list.
 ```
@@ -1297,7 +1297,7 @@ find john
 ```
 **Expected Output:**
 ```
-     You've got nothing matching 'john', bro.
+     Nothing matching 'john'. I looked. I looked so hard.
 ```
 
 ## Test Case: Contacts never appear in the task list
@@ -1309,7 +1309,7 @@ list
 ```
 **Expected Output:**
 ```
-     Here are the tasks in your list:
+     Nothing on the list. Just like Toby's contribution to this office.
 ```
 
 ## Test Case: Contact delete with a number past the end

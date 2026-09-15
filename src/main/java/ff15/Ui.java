@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Scanner;
 
 import ff15.contact.Contact;
+import ff15.task.Event;
 import ff15.task.Task;
+import ff15.task.Todo;
 
 /**
  * Deals with everything the user sees and types: reading commands from the
@@ -129,15 +131,27 @@ public class Ui {
         showMessage(header, "  " + task);
     }
 
-    /** Confirms a newly added task and how many tasks there are now. */
+    /**
+     * Confirms a newly added task and how many tasks there are now. Michael
+     * cannot hear "todo" without saying it, and cannot hear of an event without
+     * asking; a deadline gets a plain acknowledgement, since he does not rate them.
+     */
     public void showTaskAdded(Task task, int taskCount) {
-        showTask("Got it. I've added this task:", task);
+        String header;
+        if (task instanceof Todo) {
+            header = "That's what she said. Also, added:";
+        } else if (task instanceof Event) {
+            header = "Am I invited? ...I'm invited. Added:";
+        } else {
+            header = "Got it. Added:";
+        }
+        showTask(header, task);
         showTaskCount(taskCount);
     }
 
     /** Confirms a deleted task and how many tasks are left. */
     public void showTaskRemoved(Task task, int taskCount) {
-        showTask("Noted. I've removed this task:", task);
+        showTask("Gone. Like Toby, if I had my way. Removed:", task);
         showTaskCount(taskCount);
     }
 

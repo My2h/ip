@@ -332,7 +332,7 @@ public class ParserTest {
 
         String printed = runCapturing(tasks, "find book");
 
-        assertTrue(printed.contains("Here are the matching tasks in your list:"), printed);
+        assertTrue(printed.contains("Michael Scarn:"), printed);
         assertTrue(printed.contains("1.[T][ ] read book"), printed);
         assertFalse(printed.contains("buy milk"), printed);
     }
@@ -344,7 +344,7 @@ public class ParserTest {
 
         String printed = runCapturing(tasks, "find homework");
 
-        assertTrue(printed.contains("You've got nothing matching 'homework', bro."), printed);
+        assertTrue(printed.contains("Nothing matching 'homework'. I looked."), printed);
     }
 
     @Test
