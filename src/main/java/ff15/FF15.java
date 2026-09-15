@@ -3,7 +3,9 @@ package ff15;
 import java.io.IOException;
 
 import ff15.command.Command;
+import ff15.contact.Contact;
 import ff15.contact.ContactList;
+import ff15.task.Task;
 import ff15.task.TaskList;
 
 /**
@@ -41,9 +43,10 @@ public class FF15 {
     /**
      * Greets the user and loads the tasks saved at {@code filePath} and the
      * contacts saved at {@code contactFilePath}. A missing file is normal and
-     * starts an empty list; a file that cannot be read or understood is reported,
-     * and the session starts empty rather than stopping. The two files are read
-     * independently, so an unreadable one does not cost the user the other.
+     * starts an empty list; a file that cannot be read is reported, and the
+     * session starts empty rather than stopping; a file with lines that cannot be
+     * understood keeps the rest and reports the ones it skipped. The two files
+     * are read independently, so a bad one does not cost the user the other.
      */
     public FF15(String filePath, String contactFilePath) {
         ui = new Ui();
@@ -52,14 +55,18 @@ public class FF15 {
         ui.startBlock();
         ui.showWelcome();
         try {
-            tasks = new TaskList(storage.load());
-        } catch (IOException | FF15Exception e) {
+            Storage.Loaded<Task> loaded = storage.load();
+            tasks = new TaskList(loaded.items());
+            ui.showSkippedLines(filePath, loaded.skipped());
+        } catch (IOException e) {
             ui.showLoadingError(e.getMessage());
             tasks = new TaskList();
         }
         try {
-            contacts = new ContactList(storage.loadContacts());
-        } catch (IOException | FF15Exception e) {
+            Storage.Loaded<Contact> loaded = storage.loadContacts();
+            contacts = new ContactList(loaded.items());
+            ui.showSkippedLines(contactFilePath, loaded.skipped());
+        } catch (IOException e) {
             ui.showContactLoadingError(e.getMessage());
             contacts = new ContactList();
         }

@@ -21,6 +21,12 @@ public class Deadline extends Task {
         this.date = by;
     }
 
+    /** Two deadlines are the same when they match as tasks and are due at the same time. */
+    @Override
+    public boolean isSameAs(Task other) {
+        return super.isSameAs(other) && date.equals(((Deadline) other).date);
+    }
+
     /** A deadline falls in a span when the day it is due does. */
     @Override
     public boolean occursIn(DateRange range) {

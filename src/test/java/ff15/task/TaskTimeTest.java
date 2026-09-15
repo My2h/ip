@@ -121,4 +121,41 @@ public class TaskTimeTest {
         assertEquals("Jan 01 2020", TaskTime.formatDate(LocalDate.of(2020, 1, 1)));
         assertEquals("Dec 31 2019", TaskTime.formatDate(LocalDate.of(2019, 12, 31)));
     }
+
+    @Test
+    public void parse_impossibleDateWithTime_throwsRatherThanRollingBack() {
+        // Java's default "smart" resolution turns Feb 30 into Feb 28 without a word.
+        assertThrows(FF15Exception.class, () -> TaskTime.parse("2019-02-30 1800"));
+        assertThrows(FF15Exception.class, () -> TaskTime.parse("2019-04-31 0900"));
+    }
+
+    @Test
+    public void parse_impossibleTime_throwsException() {
+        assertThrows(FF15Exception.class, () -> TaskTime.parse("2019-12-02 2400"));
+        assertThrows(FF15Exception.class, () -> TaskTime.parse("2019-12-02 1260"));
+    }
+
+    @Test
+    public void parse_leapDayWithTime_isAccepted() throws FF15Exception {
+        assertEquals("Feb 29 2020, 9:00am", TaskTime.parse("2020-02-29 0900").toString());
+    }
+
+    @Test
+    public void isSameMomentAs_dateOnlyAndMidnight_isTrue() throws FF15Exception {
+        assertTrue(TaskTime.parse("2019-12-02").isSameMomentAs(TaskTime.parse("2019-12-02 0000")));
+    }
+
+    @Test
+    public void equals_dateOnlyAndMidnight_isFalse() throws FF15Exception {
+        // Same instant, but one shows a time and the other does not.
+        assertFalse(TaskTime.parse("2019-12-02").equals(TaskTime.parse("2019-12-02 0000")));
+    }
+
+    @Test
+    public void equals_sameTextTwice_isTrueWithMatchingHashCode() throws FF15Exception {
+        TaskTime a = TaskTime.parse("2019-12-02 1800");
+        TaskTime b = TaskTime.parse("2019-12-02 1800");
+        assertTrue(a.equals(b));
+        assertEquals(a.hashCode(), b.hashCode());
+    }
 }

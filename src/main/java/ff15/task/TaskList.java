@@ -3,7 +3,9 @@ package ff15.task;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import ff15.FF15Exception;
 
@@ -72,6 +74,18 @@ public class TaskList {
             throw new FF15Exception("Task " + number + "? There are " + tasks.size()
                     + ". I'm not a magician. Well, I'm a bit of a magician.");
         }
+    }
+
+    /**
+     * Returns the number of the task in this list that is the same as
+     * {@code task}, counting from 1, or nothing if there is no such task. This is
+     * what lets an add refuse a duplicate and say which one it duplicates.
+     */
+    public OptionalInt findSame(Task task) {
+        return IntStream.range(0, tasks.size())
+                .filter(i -> tasks.get(i).isSameAs(task))
+                .map(i -> i + 1)
+                .findFirst();
     }
 
     /**

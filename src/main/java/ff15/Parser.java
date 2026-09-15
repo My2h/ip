@@ -60,6 +60,13 @@ public class Parser {
     /** The characters a phone number may be written with. */
     private static final String PHONE_PATTERN = "[0-9 +\\-()]+";
 
+    /**
+     * The one character no user-typed text may contain. The save file separates
+     * fields with it, so a description holding it would split into extra fields
+     * on the way back in and lose whatever followed.
+     */
+    private static final String RESERVED = "|";
+
     private Parser() { // a private constructor stops anyone writing "new Parser()"
     }
 
@@ -69,7 +76,14 @@ public class Parser {
      * @throws FF15Exception if the command word is not recognised, or the rest of
      *     the line does not give the command what it needs.
      */
-    public static Command parse(String input) throws FF15Exception {
+    public static Command parse(String rawInput) throws FF15Exception {
+        // Trim the ends and collapse runs of spaces, so a stray space never turns a
+        // good command into an unknown one, and a description is stored the way it
+        // reads rather than with whatever spacing happened to be typed.
+        String input = rawInput.strip().replaceAll("\\s+", " ");
+        if (input.isEmpty()) {
+            throw new FF15Exception("You didn't say anything. I'm a good listener. Say something.");
+        }
         CommandWord word = CommandWord.match(input);
         return switch (word) {
             case LIST -> new ListCommand();
@@ -105,6 +119,26 @@ public class Parser {
     }
 
     /**
+     * Rejects a marker that appears more than once. Only one value can be kept,
+     * and taking the first silently would leave the user wondering where the
+     * other one went.
+     */
+    private static void requireOnce(String details, String marker) throws FF15Exception {
+        int first = details.indexOf(marker);
+        if (first != -1 && details.indexOf(marker, first + 1) != -1) {
+            throw new FF15Exception("You gave " + marker.strip() + " twice. Once is plenty.");
+        }
+    }
+
+    /** Rejects text that holds the character the save file reserves for itself. */
+    private static void requireNoReserved(String text, String what) throws FF15Exception {
+        if (text.contains(RESERVED)) {
+            throw new FF15Exception("A " + what + " can't contain '" + RESERVED
+                    + "'. It's the one character I use to save things.");
+        }
+    }
+
+    /**
      * Parses the 1-based task number given to mark, unmark, or delete, checking
      * that it is present and numeric. Whether it is in range is checked later by
      * {@link TaskList}, which is the thing that knows how many tasks there are.
@@ -129,12 +163,14 @@ public class Parser {
         if (description.isEmpty()) {
             throw new FF15Exception("A todo with nothing in it. That's what she-- no. Tell me what to do.");
         }
+        requireNoReserved(description, "description");
         return new Todo(description);
     }
 
     /** Builds the Deadline described by {@code input}, which must carry a /by. */
     private static Deadline parseDeadline(String input) throws FF15Exception {
         String details = argumentAfter(input, CommandWord.DEADLINE);
+        requireOnce(details, BY_MARKER);
         int byIndex = details.indexOf(BY_MARKER);
         if (byIndex == -1) {
             throw new FF15Exception("When? Deadlines need a /by, e.g.: deadline return book /by 2019-12-02 1800");
@@ -148,12 +184,15 @@ public class Parser {
         if (by.isEmpty()) {
             throw new FF15Exception("A /by with nothing after it. When is it due? Use your words.");
         }
+        requireNoReserved(description, "description");
         return new Deadline(description, TaskTime.parse(by));
     }
 
     /** Builds the Event described by {@code input}, which must carry a /from followed by a /to. */
     private static Event parseEvent(String input) throws FF15Exception {
         String details = argumentAfter(input, CommandWord.EVENT);
+        requireOnce(details, FROM_MARKER);
+        requireOnce(details, TO_MARKER);
         int fromIndex = details.indexOf(FROM_MARKER);
         int toIndex = details.indexOf(TO_MARKER);
         boolean isFromMissing = fromIndex == -1;
@@ -172,10 +211,14 @@ public class Parser {
         if (from.isEmpty() || to.isEmpty()) {
             throw new FF15Exception("A /from or /to with nothing after it. When do I show up?");
         }
+        requireNoReserved(description, "description");
         TaskTime fromTime = TaskTime.parse(from);
         TaskTime toTime = TaskTime.parse(to);
         if (toTime.isBefore(fromTime)) { // an event can't finish before it begins
             throw new FF15Exception("It ends before it starts? That's not an event. That's a Ryan.");
+        }
+        if (toTime.isSameMomentAs(fromTime)) { // nor can it take no time at all
+            throw new FF15Exception("It ends when it starts? That's not an event. That's a moment.");
         }
         return new Event(description, fromTime, toTime);
     }
@@ -220,6 +263,8 @@ public class Parser {
         // the line lets one be found when it opens the line too, so that
         // "contact add /phone 123" is a missing name rather than a contact called "/phone 123".
         String padded = " " + details;
+        requireOnce(padded, PHONE_MARKER);
+        requireOnce(padded, EMAIL_MARKER);
         int phoneIndex = padded.indexOf(PHONE_MARKER);
         int emailIndex = padded.indexOf(EMAIL_MARKER);
 
@@ -229,10 +274,12 @@ public class Parser {
                     + "e.g.: contact add John /phone 91234567");
         }
 
+        requireNoReserved(name, "contact name");
         String phone = valueAfter(padded, phoneIndex, PHONE_MARKER, emailIndex);
         String email = valueAfter(padded, emailIndex, EMAIL_MARKER, phoneIndex);
         requirePhone(phone, phoneIndex);
         requireEmail(email, emailIndex);
+        requireNoReserved(email, "contact email");
         return new Contact(name, phone, email);
     }
 

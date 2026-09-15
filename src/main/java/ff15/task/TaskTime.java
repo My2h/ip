@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.Objects;
 
 import ff15.FF15Exception;
 
@@ -22,8 +24,14 @@ public class TaskTime {
     /** A date on its own, as typed and as saved, e.g. {@code 2019-12-02}. */
     private static final DateTimeFormatter DATE_INPUT = DateTimeFormatter.ISO_LOCAL_DATE;
 
-    /** A date with a time, as typed and as saved, e.g. {@code 2019-12-02 1800}. */
-    private static final DateTimeFormatter DATE_TIME_INPUT = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+    /**
+     * A date with a time, as typed and as saved, e.g. {@code 2019-12-02 1800}.
+     * Resolved strictly, so that Feb 30 is rejected rather than quietly rolled
+     * back to Feb 28, which is what the default "smart" resolution does. Strict
+     * resolution needs {@code uuuu} (the proleptic year) in place of {@code yyyy}.
+     */
+    private static final DateTimeFormatter DATE_TIME_INPUT = DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
 
     /** How the date is shown back to the user, e.g. {@code Dec 02 2019}. */
     private static final DateTimeFormatter DATE_DISPLAY = DateTimeFormatter.ofPattern("MMM dd yyyy");
@@ -67,6 +75,36 @@ public class TaskTime {
     /** Returns whether this moment comes before {@code other}. */
     public boolean isBefore(TaskTime other) {
         return moment.isBefore(other.moment);
+    }
+
+    /**
+     * Returns whether this and {@code other} are the very same instant, whether
+     * or not either was typed with a time. A date-only value stands for the start
+     * of its day, so it is the same moment as that day typed with 0000.
+     */
+    public boolean isSameMomentAs(TaskTime other) {
+        return moment.equals(other.moment);
+    }
+
+    /**
+     * Two values are equal when they show the same thing: the same moment, typed
+     * the same way. A date-only value and the same day at 0000 are not equal,
+     * since one prints a time and the other does not.
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof TaskTime that)) {
+            return false;
+        }
+        return moment.equals(that.moment) && hasTime == that.hasTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(moment, hasTime);
     }
 
     /** Returns a bare date in the form used throughout the output, e.g. {@code Dec 02 2019}. */

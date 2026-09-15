@@ -38,11 +38,13 @@ are left empty and the next run starts clean. A run that stops early (at a
 failing case) leaves entries behind, so delete the files again before
 re-running.
 
-If either file exists but is corrupted (an unknown task type, or a line
-missing fields), the startup block prints two extra lines after the greeting
-— e.g. `No. GOD. NO. Couldn't read your saved tasks: ...` followed by
-`Starting you off with an empty list. Call the IT guy, what's his name?`, or the contacts equivalent — and the
-session continues with that list empty. The two files are read independently,
+If either file has a line that cannot be understood (an unknown task type,
+or a line missing fields), that line is skipped and the startup block reports
+it after the greeting — `No. GOD. NO. I couldn't read 1 line in data/ff15.txt, so I skipped it:`,
+the line number and reason, then `The rest loaded fine. Call the IT guy, what's his name?` —
+and every other line is loaded as normal. If a file cannot be read at all
+(e.g. it is a folder), the block instead prints `Couldn't read your saved
+tasks: ...` and starts that list empty. The two files are read independently,
 so a damaged one does not cost the user the other. Those cases can't be
 covered here, since the runner starts the program itself and each plan runs as
 one session; check them by hand by writing a bad line into `data/ff15.txt` or
@@ -133,6 +135,58 @@ todo read book
      Now you have 1 tasks in the list.
 ```
 
+## Test Case: Todo containing the save file's separator
+
+**Aim:** `|` is the one character a description may not contain, since the save file uses it to separate fields; it is refused at input rather than silently losing the text after it on reload.
+**Input:**
+```
+todo read | book
+```
+**Expected Output:**
+```
+     No. GOD. NO. A description can't contain '|'. It's the one character I use to save things.
+```
+
+## Test Case: Todo with runs of spaces inside
+
+**Aim:** Extra spaces inside a description are collapsed to one, so the task is stored the way it reads.
+**Input:**
+```
+todo   buy    milk
+```
+**Expected Output:**
+```
+     That's what she said. Also, added:
+       [T][ ] buy milk
+     Now you have 2 tasks in the list.
+```
+
+## Test Case: Delete the spaced todo
+
+**Aim:** Removes it again so the later cases see the list they expect.
+**Input:**
+```
+delete 2
+```
+**Expected Output:**
+```
+     Gone. Like Toby, if I had my way. Removed:
+       [T][ ] buy milk
+     Now you have 1 tasks in the list.
+```
+
+## Test Case: Adding the same todo again
+
+**Aim:** A task identical to one already in the list is refused, and the message says which task it duplicates.
+**Input:**
+```
+todo read book
+```
+**Expected Output:**
+```
+     No. GOD. NO. You already have that one. It's task 1. I remember everything.
+```
+
 ## Test Case: List after adding one todo
 **Aim:** `list` shows exactly the one todo, confirming none of the preceding negative cases left a stray task behind.
 **Input:**
@@ -154,6 +208,18 @@ deadline return book
 **Expected Output:**
 ```
      No. GOD. NO. When? Deadlines need a /by, e.g.: deadline return book /by 2019-12-02 1800
+```
+
+## Test Case: Deadline with /by given twice
+
+**Aim:** A marker given twice is refused and named, rather than the second one being read as part of the date.
+**Input:**
+```
+deadline x /by 2019-12-02 /by 2019-12-03
+```
+**Expected Output:**
+```
+     No. GOD. NO. You gave /by twice. Once is plenty.
 ```
 
 ## Test Case: Deadline with no description at all
@@ -257,6 +323,18 @@ event project meeting /to 2019-12-06 /from 2019-12-05
 **Expected Output:**
 ```
      No. GOD. NO. An event needs a /from and a /to. Otherwise how do I know when to show up? e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
+```
+
+## Test Case: Event ending the moment it starts
+
+**Aim:** An event with no duration is refused; only one that ends after it starts is an event.
+**Input:**
+```
+event blink /from 2019-12-05 1400 /to 2019-12-05 1400
+```
+**Expected Output:**
+```
+     No. GOD. NO. It ends when it starts? That's not an event. That's a moment.
 ```
 
 ## Test Case: Event with /from but no /to
@@ -1158,6 +1236,18 @@ contact add John /phone hello
      No. GOD. NO. 'hello' is not a phone number. I know phones. I have a Blackberry. Digits, spaces, +, -, and brackets only.
 ```
 
+## Test Case: Contact name containing the save file's separator
+
+**Aim:** The same reserved-character rule applies to contact fields.
+**Input:**
+```
+contact add John | Smith
+```
+**Expected Output:**
+```
+     No. GOD. NO. A contact name can't contain '|'. It's the one character I use to save things.
+```
+
 ## Test Case: Contact add with an unusable email
 
 **Aim:** An email without an `@` is rejected.
@@ -1393,14 +1483,25 @@ contact delete 1
 ```
 
 ## Test Case: Leading whitespace on a command
-**Aim:** ` list` (a leading space before an otherwise valid command) doesn't match `list`, since the raw input line isn't trimmed before the `equals`/`startsWith` checks — documenting that the parser is strict about the whole line, not just the command word.
+**Aim:** ` list` (a leading space before an otherwise valid command) is the same as `list`, since the line is trimmed before the command word is matched.
 **Input:**
 ```
  list
 ```
 **Expected Output:**
 ```
-     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
+     Nothing on the list. Just like Toby's contribution to this office.
+```
+
+## Test Case: Trailing whitespace on a command
+**Aim:** `list ` (a trailing space) is likewise the same as `list`.
+**Input:**
+```
+list
+```
+**Expected Output:**
+```
+     Nothing on the list. Just like Toby's contribution to this office.
 ```
 
 ## Test Case: Exit
