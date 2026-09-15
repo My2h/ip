@@ -76,7 +76,14 @@ public class Parser {
      * @throws FF15Exception if the command word is not recognised, or the rest of
      *     the line does not give the command what it needs.
      */
-    public static Command parse(String input) throws FF15Exception {
+    public static Command parse(String rawInput) throws FF15Exception {
+        // Trim the ends and collapse runs of spaces, so a stray space never turns a
+        // good command into an unknown one, and a description is stored the way it
+        // reads rather than with whatever spacing happened to be typed.
+        String input = rawInput.strip().replaceAll("\\s+", " ");
+        if (input.isEmpty()) {
+            throw new FF15Exception("You didn't say anything. I'm a good listener. Say something.");
+        }
         CommandWord word = CommandWord.match(input);
         return switch (word) {
             case LIST -> new ListCommand();
@@ -109,6 +116,18 @@ public class Parser {
             return "";
         }
         return input.substring(word.length() + 1).trim();
+    }
+
+    /**
+     * Rejects a marker that appears more than once. Only one value can be kept,
+     * and taking the first silently would leave the user wondering where the
+     * other one went.
+     */
+    private static void requireOnce(String details, String marker) throws FF15Exception {
+        int first = details.indexOf(marker);
+        if (first != -1 && details.indexOf(marker, first + 1) != -1) {
+            throw new FF15Exception("You gave " + marker.strip() + " twice. Once is plenty.");
+        }
     }
 
     /** Rejects text that holds the character the save file reserves for itself. */
@@ -151,6 +170,7 @@ public class Parser {
     /** Builds the Deadline described by {@code input}, which must carry a /by. */
     private static Deadline parseDeadline(String input) throws FF15Exception {
         String details = argumentAfter(input, CommandWord.DEADLINE);
+        requireOnce(details, BY_MARKER);
         int byIndex = details.indexOf(BY_MARKER);
         if (byIndex == -1) {
             throw new FF15Exception("When? Deadlines need a /by, e.g.: deadline return book /by 2019-12-02 1800");
@@ -171,6 +191,8 @@ public class Parser {
     /** Builds the Event described by {@code input}, which must carry a /from followed by a /to. */
     private static Event parseEvent(String input) throws FF15Exception {
         String details = argumentAfter(input, CommandWord.EVENT);
+        requireOnce(details, FROM_MARKER);
+        requireOnce(details, TO_MARKER);
         int fromIndex = details.indexOf(FROM_MARKER);
         int toIndex = details.indexOf(TO_MARKER);
         boolean isFromMissing = fromIndex == -1;
@@ -238,6 +260,8 @@ public class Parser {
         // the line lets one be found when it opens the line too, so that
         // "contact add /phone 123" is a missing name rather than a contact called "/phone 123".
         String padded = " " + details;
+        requireOnce(padded, PHONE_MARKER);
+        requireOnce(padded, EMAIL_MARKER);
         int phoneIndex = padded.indexOf(PHONE_MARKER);
         int emailIndex = padded.indexOf(EMAIL_MARKER);
 

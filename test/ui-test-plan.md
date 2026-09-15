@@ -147,6 +147,34 @@ todo read | book
      No. GOD. NO. A description can't contain '|'. It's the one character I use to save things.
 ```
 
+## Test Case: Todo with runs of spaces inside
+
+**Aim:** Extra spaces inside a description are collapsed to one, so the task is stored the way it reads.
+**Input:**
+```
+todo   buy    milk
+```
+**Expected Output:**
+```
+     That's what she said. Also, added:
+       [T][ ] buy milk
+     Now you have 2 tasks in the list.
+```
+
+## Test Case: Delete the spaced todo
+
+**Aim:** Removes it again so the later cases see the list they expect.
+**Input:**
+```
+delete 2
+```
+**Expected Output:**
+```
+     Gone. Like Toby, if I had my way. Removed:
+       [T][ ] buy milk
+     Now you have 1 tasks in the list.
+```
+
 ## Test Case: List after adding one todo
 **Aim:** `list` shows exactly the one todo, confirming none of the preceding negative cases left a stray task behind.
 **Input:**
@@ -168,6 +196,18 @@ deadline return book
 **Expected Output:**
 ```
      No. GOD. NO. When? Deadlines need a /by, e.g.: deadline return book /by 2019-12-02 1800
+```
+
+## Test Case: Deadline with /by given twice
+
+**Aim:** A marker given twice is refused and named, rather than the second one being read as part of the date.
+**Input:**
+```
+deadline x /by 2019-12-02 /by 2019-12-03
+```
+**Expected Output:**
+```
+     No. GOD. NO. You gave /by twice. Once is plenty.
 ```
 
 ## Test Case: Deadline with no description at all
@@ -1419,14 +1459,25 @@ contact delete 1
 ```
 
 ## Test Case: Leading whitespace on a command
-**Aim:** ` list` (a leading space before an otherwise valid command) doesn't match `list`, since the raw input line isn't trimmed before the `equals`/`startsWith` checks — documenting that the parser is strict about the whole line, not just the command word.
+**Aim:** ` list` (a leading space before an otherwise valid command) is the same as `list`, since the line is trimmed before the command word is matched.
 **Input:**
 ```
  list
 ```
 **Expected Output:**
 ```
-     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
+     Nothing on the list. Just like Toby's contribution to this office.
+```
+
+## Test Case: Trailing whitespace on a command
+**Aim:** `list ` (a trailing space) is likewise the same as `list`.
+**Input:**
+```
+list
+```
+**Expected Output:**
+```
+     Nothing on the list. Just like Toby's contribution to this office.
 ```
 
 ## Test Case: Exit

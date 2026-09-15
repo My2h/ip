@@ -390,6 +390,43 @@ public class ParserTest {
         assertTrue(thrown.getMessage().contains("don't know what that means"), thrown.getMessage());
     }
 
+    // --- forgiving the shape of the line, rejecting the substance ------------
+
+    @Test
+    public void parse_spaceAtEitherEnd_stillMatchesTheCommand() throws FF15Exception {
+        assertInstanceOf(ListCommand.class, Parser.parse(" list"));
+        assertInstanceOf(ListCommand.class, Parser.parse("list "));
+        assertInstanceOf(ListCommand.class, Parser.parse("   list   "));
+        assertInstanceOf(MarkCommand.class, Parser.parse("  mark   2  "));
+    }
+
+    @Test
+    public void parse_runsOfSpacesInsideADescription_collapseToOne() throws Exception {
+        assertEquals("[T][ ] read the book", addedBy("todo read   the    book").toString());
+        assertEquals("[D][ ] return book (by: Dec 02 2019)",
+                addedBy("deadline  return   book  /by  2019-12-02").toString());
+    }
+
+    @Test
+    public void parse_blankLine_throwsAndAsksForSomething() {
+        FF15Exception thrown = assertThrows(FF15Exception.class, () -> Parser.parse(""));
+        assertTrue(thrown.getMessage().contains("Say something"), thrown.getMessage());
+        assertThrows(FF15Exception.class, () -> Parser.parse("   "));
+    }
+
+    @Test
+    public void parse_markerGivenTwice_throwsAndNamesIt() {
+        FF15Exception thrown = assertThrows(FF15Exception.class, () ->
+                Parser.parse("deadline x /by 2019-12-02 /by 2019-12-03"));
+        assertTrue(thrown.getMessage().contains("/by twice"), thrown.getMessage());
+        assertThrows(FF15Exception.class, () ->
+                Parser.parse("event x /from 2019-12-05 /from 2019-12-06 /to 2019-12-07"));
+        assertThrows(FF15Exception.class, () ->
+                Parser.parse("event x /from 2019-12-05 /to 2019-12-06 /to 2019-12-07"));
+        assertThrows(FF15Exception.class, () -> Parser.parse("contact add John /phone 1 /phone 2"));
+        assertThrows(FF15Exception.class, () -> Parser.parse("contact add John /email a@b.c /email d@e.f"));
+    }
+
     // --- the save file's reserved character ----------------------------------
 
     @Test
