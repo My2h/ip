@@ -668,7 +668,7 @@ unmark
 ```
 **Expected Output:**
 ```
-     No. GOD. NO. Which one? Use your words. Like, a number. e.g. mark 2
+     No. GOD. NO. Which one? Use your words. Like, a number. e.g. unmark 2
 ```
 
 ## Test Case: Unmark with a non-numeric task number
@@ -738,7 +738,7 @@ delete
 ```
 **Expected Output:**
 ```
-     No. GOD. NO. Which one? Use your words. Like, a number. e.g. mark 2
+     No. GOD. NO. Which one? Use your words. Like, a number. e.g. delete 2
 ```
 
 ## Test Case: Delete with a non-numeric task number

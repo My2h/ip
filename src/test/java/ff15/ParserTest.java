@@ -427,6 +427,14 @@ public class ParserTest {
         assertTrue(thrown.getMessage().contains("description"), thrown.getMessage());
     }
 
+    @Test
+    public void parse_taskNumberMissing_exampleNamesTheCommandTyped() {
+        FF15Exception fromDelete = assertThrows(FF15Exception.class, () -> Parser.parse("delete"));
+        assertTrue(fromDelete.getMessage().contains("e.g. delete 2"), fromDelete.getMessage());
+        FF15Exception fromUnmark = assertThrows(FF15Exception.class, () -> Parser.parse("unmark"));
+        assertTrue(fromUnmark.getMessage().contains("e.g. unmark 2"), fromUnmark.getMessage());
+    }
+
     // --- forgiving the shape of the line, rejecting the substance ------------
 
     @Test

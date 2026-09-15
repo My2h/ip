@@ -146,7 +146,8 @@ public class Parser {
     private static int parseTaskNumber(String input, CommandWord command) throws FF15Exception {
         String arg = argumentAfter(input, command);
         if (arg.isEmpty()) {
-            throw new FF15Exception("Which one? Use your words. Like, a number. e.g. mark 2");
+            throw new FF15Exception("Which one? Use your words. Like, a number. e.g. "
+                    + command.getWord() + " 2");
         }
         int number;
         try {
