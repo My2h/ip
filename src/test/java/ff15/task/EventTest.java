@@ -105,4 +105,18 @@ public class EventTest {
         Event b = new Event("meeting", TaskTime.parse("2019-12-05 1400"), TaskTime.parse("2019-12-05 1700"));
         assertFalse(a.isSameAs(b));
     }
+
+    @Test
+    public void isSameAs_differentDescriptionSameSpan_isFalse() throws FF15Exception {
+        Event a = new Event("meeting", TaskTime.parse("2019-12-05"), TaskTime.parse("2019-12-06"));
+        Event b = new Event("the meeting", TaskTime.parse("2019-12-05"), TaskTime.parse("2019-12-06"));
+        assertFalse(a.isSameAs(b));
+    }
+
+    @Test
+    public void isSameAs_sameDescriptionDifferentStart_isFalse() throws FF15Exception {
+        Event a = new Event("meeting", TaskTime.parse("2019-12-05"), TaskTime.parse("2019-12-07"));
+        Event b = new Event("meeting", TaskTime.parse("2019-12-06"), TaskTime.parse("2019-12-07"));
+        assertFalse(a.isSameAs(b));
+    }
 }

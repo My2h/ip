@@ -169,7 +169,9 @@ public class Parser {
 
     /** Builds the Deadline described by {@code input}, which must carry a /by. */
     private static Deadline parseDeadline(String input) throws FF15Exception {
-        String details = argumentAfter(input, CommandWord.DEADLINE);
+        // Padded so a marker that opens the line is still found; without it,
+        // "deadline /by ..." reads as having no /by rather than no description.
+        String details = " " + argumentAfter(input, CommandWord.DEADLINE);
         requireOnce(details, BY_MARKER);
         int byIndex = details.indexOf(BY_MARKER);
         if (byIndex == -1) {
@@ -190,7 +192,7 @@ public class Parser {
 
     /** Builds the Event described by {@code input}, which must carry a /from followed by a /to. */
     private static Event parseEvent(String input) throws FF15Exception {
-        String details = argumentAfter(input, CommandWord.EVENT);
+        String details = " " + argumentAfter(input, CommandWord.EVENT); // padded, as for a deadline
         requireOnce(details, FROM_MARKER);
         requireOnce(details, TO_MARKER);
         int fromIndex = details.indexOf(FROM_MARKER);
@@ -259,9 +261,8 @@ public class Parser {
      * and may then carry a /phone, an /email, or both, in either order.
      */
     private static Contact parseContact(String details) throws FF15Exception {
-        // The markers carry a leading space so that a name may contain "/phone". Padding
-        // the line lets one be found when it opens the line too, so that
-        // "contact add /phone 123" is a missing name rather than a contact called "/phone 123".
+        // Padded for the same reason as a deadline or an event: a marker that opens
+        // the line is a missing name, not a contact called "/phone 123".
         String padded = " " + details;
         requireOnce(padded, PHONE_MARKER);
         requireOnce(padded, EMAIL_MARKER);

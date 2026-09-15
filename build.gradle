@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'checkstyle'
+    id 'jacoco'
     id 'application'
     id 'com.gradleup.shadow' version '9.5.1'
 }
@@ -53,6 +54,19 @@ test {
         showCauses = true
         showStackTraces = true
         showStandardStreams = false
+    }
+}
+
+jacocoTestReport {
+    dependsOn test
+    // The GUI package is exercised by hand, not by JUnit, so it is left out of
+    // the figures rather than dragging them down for code that cannot be measured.
+    classDirectories.setFrom(files(classDirectories.files.collect {
+        fileTree(dir: it, exclude: 'ff15/gui/**')
+    }))
+    reports {
+        xml.required = true
+        html.required = true
     }
 }
 

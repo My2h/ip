@@ -114,4 +114,9 @@ public class ContactListTest {
         assertThrows(UnsupportedOperationException.class, () -> view.add(new Contact("sneaked in", "", "")));
         assertThrows(UnsupportedOperationException.class, () -> view.remove(0));
     }
+
+    @Test
+    public void add_noArguments_tripsTheGuard() {
+        assertThrows(AssertionError.class, () -> new ContactList().add());
+    }
 }

@@ -223,14 +223,14 @@ deadline x /by 2019-12-02 /by 2019-12-03
 ```
 
 ## Test Case: Deadline with no description at all
-**Aim:** `deadline /by Sunday` (description omitted, `/by` immediately after the command) has no leading space before `/by` once the command word is stripped, so the `" /by"` search fails to match and this reports the generic missing-`/by` error rather than an empty-description error — documenting that edge in the parsing logic.
+**Aim:** `deadline /by Sunday` (description omitted, `/by` immediately after the command) is reported as a missing description, which is what is actually wrong, rather than as a missing `/by`.
 **Input:**
 ```
 deadline /by Sunday
 ```
 **Expected Output:**
 ```
-     No. GOD. NO. When? Deadlines need a /by, e.g.: deadline return book /by 2019-12-02 1800
+     No. GOD. NO. A deadline needs a description. I'm a manager, not a mind reader. Which I also am.
 ```
 
 ## Test Case: Deadline with empty /by

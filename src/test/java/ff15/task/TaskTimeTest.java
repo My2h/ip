@@ -158,4 +158,15 @@ public class TaskTimeTest {
         assertTrue(a.equals(b));
         assertEquals(a.hashCode(), b.hashCode());
     }
+
+    @Test
+    public void equals_sameInstance_isTrue() throws FF15Exception {
+        TaskTime time = TaskTime.parse("2019-12-02");
+        assertTrue(time.equals(time));
+    }
+
+    @Test
+    public void equals_somethingThatIsNotATaskTime_isFalse() throws FF15Exception {
+        assertFalse(TaskTime.parse("2019-12-02").equals("2019-12-02"));
+    }
 }
