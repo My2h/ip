@@ -390,6 +390,27 @@ public class ParserTest {
         assertTrue(thrown.getMessage().contains("don't know what that means"), thrown.getMessage());
     }
 
+    // --- the save file's reserved character ----------------------------------
+
+    @Test
+    public void parse_descriptionContainingTheSeparator_throwsException() {
+        assertThrows(FF15Exception.class, () -> Parser.parse("todo read | book"));
+        assertThrows(FF15Exception.class, () -> Parser.parse("deadline a|b /by 2019-12-02"));
+        assertThrows(FF15Exception.class, () -> Parser.parse("event x | y /from 2019-12-05 /to 2019-12-06"));
+    }
+
+    @Test
+    public void parse_contactFieldContainingTheSeparator_throwsException() {
+        assertThrows(FF15Exception.class, () -> Parser.parse("contact add John | Smith"));
+        assertThrows(FF15Exception.class, () -> Parser.parse("contact add John /email a|b@example.com"));
+    }
+
+    @Test
+    public void parse_separatorRejection_explainsWhy() {
+        FF15Exception thrown = assertThrows(FF15Exception.class, () -> Parser.parse("todo read | book"));
+        assertTrue(thrown.getMessage().contains("save"), thrown.getMessage());
+    }
+
     // --- contacts -------------------------------------------------------------
 
     /** Runs {@code input} against a fresh contact list and returns the single contact it added. */

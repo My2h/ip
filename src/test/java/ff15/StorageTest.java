@@ -159,9 +159,10 @@ public class StorageTest {
 
     @Test
     public void save_descriptionContainingTheSeparator_losesTheTextAfterIt() throws Exception {
-        // Documents today's behaviour: a description holding " | " gains a field when
-        // it is read back, so the extra text lands in the wrong place rather than
-        // being kept as part of the description.
+        // Documents Storage's own limit: a description holding " | " gains a field
+        // when read back, so the text after it is lost. The parser refuses "|" in
+        // anything the user types, so this cannot be reached from a command; it is
+        // kept so that the limit is stated rather than merely avoided.
         Storage storage = storageAt("ff15.txt");
         TaskList tasks = new TaskList();
         tasks.add(new Todo("read book | and take notes"));

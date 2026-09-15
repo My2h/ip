@@ -60,6 +60,13 @@ public class Parser {
     /** The characters a phone number may be written with. */
     private static final String PHONE_PATTERN = "[0-9 +\\-()]+";
 
+    /**
+     * The one character no user-typed text may contain. The save file separates
+     * fields with it, so a description holding it would split into extra fields
+     * on the way back in and lose whatever followed.
+     */
+    private static final String RESERVED = "|";
+
     private Parser() { // a private constructor stops anyone writing "new Parser()"
     }
 
@@ -104,6 +111,14 @@ public class Parser {
         return input.substring(word.length() + 1).trim();
     }
 
+    /** Rejects text that holds the character the save file reserves for itself. */
+    private static void requireNoReserved(String text, String what) throws FF15Exception {
+        if (text.contains(RESERVED)) {
+            throw new FF15Exception("A " + what + " can't contain '" + RESERVED
+                    + "'. It's the one character I use to save things.");
+        }
+    }
+
     /**
      * Parses the 1-based task number given to mark, unmark, or delete, checking
      * that it is present and numeric. Whether it is in range is checked later by
@@ -129,6 +144,7 @@ public class Parser {
         if (description.isEmpty()) {
             throw new FF15Exception("A todo with nothing in it. That's what she-- no. Tell me what to do.");
         }
+        requireNoReserved(description, "description");
         return new Todo(description);
     }
 
@@ -148,6 +164,7 @@ public class Parser {
         if (by.isEmpty()) {
             throw new FF15Exception("A /by with nothing after it. When is it due? Use your words.");
         }
+        requireNoReserved(description, "description");
         return new Deadline(description, TaskTime.parse(by));
     }
 
@@ -172,6 +189,7 @@ public class Parser {
         if (from.isEmpty() || to.isEmpty()) {
             throw new FF15Exception("A /from or /to with nothing after it. When do I show up?");
         }
+        requireNoReserved(description, "description");
         TaskTime fromTime = TaskTime.parse(from);
         TaskTime toTime = TaskTime.parse(to);
         if (toTime.isBefore(fromTime)) { // an event can't finish before it begins
@@ -229,10 +247,12 @@ public class Parser {
                     + "e.g.: contact add John /phone 91234567");
         }
 
+        requireNoReserved(name, "contact name");
         String phone = valueAfter(padded, phoneIndex, PHONE_MARKER, emailIndex);
         String email = valueAfter(padded, emailIndex, EMAIL_MARKER, phoneIndex);
         requirePhone(phone, phoneIndex);
         requireEmail(email, emailIndex);
+        requireNoReserved(email, "contact email");
         return new Contact(name, phone, email);
     }
 

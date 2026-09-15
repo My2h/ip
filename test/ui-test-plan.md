@@ -135,6 +135,18 @@ todo read book
      Now you have 1 tasks in the list.
 ```
 
+## Test Case: Todo containing the save file's separator
+
+**Aim:** `|` is the one character a description may not contain, since the save file uses it to separate fields; it is refused at input rather than silently losing the text after it on reload.
+**Input:**
+```
+todo read | book
+```
+**Expected Output:**
+```
+     No. GOD. NO. A description can't contain '|'. It's the one character I use to save things.
+```
+
 ## Test Case: List after adding one todo
 **Aim:** `list` shows exactly the one todo, confirming none of the preceding negative cases left a stray task behind.
 **Input:**
@@ -1158,6 +1170,18 @@ contact add John /phone hello
 **Expected Output:**
 ```
      No. GOD. NO. 'hello' is not a phone number. I know phones. I have a Blackberry. Digits, spaces, +, -, and brackets only.
+```
+
+## Test Case: Contact name containing the save file's separator
+
+**Aim:** The same reserved-character rule applies to contact fields.
+**Input:**
+```
+contact add John | Smith
+```
+**Expected Output:**
+```
+     No. GOD. NO. A contact name can't contain '|'. It's the one character I use to save things.
 ```
 
 ## Test Case: Contact add with an unusable email
