@@ -217,13 +217,18 @@ public class Parser {
         requireNoReserved(description, "description");
         TaskTime fromTime = TaskTime.parse(from);
         TaskTime toTime = TaskTime.parse(to);
-        if (toTime.isBefore(fromTime)) { // an event can't finish before it begins
+        requireSomeDuration(fromTime, toTime);
+        return new Event(description, fromTime, toTime);
+    }
+
+    /** Rejects an event that ends before it starts, or the moment it starts: neither takes any time. */
+    private static void requireSomeDuration(TaskTime from, TaskTime to) throws FF15Exception {
+        if (to.isBefore(from)) {
             throw new FF15Exception("It ends before it starts? That's not an event. That's a Ryan.");
         }
-        if (toTime.isSameMomentAs(fromTime)) { // nor can it take no time at all
+        if (to.isSameMomentAs(from)) {
             throw new FF15Exception("It ends when it starts? That's not an event. That's a moment.");
         }
-        return new Event(description, fromTime, toTime);
     }
 
     /** Returns the keyword a {@code find} command should search for. */
