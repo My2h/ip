@@ -2,7 +2,7 @@
 
 ![FF15 in use](Ui.png)
 
-**FF15** is a desktop app for keeping track of your tasks and your contacts, typed one line at a time. It talks like a regional manager who thinks he is your assistant. He is not. You are the boss.
+**FF15** is a desktop app for keeping track of your tasks and your contacts, typed one line at a time. You are the Regional Manager; FF15 is your Assistant to the Regional Manager, and it has Michael Scott's sense of humour.
 
 - [Quick start](#quick-start)
 - [Features](#features)
