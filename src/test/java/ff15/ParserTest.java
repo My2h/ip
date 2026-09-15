@@ -414,6 +414,19 @@ public class ParserTest {
         assertTrue(thrown.getMessage().contains("don't know what that means"), thrown.getMessage());
     }
 
+    @Test
+    public void parse_deadlineWithMarkerButNoDescription_saysTheDescriptionIsMissing() {
+        FF15Exception thrown = assertThrows(FF15Exception.class, () -> Parser.parse("deadline /by 2019-12-02"));
+        assertTrue(thrown.getMessage().contains("description"), thrown.getMessage());
+    }
+
+    @Test
+    public void parse_eventWithMarkersButNoDescription_saysTheDescriptionIsMissing() {
+        FF15Exception thrown = assertThrows(FF15Exception.class, () ->
+                Parser.parse("event /from 2019-12-05 /to 2019-12-06"));
+        assertTrue(thrown.getMessage().contains("description"), thrown.getMessage());
+    }
+
     // --- forgiving the shape of the line, rejecting the substance ------------
 
     @Test
