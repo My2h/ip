@@ -85,4 +85,9 @@ jar {
 
 shadowJar {
     archiveFileName = 'ff15.jar'
+    // JavaFX loads its native libraries through a restricted method, which Java 25 warns about on every
+    // launch unless the jar says it is allowed to. This is that permission, so java -jar starts quietly.
+    manifest {
+        attributes 'Enable-Native-Access': 'ALL-UNNAMED'
+    }
 }
