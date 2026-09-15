@@ -61,7 +61,8 @@ public class Ui {
      */
     public void showWelcome() {
         System.out.println(BANNER);
-        showMessage("Hi. I'm FF15. Assistant Regional Manager. ...Assistant TO the Regional Manager. Which is you.",
+        showMessage("Hi. I'm FF15. Assistant Regional Manager. "
+                        + "...Assistant TO the Regional Manager. Which is you.",
                 "What can I do for you, boss?");
     }
 
@@ -88,7 +89,8 @@ public class Ui {
         }
         boolean isOne = skipped.size() == 1;
         String count = isOne ? "1 line" : skipped.size() + " lines";
-        showError("I couldn't read " + count + " in " + fileName + ", so I skipped " + (isOne ? "it" : "them") + ":");
+        String them = isOne ? "it" : "them";
+        showError("I couldn't read " + count + " in " + fileName + ", so I skipped " + them + ":");
         for (String problem : skipped) {
             showMessage("  " + problem);
         }

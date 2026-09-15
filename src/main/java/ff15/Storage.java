@@ -103,7 +103,8 @@ public class Storage {
             try {
                 Files.createDirectories(folder);
             } catch (FileAlreadyExistsException e) {
-                throw new IOException("'" + folder + "' is a file, but I need it to be a folder I can save into", e);
+                throw new IOException(
+                        "'" + folder + "' is a file, but I need it to be a folder I can save into", e);
             }
         }
         if (Files.isDirectory(path)) {

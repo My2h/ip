@@ -23,7 +23,7 @@ import javafx.scene.shape.Circle;
  * every dialog box in the window.
  */
 public class DialogBox extends HBox {
-    /** How wide and tall FF15's face is shown, in pixels. Small on purpose: it is a marker, not a portrait. */
+    /** How wide and tall FF15's face is shown, in pixels. Small on purpose: a marker, not a portrait. */
     private static final double AVATAR_SIZE = 36.0;
 
     /**

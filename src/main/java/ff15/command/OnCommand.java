@@ -27,7 +27,8 @@ public class OnCommand extends Command {
     public void execute(TaskList tasks, ContactList contacts, Ui ui, Storage storage) {
         List<Task> matches = tasks.tasksIn(range);
         if (matches.isEmpty()) {
-            ui.showMessage("Nothing on " + range.getLabel() + ". Conference room is free. I'm calling a meeting.");
+            ui.showMessage("Nothing on " + range.getLabel()
+                    + ". Conference room is free. I'm calling a meeting.");
         } else {
             ui.showTaskList("On " + range.getLabel() + " we've got:", matches);
         }

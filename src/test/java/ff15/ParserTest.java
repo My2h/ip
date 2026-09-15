@@ -416,7 +416,8 @@ public class ParserTest {
 
     @Test
     public void parse_deadlineWithMarkerButNoDescription_saysTheDescriptionIsMissing() {
-        FF15Exception thrown = assertThrows(FF15Exception.class, () -> Parser.parse("deadline /by 2019-12-02"));
+        FF15Exception thrown = assertThrows(FF15Exception.class, () ->
+                Parser.parse("deadline /by 2019-12-02"));
         assertTrue(thrown.getMessage().contains("description"), thrown.getMessage());
     }
 
@@ -545,7 +546,8 @@ public class ParserTest {
 
     @Test
     public void parse_contactAddWithSurroundingSpaces_trimsEachField() throws Exception {
-        Contact contact = contactAddedBy("contact add   John   /phone   91234567   /email   john@example.com  ");
+        Contact contact = contactAddedBy(
+                "contact add   John   /phone   91234567   /email   john@example.com  ");
         assertEquals("John", contact.getName());
         assertEquals("91234567", contact.getPhone());
         assertEquals("john@example.com", contact.getEmail());
@@ -570,7 +572,8 @@ public class ParserTest {
 
     @Test
     public void parse_contactAddWithOddButValidPhone_isAccepted() throws Exception {
-        assertEquals("+65 (912) 345-67", contactAddedBy("contact add John /phone +65 (912) 345-67").getPhone());
+        Contact contact = contactAddedBy("contact add John /phone +65 (912) 345-67");
+        assertEquals("+65 (912) 345-67", contact.getPhone());
     }
 
     @Test

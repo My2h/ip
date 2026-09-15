@@ -39,7 +39,8 @@ public class ExitCommandTest {
     @Test
     public void execute_saysGoodbye() {
         Ui ui = new Ui();
-        Storage storage = new Storage(tempDir.resolve("t.txt").toString(), tempDir.resolve("c.txt").toString());
+        Storage storage = new Storage(tempDir.resolve("t.txt").toString(),
+                tempDir.resolve("c.txt").toString());
 
         new ExitCommand().execute(new TaskList(), new ContactList(), ui, storage);
 

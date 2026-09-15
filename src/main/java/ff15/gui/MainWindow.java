@@ -59,7 +59,8 @@ public class MainWindow extends AnchorPane {
     @FXML
     private Button sendButton;
 
-    private final Image ff15Image = new Image(this.getClass().getResourceAsStream("/images/michael-scott.png"));
+    private final Image ff15Image = new Image(
+            this.getClass().getResourceAsStream("/images/michael-scott.png"));
 
     private FF15 ff15;
     private int nextPrompt;

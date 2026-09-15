@@ -176,7 +176,8 @@ public class Parser {
         requireOnce(details, BY_MARKER);
         int byIndex = details.indexOf(BY_MARKER);
         if (byIndex == -1) {
-            throw new FF15Exception("When? Deadlines need a /by, e.g.: deadline return book /by 2019-12-02 1800");
+            throw new FF15Exception("When? Deadlines need a /by, "
+                    + "e.g.: deadline return book /by 2019-12-02 1800");
         }
         String description = details.substring(0, byIndex).trim();
         String by = details.substring(byIndex + BY_MARKER.length()).trim();
@@ -202,14 +203,16 @@ public class Parser {
         boolean isToMissing = toIndex == -1;
         boolean isToBeforeFrom = toIndex < fromIndex;
         if (isFromMissing || isToMissing || isToBeforeFrom) {
-            throw new FF15Exception("An event needs a /from and a /to. Otherwise how do I know when to show up? "
+            throw new FF15Exception("An event needs a /from and a /to. "
+                    + "Otherwise how do I know when to show up? "
                     + "e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600");
         }
         String description = details.substring(0, fromIndex).trim();
         String from = details.substring(fromIndex + FROM_MARKER.length(), toIndex).trim();
         String to = details.substring(toIndex + TO_MARKER.length()).trim();
         if (description.isEmpty()) {
-            throw new FF15Exception("An event needs a description. I'm a manager, not a mind reader. Which I also am.");
+            throw new FF15Exception(
+                    "An event needs a description. I'm a manager, not a mind reader. Which I also am.");
         }
         if (from.isEmpty() || to.isEmpty()) {
             throw new FF15Exception("A /from or /to with nothing after it. When do I show up?");
@@ -324,8 +327,8 @@ public class Parser {
             throw new FF15Exception("A /phone with nothing after it. What's the number?");
         }
         if (!phone.isEmpty() && !phone.matches(PHONE_PATTERN)) {
-            throw new FF15Exception("'" + phone + "' is not a phone number. I know phones. I have a Blackberry. "
-                    + "Digits, spaces, +, -, and brackets only.");
+            throw new FF15Exception("'" + phone + "' is not a phone number. "
+                    + "I know phones. I have a Blackberry. Digits, spaces, +, -, and brackets only.");
         }
     }
 
@@ -346,7 +349,8 @@ public class Parser {
     /** Builds the command that lists every contact, which takes nothing after it. */
     private static Command parseContactList(String rest) throws FF15Exception {
         if (!rest.isEmpty()) {
-            throw new FF15Exception("'contact list' doesn't need anything after it. Just 'contact list'. Simple.");
+            throw new FF15Exception(
+                    "'contact list' doesn't need anything after it. Just 'contact list'. Simple.");
         }
         return new ContactListCommand();
     }
