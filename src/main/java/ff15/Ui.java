@@ -68,13 +68,13 @@ public class Ui {
     /** Reports that the save file could not be read, and that the session starts empty. */
     public void showLoadingError(String reason) {
         showError("Couldn't read your saved tasks: " + reason);
-        showMessage("Starting you off with an empty list.");
+        showMessage("Starting you off with an empty list. Call the IT guy, what's his name?");
     }
 
     /** Reports that the contacts file could not be read, and that the session starts empty. */
     public void showContactLoadingError(String reason) {
         showError("Couldn't read your saved contacts: " + reason);
-        showMessage("Starting you off with an empty contact list.");
+        showMessage("Starting you off with an empty contact list. Call the IT guy, what's his name?");
     }
 
     /** Closes the final block. No blank line follows it, since the program is ending. */
@@ -115,7 +115,7 @@ public class Ui {
 
     /** Prints something that went wrong, tagged so it stands out from ordinary replies. */
     public void showError(String message) {
-        showMessage("AYY!!! " + message);
+        showMessage("No. GOD. NO. " + message);
     }
 
     /** Prints a heading followed by the tasks under it, numbered from 1. */
@@ -165,13 +165,13 @@ public class Ui {
 
     /** Confirms a newly added contact and how many contacts there are now. */
     public void showContactAdded(Contact contact, int contactCount) {
-        showMessage("Got it. I've added this contact:", "  " + contact);
+        showMessage("New friend. I'm friends with everyone. Added:", "  " + contact);
         showContactCount(contactCount);
     }
 
     /** Confirms a deleted contact and how many contacts are left. */
     public void showContactRemoved(Contact contact, int contactCount) {
-        showMessage("Noted. I've removed this contact:", "  " + contact);
+        showMessage("Dead to me. Removed:", "  " + contact);
         showContactCount(contactCount);
     }
 
@@ -180,7 +180,7 @@ public class Ui {
     }
 
     private void showContactCount(int contactCount) {
-        showMessage("Now you have " + contactCount + " contacts in the list.");
+        showMessage(contactCount + " contacts. I know everyone. Everyone knows me.");
     }
 
     private void printDivider() {

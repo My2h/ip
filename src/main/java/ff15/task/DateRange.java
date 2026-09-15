@@ -59,7 +59,7 @@ public class DateRange {
     }
 
     private static String rejectionMessage(String text) {
-        return "'" + text + "' isn't a date, month, or year I understand. "
+        return "'" + text + "' isn't a date, month, or year. I know dates. "
                 + "Try: on 2019-12-02, on 2019-12, or on 2019";
     }
 

@@ -40,8 +40,8 @@ re-running.
 
 If either file exists but is corrupted (an unknown task type, or a line
 missing fields), the startup block prints two extra lines after the greeting
-— e.g. `AYY!!! Couldn't read your saved tasks: ...` followed by
-`Starting you off with an empty list.`, or the contacts equivalent — and the
+— e.g. `No. GOD. NO. Couldn't read your saved tasks: ...` followed by
+`Starting you off with an empty list. Call the IT guy, what's his name?`, or the contacts equivalent — and the
 session continues with that list empty. The two files are read independently,
 so a damaged one does not cost the user the other. Those cases can't be
 covered here, since the runner starts the program itself and each plan runs as
@@ -73,7 +73,7 @@ blah
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: List with an unexpected argument
@@ -84,7 +84,7 @@ list now
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: List on an empty list
@@ -106,7 +106,7 @@ todo
 ```
 **Expected Output:**
 ```
-     AYY!!! The description of a todo can't be empty, bro.
+     No. GOD. NO. A todo with nothing in it. That's what she-- no. Tell me what to do.
 ```
 
 ## Test Case: Word that merely starts with "todo"
@@ -117,7 +117,7 @@ todox hello
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: Add a todo
@@ -153,7 +153,7 @@ deadline return book
 ```
 **Expected Output:**
 ```
-     AYY!!! A deadline needs a /by, e.g.: deadline return book /by 2019-12-02 1800
+     No. GOD. NO. When? Deadlines need a /by, e.g.: deadline return book /by 2019-12-02 1800
 ```
 
 ## Test Case: Deadline with no description at all
@@ -164,7 +164,7 @@ deadline /by Sunday
 ```
 **Expected Output:**
 ```
-     AYY!!! A deadline needs a /by, e.g.: deadline return book /by 2019-12-02 1800
+     No. GOD. NO. When? Deadlines need a /by, e.g.: deadline return book /by 2019-12-02 1800
 ```
 
 ## Test Case: Deadline with empty /by
@@ -175,7 +175,7 @@ deadline return book /by
 ```
 **Expected Output:**
 ```
-     AYY!!! The /by date/time of a deadline can't be empty, bro.
+     No. GOD. NO. A /by with nothing after it. When is it due? Use your words.
 ```
 
 ## Test Case: Word that merely starts with "deadline"
@@ -186,7 +186,7 @@ deadlinex return book /by 2019-12-02
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: Deadline with a /by that isn't a date
@@ -197,7 +197,7 @@ deadline return book /by Sunday
 ```
 **Expected Output:**
 ```
-     AYY!!! 'Sunday' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+     No. GOD. NO. 'Sunday' isn't a date. I know dates. I've been on a lot of dates. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
 ```
 
 ## Test Case: Deadline with a well-formed but impossible date
@@ -208,7 +208,7 @@ deadline return book /by 2019-13-45
 ```
 **Expected Output:**
 ```
-     AYY!!! '2019-13-45' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+     No. GOD. NO. '2019-13-45' isn't a date. I know dates. I've been on a lot of dates. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
 ```
 
 ## Test Case: Add a deadline
@@ -245,7 +245,7 @@ event project meeting
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
+     No. GOD. NO. An event needs a /from and a /to. Otherwise how do I know when to show up? e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with /to before /from
@@ -256,7 +256,7 @@ event project meeting /to 2019-12-06 /from 2019-12-05
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
+     No. GOD. NO. An event needs a /from and a /to. Otherwise how do I know when to show up? e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with /from but no /to
@@ -267,7 +267,7 @@ event project meeting /from 2019-12-05
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
+     No. GOD. NO. An event needs a /from and a /to. Otherwise how do I know when to show up? e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with /to but no /from
@@ -278,7 +278,7 @@ event project meeting /to 2019-12-06
 ```
 **Expected Output:**
 ```
-     AYY!!! An event needs /from and /to, e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
+     No. GOD. NO. An event needs a /from and a /to. Otherwise how do I know when to show up? e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
 ```
 
 ## Test Case: Event with empty /from
@@ -289,7 +289,7 @@ event project meeting /from /to 2019-12-06
 ```
 **Expected Output:**
 ```
-     AYY!!! The /from and /to date/times of an event can't be empty, bro.
+     No. GOD. NO. A /from or /to with nothing after it. When do I show up?
 ```
 
 ## Test Case: Event with empty /to
@@ -300,7 +300,7 @@ event project meeting /from 2019-12-05 /to
 ```
 **Expected Output:**
 ```
-     AYY!!! The /from and /to date/times of an event can't be empty, bro.
+     No. GOD. NO. A /from or /to with nothing after it. When do I show up?
 ```
 
 ## Test Case: Word that merely starts with "event"
@@ -311,7 +311,7 @@ eventx project meeting /from 2019-12-05 /to 2019-12-07
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: Event that ends before it starts
@@ -322,7 +322,7 @@ event project meeting /from 2019-12-09 /to 2019-12-08
 ```
 **Expected Output:**
 ```
-     AYY!!! An event can't end before it starts, bro.
+     No. GOD. NO. It ends before it starts? That's not an event. That's a Ryan.
 ```
 
 ## Test Case: Event with a /from that isn't a date
@@ -333,7 +333,7 @@ event project meeting /from Monday /to 2019-12-06
 ```
 **Expected Output:**
 ```
-     AYY!!! 'Monday' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+     No. GOD. NO. 'Monday' isn't a date. I know dates. I've been on a lot of dates. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
 ```
 
 ## Test Case: Add an event
@@ -432,7 +432,7 @@ on
 ```
 **Expected Output:**
 ```
-     AYY!!! Tell me when, e.g.: on 2019-12-02, on 2019-12, or on 2019
+     No. GOD. NO. When? Tell me when. e.g.: on 2019-12-02, on 2019-12, or on 2019
 ```
 
 ## Test Case: Query that isn't a date at all
@@ -443,7 +443,7 @@ on nonsense
 ```
 **Expected Output:**
 ```
-     AYY!!! 'nonsense' isn't a date, month, or year I understand. Try: on 2019-12-02, on 2019-12, or on 2019
+     No. GOD. NO. 'nonsense' isn't a date, month, or year. I know dates. Try: on 2019-12-02, on 2019-12, or on 2019
 ```
 
 ## Test Case: Query with an impossible month
@@ -454,7 +454,7 @@ on 2019-13
 ```
 **Expected Output:**
 ```
-     AYY!!! '2019-13' isn't a date, month, or year I understand. Try: on 2019-12-02, on 2019-12, or on 2019
+     No. GOD. NO. '2019-13' isn't a date, month, or year. I know dates. Try: on 2019-12-02, on 2019-12, or on 2019
 ```
 
 ## Test Case: Query with too many date parts
@@ -465,7 +465,7 @@ on 2019-12-02-05
 ```
 **Expected Output:**
 ```
-     AYY!!! '2019-12-02-05' isn't a date, month, or year I understand. Try: on 2019-12-02, on 2019-12, or on 2019
+     No. GOD. NO. '2019-12-02-05' isn't a date, month, or year. I know dates. Try: on 2019-12-02, on 2019-12, or on 2019
 ```
 
 ## Test Case: Word that merely starts with "on"
@@ -476,7 +476,7 @@ once 2019
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: Mark with no task number
@@ -487,7 +487,7 @@ mark
 ```
 **Expected Output:**
 ```
-     AYY!!! Bro Tell me which task number, e.g. mark 2.
+     No. GOD. NO. Which one? Use your words. Like, a number. e.g. mark 2
 ```
 
 ## Test Case: Mark with a non-numeric task number
@@ -498,7 +498,7 @@ mark abc
 ```
 **Expected Output:**
 ```
-     AYY!!! 'abc' aint looking like a task number.
+     No. GOD. NO. 'abc' is not a number. I know numbers. I run a branch.
 ```
 
 ## Test Case: Mark with a decimal task number
@@ -509,7 +509,7 @@ mark 1.5
 ```
 **Expected Output:**
 ```
-     AYY!!! '1.5' aint looking like a task number.
+     No. GOD. NO. '1.5' is not a number. I know numbers. I run a branch.
 ```
 
 ## Test Case: Mark with task number zero
@@ -520,7 +520,7 @@ mark 0
 ```
 **Expected Output:**
 ```
-     AYY!!! I don't have task number 0. You've got 3 task(s).
+     No. GOD. NO. Task 0? There are 3. I'm not a magician. Well, I'm a bit of a magician.
 ```
 
 ## Test Case: Mark with a negative task number
@@ -531,7 +531,7 @@ mark -1
 ```
 **Expected Output:**
 ```
-     AYY!!! I don't have task number -1. You've got 3 task(s).
+     No. GOD. NO. Task -1? There are 3. I'm not a magician. Well, I'm a bit of a magician.
 ```
 
 ## Test Case: Mark with an out-of-range task number
@@ -542,7 +542,7 @@ mark 9
 ```
 **Expected Output:**
 ```
-     AYY!!! I don't have task number 9. You've got 3 task(s).
+     No. GOD. NO. Task 9? There are 3. I'm not a magician. Well, I'm a bit of a magician.
 ```
 
 ## Test Case: Word that merely starts with "mark"
@@ -553,7 +553,7 @@ marking 1
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: Mark task 1 as done
@@ -590,7 +590,7 @@ unmark
 ```
 **Expected Output:**
 ```
-     AYY!!! Bro Tell me which task number, e.g. mark 2.
+     No. GOD. NO. Which one? Use your words. Like, a number. e.g. mark 2
 ```
 
 ## Test Case: Unmark with a non-numeric task number
@@ -601,7 +601,7 @@ unmark xyz
 ```
 **Expected Output:**
 ```
-     AYY!!! 'xyz' aint looking like a task number.
+     No. GOD. NO. 'xyz' is not a number. I know numbers. I run a branch.
 ```
 
 ## Test Case: Unmark with an out-of-range task number
@@ -612,7 +612,7 @@ unmark 9
 ```
 **Expected Output:**
 ```
-     AYY!!! I don't have task number 9. You've got 3 task(s).
+     No. GOD. NO. Task 9? There are 3. I'm not a magician. Well, I'm a bit of a magician.
 ```
 
 ## Test Case: Word that merely starts with "unmark"
@@ -623,7 +623,7 @@ unmarking 1
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: Unmark task 1
@@ -660,7 +660,7 @@ delete
 ```
 **Expected Output:**
 ```
-     AYY!!! Bro Tell me which task number, e.g. mark 2.
+     No. GOD. NO. Which one? Use your words. Like, a number. e.g. mark 2
 ```
 
 ## Test Case: Delete with a non-numeric task number
@@ -671,7 +671,7 @@ delete abc
 ```
 **Expected Output:**
 ```
-     AYY!!! 'abc' aint looking like a task number.
+     No. GOD. NO. 'abc' is not a number. I know numbers. I run a branch.
 ```
 
 ## Test Case: Delete with an out-of-range task number
@@ -682,7 +682,7 @@ delete 9
 ```
 **Expected Output:**
 ```
-     AYY!!! I don't have task number 9. You've got 3 task(s).
+     No. GOD. NO. Task 9? There are 3. I'm not a magician. Well, I'm a bit of a magician.
 ```
 
 ## Test Case: Word that merely starts with "delete"
@@ -693,7 +693,7 @@ deletex 2
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: List before deleting
@@ -793,7 +793,7 @@ mark 1
 ```
 **Expected Output:**
 ```
-     AYY!!! I don't have task number 1. You've got 0 task(s).
+     No. GOD. NO. Task 1? There are 0. I'm not a magician. Well, I'm a bit of a magician.
 ```
 
 ## Test Case: Delete on an empty list
@@ -804,7 +804,7 @@ delete 1
 ```
 **Expected Output:**
 ```
-     AYY!!! I don't have task number 1. You've got 0 task(s).
+     No. GOD. NO. Task 1? There are 0. I'm not a magician. Well, I'm a bit of a magician.
 ```
 
 ## Test Case: Add a deadline with a time
@@ -828,7 +828,7 @@ deadline return book /by 2019-12-02 1860
 ```
 **Expected Output:**
 ```
-     AYY!!! '2019-12-02 1860' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+     No. GOD. NO. '2019-12-02 1860' isn't a date. I know dates. I've been on a lot of dates. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
 ```
 
 ## Test Case: Deadline with a time in the wrong format
@@ -839,7 +839,7 @@ deadline return book /by 2019-12-02 6pm
 ```
 **Expected Output:**
 ```
-     AYY!!! '2019-12-02 6pm' isn't a date I understand. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
+     No. GOD. NO. '2019-12-02 6pm' isn't a date. I know dates. I've been on a lot of dates. Write it as yyyy-mm-dd, or yyyy-mm-dd HHmm to add a time, e.g. 2019-12-02 or 2019-12-02 1800
 ```
 
 ## Test Case: Add an event with times
@@ -863,7 +863,7 @@ event project meeting /from 2019-12-05 1600 /to 2019-12-05 1400
 ```
 **Expected Output:**
 ```
-     AYY!!! An event can't end before it starts, bro.
+     No. GOD. NO. It ends before it starts? That's not an event. That's a Ryan.
 ```
 
 ## Test Case: List tasks that carry times
@@ -1020,7 +1020,7 @@ find
 ```
 **Expected Output:**
 ```
-     AYY!!! Tell me what to look for, e.g.: find book
+     No. GOD. NO. Look for what? Give me a word. e.g.: find book
 ```
 
 ## Test Case: Delete the searched todo
@@ -1059,7 +1059,7 @@ Todo not a command
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: Contact list on an empty contact list
@@ -1083,7 +1083,7 @@ contact
 ```
 **Expected Output:**
 ```
-     AYY!!! Tell me what to do with your contacts, bro. Try: contact add, contact list, contact delete, or contact find
+     No. GOD. NO. Tell me what to do with your contacts. Try: contact add, contact list, contact delete, or contact find
 ```
 
 ## Test Case: Contact with an unknown sub-command
@@ -1095,7 +1095,7 @@ contact mark 1
 ```
 **Expected Output:**
 ```
-     AYY!!! I can't 'mark' a contact, bro. Try: contact add, contact list, contact delete, or contact find
+     No. GOD. NO. I can't 'mark' a contact. Nobody can. Try: contact add, contact list, contact delete, or contact find
 ```
 
 ## Test Case: Word that merely starts with "contact"
@@ -1107,7 +1107,7 @@ contacts
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: Contact add with no name
@@ -1119,7 +1119,7 @@ contact add
 ```
 **Expected Output:**
 ```
-     AYY!!! A contact needs a name, e.g.: contact add John /phone 91234567
+     No. GOD. NO. A contact needs a name. Everyone has a name. Even Toby. e.g.: contact add John /phone 91234567
 ```
 
 ## Test Case: Contact add with a marker but no name
@@ -1131,7 +1131,7 @@ contact add /phone 91234567
 ```
 **Expected Output:**
 ```
-     AYY!!! A contact needs a name, e.g.: contact add John /phone 91234567
+     No. GOD. NO. A contact needs a name. Everyone has a name. Even Toby. e.g.: contact add John /phone 91234567
 ```
 
 ## Test Case: Contact add with an empty /phone
@@ -1143,7 +1143,7 @@ contact add John /phone
 ```
 **Expected Output:**
 ```
-     AYY!!! The /phone of a contact can't be empty, bro.
+     No. GOD. NO. A /phone with nothing after it. What's the number?
 ```
 
 ## Test Case: Contact add with an unusable phone
@@ -1155,7 +1155,7 @@ contact add John /phone hello
 ```
 **Expected Output:**
 ```
-     AYY!!! 'hello' aint looking like a phone number. Digits, spaces, +, -, and brackets only.
+     No. GOD. NO. 'hello' is not a phone number. I know phones. I have a Blackberry. Digits, spaces, +, -, and brackets only.
 ```
 
 ## Test Case: Contact add with an unusable email
@@ -1167,7 +1167,7 @@ contact add John /email nope
 ```
 **Expected Output:**
 ```
-     AYY!!! 'nope' aint looking like an email. It needs one @ with something on both sides.
+     No. GOD. NO. 'nope' is not an email. I've sent emails. Reply-all emails. It needs one @ with something on both sides.
 ```
 
 ## Test Case: List after the rejected contacts
@@ -1191,9 +1191,9 @@ contact add John /phone 91234567 /email john@example.com
 ```
 **Expected Output:**
 ```
-     Got it. I've added this contact:
+     New friend. I'm friends with everyone. Added:
        John (phone: 91234567, email: john@example.com)
-     Now you have 1 contacts in the list.
+     1 contacts. I know everyone. Everyone knows me.
 ```
 
 ## Test Case: Add a contact with the markers reversed
@@ -1205,9 +1205,9 @@ contact add Mary /email mary@example.com /phone 98765432
 ```
 **Expected Output:**
 ```
-     Got it. I've added this contact:
+     New friend. I'm friends with everyone. Added:
        Mary (phone: 98765432, email: mary@example.com)
-     Now you have 2 contacts in the list.
+     2 contacts. I know everyone. Everyone knows me.
 ```
 
 ## Test Case: Add a contact with a name only
@@ -1219,9 +1219,9 @@ contact add Alex Tan
 ```
 **Expected Output:**
 ```
-     Got it. I've added this contact:
+     New friend. I'm friends with everyone. Added:
        Alex Tan
-     Now you have 3 contacts in the list.
+     3 contacts. I know everyone. Everyone knows me.
 ```
 
 ## Test Case: Contact list after adding three
@@ -1248,7 +1248,7 @@ contact list everything
 ```
 **Expected Output:**
 ```
-     AYY!!! 'contact list' doesn't need anything after it, bro.
+     No. GOD. NO. 'contact list' doesn't need anything after it. Just 'contact list'. Simple.
 ```
 
 ## Test Case: Contact find by name
@@ -1260,7 +1260,7 @@ contact find JOHN
 ```
 **Expected Output:**
 ```
-     Here are the matching contacts in your list:
+     Found them. This is my office, I know everyone:
      1.John (phone: 91234567, email: john@example.com)
 ```
 
@@ -1273,7 +1273,7 @@ contact find 9123
 ```
 **Expected Output:**
 ```
-     You've got no contacts matching '9123', bro.
+     No '9123' here. Is this someone from corporate?
 ```
 
 ## Test Case: Contact find without a keyword
@@ -1285,7 +1285,7 @@ contact find
 ```
 **Expected Output:**
 ```
-     AYY!!! Tell me which contact to look for, e.g.: contact find john
+     No. GOD. NO. Look for who? Give me a name. e.g.: contact find john
 ```
 
 ## Test Case: Task find never matches a contact
@@ -1321,7 +1321,7 @@ contact delete 9
 ```
 **Expected Output:**
 ```
-     AYY!!! I don't have contact number 9. You've got 3 contact(s).
+     No. GOD. NO. Contact 9? There are 3. And I know all of them personally.
 ```
 
 ## Test Case: Contact delete with something that isn't a number
@@ -1333,7 +1333,7 @@ contact delete two
 ```
 **Expected Output:**
 ```
-     AYY!!! 'two' aint looking like a contact number.
+     No. GOD. NO. 'two' is not a number. I know numbers. I run a branch.
 ```
 
 ## Test Case: Contact delete
@@ -1345,9 +1345,9 @@ contact delete 2
 ```
 **Expected Output:**
 ```
-     Noted. I've removed this contact:
+     Dead to me. Removed:
        Mary (phone: 98765432, email: mary@example.com)
-     Now you have 2 contacts in the list.
+     2 contacts. I know everyone. Everyone knows me.
 ```
 
 ## Test Case: Contact list after deleting
@@ -1373,9 +1373,9 @@ contact delete 1
 ```
 **Expected Output:**
 ```
-     Noted. I've removed this contact:
+     Dead to me. Removed:
        John (phone: 91234567, email: john@example.com)
-     Now you have 1 contacts in the list.
+     1 contacts. I know everyone. Everyone knows me.
 ```
 
 ## Test Case: Delete the last remaining contact
@@ -1387,9 +1387,9 @@ contact delete 1
 ```
 **Expected Output:**
 ```
-     Noted. I've removed this contact:
+     Dead to me. Removed:
        Alex Tan
-     Now you have 0 contacts in the list.
+     0 contacts. I know everyone. Everyone knows me.
 ```
 
 ## Test Case: Leading whitespace on a command
@@ -1400,7 +1400,7 @@ contact delete 1
 ```
 **Expected Output:**
 ```
-     AYY!!! I'm sorry big man, I don't know what that means :-(
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
 ```
 
 ## Test Case: Exit

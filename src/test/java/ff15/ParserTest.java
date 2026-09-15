@@ -538,6 +538,6 @@ public class ParserTest {
 
         String printed = runCapturing(new TaskList(), contacts, "contact find zzz");
 
-        assertTrue(printed.contains("no contacts matching"), printed);
+        assertTrue(printed.contains("Is this someone from corporate?"), printed);
     }
 }
