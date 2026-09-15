@@ -23,6 +23,12 @@ jobs:
           java-version: '25'
           java-package: jdk+fx
 
+      # Caches Gradle's dependency store between runs, so a fetch that has
+      # succeeded once is served from cache thereafter and a blip on the Gradle
+      # Plugin Portal or Maven Central does not fail the build.
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v6
+
       - name: Build and check with Gradle
         run: ./gradlew check
 
