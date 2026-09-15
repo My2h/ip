@@ -121,4 +121,22 @@ public class TaskTimeTest {
         assertEquals("Jan 01 2020", TaskTime.formatDate(LocalDate.of(2020, 1, 1)));
         assertEquals("Dec 31 2019", TaskTime.formatDate(LocalDate.of(2019, 12, 31)));
     }
+
+    @Test
+    public void parse_impossibleDateWithTime_throwsRatherThanRollingBack() {
+        // Java's default "smart" resolution turns Feb 30 into Feb 28 without a word.
+        assertThrows(FF15Exception.class, () -> TaskTime.parse("2019-02-30 1800"));
+        assertThrows(FF15Exception.class, () -> TaskTime.parse("2019-04-31 0900"));
+    }
+
+    @Test
+    public void parse_impossibleTime_throwsException() {
+        assertThrows(FF15Exception.class, () -> TaskTime.parse("2019-12-02 2400"));
+        assertThrows(FF15Exception.class, () -> TaskTime.parse("2019-12-02 1260"));
+    }
+
+    @Test
+    public void parse_leapDayWithTime_isAccepted() throws FF15Exception {
+        assertEquals("Feb 29 2020, 9:00am", TaskTime.parse("2020-02-29 0900").toString());
+    }
 }

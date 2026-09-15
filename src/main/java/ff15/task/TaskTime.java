@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
 
 import ff15.FF15Exception;
 
@@ -22,8 +23,14 @@ public class TaskTime {
     /** A date on its own, as typed and as saved, e.g. {@code 2019-12-02}. */
     private static final DateTimeFormatter DATE_INPUT = DateTimeFormatter.ISO_LOCAL_DATE;
 
-    /** A date with a time, as typed and as saved, e.g. {@code 2019-12-02 1800}. */
-    private static final DateTimeFormatter DATE_TIME_INPUT = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+    /**
+     * A date with a time, as typed and as saved, e.g. {@code 2019-12-02 1800}.
+     * Resolved strictly, so that Feb 30 is rejected rather than quietly rolled
+     * back to Feb 28, which is what the default "smart" resolution does. Strict
+     * resolution needs {@code uuuu} (the proleptic year) in place of {@code yyyy}.
+     */
+    private static final DateTimeFormatter DATE_TIME_INPUT = DateTimeFormatter.ofPattern("uuuu-MM-dd HHmm")
+            .withResolverStyle(ResolverStyle.STRICT);
 
     /** How the date is shown back to the user, e.g. {@code Dec 02 2019}. */
     private static final DateTimeFormatter DATE_DISPLAY = DateTimeFormatter.ofPattern("MMM dd yyyy");
