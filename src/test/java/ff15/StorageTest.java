@@ -1,6 +1,7 @@
 package ff15;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -170,6 +171,38 @@ public class StorageTest {
         storage.save(tasks);
 
         assertEquals("read book", storage.load().items().get(0).toString().substring("[T][ ] ".length()));
+    }
+
+    // --- the environment getting in the way ----------------------------------
+
+    @Test
+    public void save_parentIsAFileNotAFolder_throwsAndSaysSo() throws Exception {
+        Files.writeString(fileAt("data"), "not a folder");
+        Storage storage = storageAt("data", "ff15.txt");
+
+        IOException thrown = assertThrows(IOException.class, () -> storage.save(new TaskList()));
+
+        assertTrue(thrown.getMessage().contains("folder"), thrown.getMessage());
+    }
+
+    @Test
+    public void save_targetIsAFolder_throwsAndSaysSo() throws Exception {
+        Files.createDirectories(fileAt("ff15.txt"));
+        Storage storage = storageAt("ff15.txt");
+
+        IOException thrown = assertThrows(IOException.class, () -> storage.save(new TaskList()));
+
+        assertTrue(thrown.getMessage().contains("folder"), thrown.getMessage());
+    }
+
+    @Test
+    public void load_targetIsAFolder_throwsAndSaysSo() throws Exception {
+        Files.createDirectories(fileAt("ff15.txt"));
+        Storage storage = storageAt("ff15.txt");
+
+        IOException thrown = assertThrows(IOException.class, storage::load);
+
+        assertTrue(thrown.getMessage().contains("folder"), thrown.getMessage());
     }
 
     // --- reading a file that is not quite right ------------------------------

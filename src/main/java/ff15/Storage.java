@@ -1,6 +1,8 @@
 package ff15;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -89,13 +91,29 @@ public class Storage {
                 .toList());
     }
 
-    /** Writes {@code lines} to {@code path}, creating the containing folder first if needed. */
+    /**
+     * Writes {@code lines} to {@code path}, creating the containing folder first
+     * if needed. The two ways this commonly fails -- something already sitting
+     * where the folder or the file should be, and a file the user may not write
+     * -- are reported in words, since the bare exception says only the path.
+     */
     private static void writeLines(Path path, List<String> lines) throws IOException {
         Path folder = path.getParent();
         if (folder != null) { // null when the file sits in the working directory
-            Files.createDirectories(folder);
+            try {
+                Files.createDirectories(folder);
+            } catch (FileAlreadyExistsException e) {
+                throw new IOException("'" + folder + "' is a file, but I need it to be a folder I can save into", e);
+            }
         }
-        Files.write(path, lines);
+        if (Files.isDirectory(path)) {
+            throw new IOException("'" + path + "' is a folder, not a file. I can't save into a folder");
+        }
+        try {
+            Files.write(path, lines);
+        } catch (AccessDeniedException e) {
+            throw new IOException("I'm not allowed to write to '" + path + "'. Check who owns it", e);
+        }
     }
 
     /**
@@ -175,7 +193,15 @@ public class Storage {
         if (!Files.exists(path)) {
             return new Loaded<>(items, skipped);
         }
-        List<String> lines = Files.readAllLines(path);
+        if (Files.isDirectory(path)) {
+            throw new IOException("'" + path + "' is a folder, not a file. I can't read a folder");
+        }
+        List<String> lines;
+        try {
+            lines = Files.readAllLines(path);
+        } catch (AccessDeniedException e) {
+            throw new IOException("I'm not allowed to read '" + path + "'. Check who owns it", e);
+        }
         for (int i = 0; i < lines.size(); i++) {
             String line = lines.get(i);
             if (line.isBlank()) { // ignore stray empty lines rather than failing on them
