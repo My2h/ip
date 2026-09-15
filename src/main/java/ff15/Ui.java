@@ -77,6 +77,24 @@ public class Ui {
         showMessage("Starting you off with an empty contact list. Call the IT guy, what's his name?");
     }
 
+    /**
+     * Reports the lines of {@code fileName} that could not be read and were left
+     * out, one per line, then reassures that the rest loaded. Prints nothing when
+     * nothing was skipped, which is the normal case.
+     */
+    public void showSkippedLines(String fileName, List<String> skipped) {
+        if (skipped.isEmpty()) {
+            return;
+        }
+        boolean isOne = skipped.size() == 1;
+        String count = isOne ? "1 line" : skipped.size() + " lines";
+        showError("I couldn't read " + count + " in " + fileName + ", so I skipped " + (isOne ? "it" : "them") + ":");
+        for (String problem : skipped) {
+            showMessage("  " + problem);
+        }
+        showMessage("The rest loaded fine. Call the IT guy, what's his name?");
+    }
+
     /** Closes the final block. No blank line follows it, since the program is ending. */
     public void endFinalBlock() {
         printDivider();

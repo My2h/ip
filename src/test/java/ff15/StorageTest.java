@@ -1,7 +1,6 @@
 package ff15;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.IOException;
@@ -69,12 +68,12 @@ public class StorageTest {
 
     @Test
     public void load_fileDoesNotExist_returnsEmptyList() throws Exception {
-        assertTrue(storageAt("never-written.txt").load().isEmpty());
+        assertTrue(storageAt("never-written.txt").load().items().isEmpty());
     }
 
     @Test
     public void load_emptyFile_returnsEmptyList() throws Exception {
-        assertTrue(givenSaveFile().load().isEmpty());
+        assertTrue(givenSaveFile().load().items().isEmpty());
     }
 
     @Test
@@ -101,7 +100,7 @@ public class StorageTest {
                 TaskTime.parse("2019-12-05 1400"), TaskTime.parse("2019-12-05 1600")));
 
         storage.save(original);
-        TaskList reloaded = new TaskList(storage.load());
+        TaskList reloaded = new TaskList(storage.load().items());
 
         assertEquals(original.size(), reloaded.size());
         for (int number = 1; number <= original.size(); number++) {
@@ -117,7 +116,7 @@ public class StorageTest {
 
         storage.save(tasks);
 
-        assertEquals("[D][ ] return book (by: Dec 02 2019)", storage.load().get(0).toString());
+        assertEquals("[D][ ] return book (by: Dec 02 2019)", storage.load().items().get(0).toString());
     }
 
     @Test
@@ -130,7 +129,7 @@ public class StorageTest {
         tasks.add(new Todo("not done yet"));
 
         storage.save(tasks);
-        ArrayList<Task> reloaded = storage.load();
+        ArrayList<Task> reloaded = storage.load().items();
 
         assertEquals("[T][X] read book", reloaded.get(0).toString());
         assertEquals("[T][ ] not done yet", reloaded.get(1).toString());
@@ -169,7 +168,7 @@ public class StorageTest {
 
         storage.save(tasks);
 
-        assertEquals("read book", storage.load().get(0).toString().substring("[T][ ] ".length()));
+        assertEquals("read book", storage.load().items().get(0).toString().substring("[T][ ] ".length()));
     }
 
     // --- reading a file that is not quite right ------------------------------
@@ -177,57 +176,71 @@ public class StorageTest {
     @Test
     public void load_blankLines_areSkipped() throws Exception {
         Storage storage = givenSaveFile("T | 0 | read book", "", "   ", "T | 1 | return book");
-        ArrayList<Task> tasks = storage.load();
+        ArrayList<Task> tasks = storage.load().items();
         assertEquals(2, tasks.size());
         assertEquals("[T][ ] read book", tasks.get(0).toString());
         assertEquals("[T][X] return book", tasks.get(1).toString());
     }
 
     @Test
-    public void load_unknownTaskType_throwsException() throws Exception {
-        Storage storage = givenSaveFile("X | 0 | mystery");
-        FF15Exception thrown = assertThrows(FF15Exception.class, storage::load);
-        assertTrue(thrown.getMessage().contains("X"), thrown.getMessage());
+    public void load_unknownTaskType_skipsTheLineAndSaysWhich() throws Exception {
+        Storage.Loaded<Task> loaded = givenSaveFile("X | 0 | mystery").load();
+        assertTrue(loaded.items().isEmpty());
+        assertEquals(1, loaded.skipped().size());
+        assertTrue(loaded.skipped().get(0).startsWith("line 1:"), loaded.skipped().get(0));
+        assertTrue(loaded.skipped().get(0).contains("X"), loaded.skipped().get(0));
     }
 
     @Test
-    public void load_lineWithTooFewFields_throwsException() throws Exception {
-        assertThrows(FF15Exception.class, () -> givenSaveFile("T | 0").load());
-        assertThrows(FF15Exception.class, () -> givenSaveFile("just some text").load());
+    public void load_lineWithTooFewFields_isSkipped() throws Exception {
+        assertEquals(1, givenSaveFile("T | 0").load().skipped().size());
+        assertEquals(1, givenSaveFile("just some text").load().skipped().size());
     }
 
     @Test
-    public void load_deadlineMissingItsDate_throwsException() throws Exception {
-        assertThrows(FF15Exception.class, () -> givenSaveFile("D | 0 | return book").load());
+    public void load_deadlineMissingItsDate_isSkipped() throws Exception {
+        assertEquals(1, givenSaveFile("D | 0 | return book").load().skipped().size());
     }
 
     @Test
-    public void load_eventMissingItsEndDate_throwsException() throws Exception {
-        assertThrows(FF15Exception.class, () -> givenSaveFile("E | 0 | meeting | 2019-12-05").load());
+    public void load_eventMissingItsEndDate_isSkipped() throws Exception {
+        assertEquals(1, givenSaveFile("E | 0 | meeting | 2019-12-05").load().skipped().size());
     }
 
     @Test
-    public void load_unreadableDate_throwsException() throws Exception {
-        assertThrows(FF15Exception.class, () -> givenSaveFile("D | 0 | return book | sunday").load());
+    public void load_unreadableDate_isSkipped() throws Exception {
+        assertEquals(1, givenSaveFile("D | 0 | return book | sunday").load().skipped().size());
     }
 
     @Test
     public void load_doneFlagThatIsNotOne_readsAsNotDone() throws Exception {
-        assertEquals("[T][ ] read book", givenSaveFile("T | 0 | read book").load().get(0).toString());
-        assertEquals("[T][ ] read book", givenSaveFile("T | 2 | read book").load().get(0).toString());
+        assertEquals("[T][ ] read book", givenSaveFile("T | 0 | read book").load().items().get(0).toString());
+        assertEquals("[T][ ] read book", givenSaveFile("T | 2 | read book").load().items().get(0).toString());
     }
 
     @Test
-    public void load_damagedLineAfterAGoodOne_throwsRatherThanKeepingHalfTheFile() throws Exception {
-        Storage storage = givenSaveFile("T | 0 | read book", "D | 0 | broken");
-        assertThrows(FF15Exception.class, storage::load);
+    public void load_damagedLineAmongGoodOnes_keepsTheGoodOnesAndNumbersTheBad() throws Exception {
+        Storage storage = givenSaveFile("T | 0 | read book", "D | 0 | broken", "", "T | 1 | return book");
+
+        Storage.Loaded<Task> loaded = storage.load();
+
+        assertEquals(2, loaded.items().size());
+        assertEquals("[T][ ] read book", loaded.items().get(0).toString());
+        assertEquals("[T][X] return book", loaded.items().get(1).toString());
+        assertEquals(1, loaded.skipped().size());
+        assertTrue(loaded.skipped().get(0).startsWith("line 2:"), loaded.skipped().get(0));
+    }
+
+    @Test
+    public void load_cleanFile_reportsNothingSkipped() throws Exception {
+        assertTrue(givenSaveFile("T | 0 | read book").load().skipped().isEmpty());
     }
 
     // --- contacts -------------------------------------------------------------
 
     @Test
     public void loadContacts_fileDoesNotExist_returnsEmptyList() throws Exception {
-        assertTrue(contactStorageAt("never-written.txt").loadContacts().isEmpty());
+        assertTrue(contactStorageAt("never-written.txt").loadContacts().items().isEmpty());
     }
 
     @Test
@@ -239,7 +252,7 @@ public class StorageTest {
         Storage storage = contactStorageAt("contacts.txt");
 
         storage.saveContacts(original);
-        ContactList reloaded = new ContactList(storage.loadContacts());
+        ContactList reloaded = new ContactList(storage.loadContacts().items());
 
         assertEquals(3, reloaded.size());
         assertEquals("John (phone: 91234567, email: john@example.com)", reloaded.get(1).toString());
@@ -249,7 +262,7 @@ public class StorageTest {
 
     @Test
     public void loadContacts_nameOnlyLine_keepsTheTrailingEmptyFields() throws Exception {
-        ContactList contacts = new ContactList(givenContactFile("Alex |  | ").loadContacts());
+        ContactList contacts = new ContactList(givenContactFile("Alex |  | ").loadContacts().items());
         assertEquals(1, contacts.size());
         assertEquals("Alex", contacts.get(1).toString());
     }
@@ -257,13 +270,19 @@ public class StorageTest {
     @Test
     public void loadContacts_blankLines_areSkipped() throws Exception {
         Storage storage = givenContactFile("John | 91234567 | ", "", "   ", "Mary |  | ");
-        assertEquals(2, storage.loadContacts().size());
+        assertEquals(2, storage.loadContacts().items().size());
     }
 
     @Test
-    public void loadContacts_lineMissingFields_throwsException() throws Exception {
-        Storage storage = givenContactFile("John | 91234567");
-        assertThrows(FF15Exception.class, storage::loadContacts);
+    public void loadContacts_lineMissingFields_isSkippedAndTheRestKept() throws Exception {
+        Storage storage = givenContactFile("John | 91234567", "Mary | 98765432 | ");
+
+        Storage.Loaded<Contact> loaded = storage.loadContacts();
+
+        assertEquals(1, loaded.items().size());
+        assertEquals("Mary", loaded.items().get(0).getName());
+        assertEquals(1, loaded.skipped().size());
+        assertTrue(loaded.skipped().get(0).startsWith("line 1:"), loaded.skipped().get(0));
     }
 
     @Test
@@ -277,7 +296,7 @@ public class StorageTest {
     @Test
     public void loadContacts_missingContactFile_leavesTaskLoadingUnaffected() throws Exception {
         Storage storage = givenSaveFile("T | 0 | read book");
-        assertEquals(1, storage.load().size());
-        assertTrue(storage.loadContacts().isEmpty());
+        assertEquals(1, storage.load().items().size());
+        assertTrue(storage.loadContacts().items().isEmpty());
     }
 }

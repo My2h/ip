@@ -38,11 +38,13 @@ are left empty and the next run starts clean. A run that stops early (at a
 failing case) leaves entries behind, so delete the files again before
 re-running.
 
-If either file exists but is corrupted (an unknown task type, or a line
-missing fields), the startup block prints two extra lines after the greeting
-— e.g. `No. GOD. NO. Couldn't read your saved tasks: ...` followed by
-`Starting you off with an empty list. Call the IT guy, what's his name?`, or the contacts equivalent — and the
-session continues with that list empty. The two files are read independently,
+If either file has a line that cannot be understood (an unknown task type,
+or a line missing fields), that line is skipped and the startup block reports
+it after the greeting — `No. GOD. NO. I couldn't read 1 line in data/ff15.txt, so I skipped it:`,
+the line number and reason, then `The rest loaded fine. Call the IT guy, what's his name?` —
+and every other line is loaded as normal. If a file cannot be read at all
+(e.g. it is a folder), the block instead prints `Couldn't read your saved
+tasks: ...` and starts that list empty. The two files are read independently,
 so a damaged one does not cost the user the other. Those cases can't be
 covered here, since the runner starts the program itself and each plan runs as
 one session; check them by hand by writing a bad line into `data/ff15.txt` or

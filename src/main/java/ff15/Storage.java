@@ -56,6 +56,20 @@ public class Storage {
     }
 
     /**
+     * What a load produced: every item that could be read, and a note for each
+     * line that could not, saying which line and why. A file with one damaged
+     * line therefore still yields the rest, rather than nothing.
+     */
+    public record Loaded<T>(ArrayList<T> items, List<String> skipped) {
+    }
+
+    /** Turns one saved line into an item, or explains why it cannot. */
+    @FunctionalInterface
+    private interface LineParser<T> {
+        T parse(String line) throws FF15Exception;
+    }
+
+    /**
      * Writes {@code tasks} to the data file, one task per line, creating the
      * containing folder first if it does not already exist.
      */
@@ -89,21 +103,14 @@ public class Storage {
      * Returns an empty list if the data file does not exist yet, which is the
      * normal situation on the very first run.
      *
+     * Lines that are not in the expected save format are skipped and reported in
+     * the result rather than failing the load, so one damaged line does not cost
+     * the user every other task.
+     *
      * @throws IOException if the file exists but cannot be read.
-     * @throws FF15Exception if a line in the file is not in the expected save format.
      */
-    public ArrayList<Task> load() throws IOException, FF15Exception {
-        ArrayList<Task> tasks = new ArrayList<>();
-        if (!Files.exists(filePath)) {
-            return tasks;
-        }
-        for (String line : Files.readAllLines(filePath)) {
-            if (line.isBlank()) { // ignore stray empty lines rather than failing on them
-                continue;
-            }
-            tasks.add(parseTask(line));
-        }
-        return tasks;
+    public Loaded<Task> load() throws IOException {
+        return loadLines(filePath, Storage::parseTask);
     }
 
     /**
@@ -146,21 +153,41 @@ public class Storage {
      * list. Returns an empty list if the contacts file does not exist yet, which
      * is the normal situation until the first contact is added.
      *
+     * Lines that are not in the expected save format are skipped and reported in
+     * the result rather than failing the load.
+     *
      * @throws IOException if the file exists but cannot be read.
-     * @throws FF15Exception if a line in the file is not in the expected save format.
      */
-    public ArrayList<Contact> loadContacts() throws IOException, FF15Exception {
-        ArrayList<Contact> contacts = new ArrayList<>();
-        if (!Files.exists(contactFilePath)) {
-            return contacts;
+    public Loaded<Contact> loadContacts() throws IOException {
+        return loadLines(contactFilePath, Storage::parseContact);
+    }
+
+    /**
+     * Reads {@code path} one line at a time through {@code parser}, keeping every
+     * item that parses and a note for every line that does not. A damaged line
+     * therefore costs the user that line, not the whole file: giving up at the
+     * first bad line meant the next save wrote an empty list over everything
+     * that had been fine.
+     */
+    private static <T> Loaded<T> loadLines(Path path, LineParser<T> parser) throws IOException {
+        ArrayList<T> items = new ArrayList<>();
+        List<String> skipped = new ArrayList<>();
+        if (!Files.exists(path)) {
+            return new Loaded<>(items, skipped);
         }
-        for (String line : Files.readAllLines(contactFilePath)) {
+        List<String> lines = Files.readAllLines(path);
+        for (int i = 0; i < lines.size(); i++) {
+            String line = lines.get(i);
             if (line.isBlank()) { // ignore stray empty lines rather than failing on them
                 continue;
             }
-            contacts.add(parseContact(line));
+            try {
+                items.add(parser.parse(line));
+            } catch (FF15Exception e) {
+                skipped.add("line " + (i + 1) + ": " + e.getMessage());
+            }
         }
-        return contacts;
+        return new Loaded<>(items, skipped);
     }
 
     /**
