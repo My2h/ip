@@ -73,4 +73,21 @@ public class TaskTest {
     public void hasKeyword_typeMarkerNotSearched_ignoresTheTaskType() {
         assertFalse(new Todo("read book").hasKeyword("[T]"));
     }
+
+    @Test
+    public void isSameAs_sameKindAndDescription_isTrueRegardlessOfDone() {
+        Task done = new Todo("read book");
+        done.markAsDone();
+        assertTrue(new Todo("read book").isSameAs(done));
+    }
+
+    @Test
+    public void isSameAs_differentDescription_isFalse() {
+        assertFalse(new Todo("read book").isSameAs(new Todo("read books")));
+    }
+
+    @Test
+    public void isSameAs_differentKindSameDescription_isFalse() throws FF15Exception {
+        assertFalse(new Todo("x").isSameAs(new Deadline("x", TaskTime.parse("2019-12-02"))));
+    }
 }

@@ -139,4 +139,23 @@ public class TaskTimeTest {
     public void parse_leapDayWithTime_isAccepted() throws FF15Exception {
         assertEquals("Feb 29 2020, 9:00am", TaskTime.parse("2020-02-29 0900").toString());
     }
+
+    @Test
+    public void isSameMomentAs_dateOnlyAndMidnight_isTrue() throws FF15Exception {
+        assertTrue(TaskTime.parse("2019-12-02").isSameMomentAs(TaskTime.parse("2019-12-02 0000")));
+    }
+
+    @Test
+    public void equals_dateOnlyAndMidnight_isFalse() throws FF15Exception {
+        // Same instant, but one shows a time and the other does not.
+        assertFalse(TaskTime.parse("2019-12-02").equals(TaskTime.parse("2019-12-02 0000")));
+    }
+
+    @Test
+    public void equals_sameTextTwice_isTrueWithMatchingHashCode() throws FF15Exception {
+        TaskTime a = TaskTime.parse("2019-12-02 1800");
+        TaskTime b = TaskTime.parse("2019-12-02 1800");
+        assertTrue(a.equals(b));
+        assertEquals(a.hashCode(), b.hashCode());
+    }
 }

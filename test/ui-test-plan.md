@@ -175,6 +175,18 @@ delete 2
      Now you have 1 tasks in the list.
 ```
 
+## Test Case: Adding the same todo again
+
+**Aim:** A task identical to one already in the list is refused, and the message says which task it duplicates.
+**Input:**
+```
+todo read book
+```
+**Expected Output:**
+```
+     No. GOD. NO. You already have that one. It's task 1. I remember everything.
+```
+
 ## Test Case: List after adding one todo
 **Aim:** `list` shows exactly the one todo, confirming none of the preceding negative cases left a stray task behind.
 **Input:**
@@ -311,6 +323,18 @@ event project meeting /to 2019-12-06 /from 2019-12-05
 **Expected Output:**
 ```
      No. GOD. NO. An event needs a /from and a /to. Otherwise how do I know when to show up? e.g.: event project meeting /from 2019-12-05 1400 /to 2019-12-05 1600
+```
+
+## Test Case: Event ending the moment it starts
+
+**Aim:** An event with no duration is refused; only one that ends after it starts is an event.
+**Input:**
+```
+event blink /from 2019-12-05 1400 /to 2019-12-05 1400
+```
+**Expected Output:**
+```
+     No. GOD. NO. It ends when it starts? That's not an event. That's a moment.
 ```
 
 ## Test Case: Event with /from but no /to

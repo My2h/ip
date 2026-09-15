@@ -217,6 +217,9 @@ public class Parser {
         if (toTime.isBefore(fromTime)) { // an event can't finish before it begins
             throw new FF15Exception("It ends before it starts? That's not an event. That's a Ryan.");
         }
+        if (toTime.isSameMomentAs(fromTime)) { // nor can it take no time at all
+            throw new FF15Exception("It ends when it starts? That's not an event. That's a moment.");
+        }
         return new Event(description, fromTime, toTime);
     }
 

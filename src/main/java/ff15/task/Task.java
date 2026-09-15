@@ -51,6 +51,18 @@ public class Task {
     }
 
     /**
+     * Returns whether {@code other} describes the same task as this one: the same
+     * kind, with the same description, and (for the kinds that have them) the
+     * same dates. Whether either is done is not part of it, since the user is
+     * asking "do I already have this?", not "have I already done this?".
+     * Subclasses with dates extend the check; a plain task compares only what it
+     * has.
+     */
+    public boolean isSameAs(Task other) {
+        return getClass() == other.getClass() && description.equals(other.description);
+    }
+
+    /**
      * Returns whether this task falls within {@code range}. A plain task has no
      * date attached, so it never does; {@link Deadline} and {@link Event} override
      * this with their own answer.

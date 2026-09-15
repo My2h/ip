@@ -25,6 +25,13 @@ public class Event extends Task {
         this.to = to;
     }
 
+    /** Two events are the same when they match as tasks and run between the same times. */
+    @Override
+    public boolean isSameAs(Task other) {
+        Event that = (Event) other;
+        return super.isSameAs(other) && from.equals(that.from) && to.equals(that.to);
+    }
+
     /**
      * An event falls in a span when it is running for at least one day of it —
      * an event lasting a whole week shows up in a query for any day of that week,

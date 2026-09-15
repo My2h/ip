@@ -320,9 +320,33 @@ public class ParserTest {
     }
 
     @Test
-    public void parse_eventStartingAndEndingAtTheSameMoment_isAccepted() throws Exception {
-        assertEquals("[E][ ] meeting (from: Dec 05 2019, 2:00pm to: Dec 05 2019, 2:00pm)",
-                addedBy("event meeting /from 2019-12-05 1400 /to 2019-12-05 1400").toString());
+    public void parse_eventStartingAndEndingAtTheSameMoment_throwsException() {
+        FF15Exception thrown = assertThrows(FF15Exception.class, () ->
+                Parser.parse("event meeting /from 2019-12-05 1400 /to 2019-12-05 1400"));
+        assertTrue(thrown.getMessage().contains("moment"), thrown.getMessage());
+        // A date-only end is the start of that day, so it is the same moment as 0000.
+        assertThrows(FF15Exception.class, () ->
+                Parser.parse("event meeting /from 2019-12-05 0000 /to 2019-12-05"));
+    }
+
+    @Test
+    public void parse_taskAlreadyInTheList_isRefusedAndNamesIt() throws Exception {
+        TaskList tasks = new TaskList();
+        run(tasks, "todo read book");
+        run(tasks, "todo buy milk");
+
+        FF15Exception thrown = assertThrows(FF15Exception.class, () -> run(tasks, "todo read book"));
+
+        assertTrue(thrown.getMessage().contains("task 1"), thrown.getMessage());
+        assertEquals(2, tasks.size());
+    }
+
+    @Test
+    public void parse_taskDifferingOnlyInDate_isNotADuplicate() throws Exception {
+        TaskList tasks = new TaskList();
+        run(tasks, "deadline return book /by 2019-12-02");
+        run(tasks, "deadline return book /by 2019-12-03");
+        assertEquals(2, tasks.size());
     }
 
     @Test

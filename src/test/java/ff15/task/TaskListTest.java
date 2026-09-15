@@ -236,4 +236,21 @@ public class TaskListTest {
         TaskList tasks = listOf("a");
         assertSame(tasks.get(1), tasks.get(1));
     }
+
+    @Test
+    public void findSame_taskPresent_returnsItsNumber() {
+        TaskList tasks = listOf("a", "b", "c");
+        assertEquals(2, tasks.findSame(new Todo("b")).getAsInt());
+    }
+
+    @Test
+    public void findSame_taskAbsent_returnsEmpty() {
+        assertTrue(listOf("a", "b").findSame(new Todo("z")).isEmpty());
+    }
+
+    @Test
+    public void findSame_twoMatches_returnsTheFirst() {
+        TaskList tasks = listOf("a", "b", "b");
+        assertEquals(2, tasks.findSame(new Todo("b")).getAsInt());
+    }
 }

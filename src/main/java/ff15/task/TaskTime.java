@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.ResolverStyle;
+import java.util.Objects;
 
 import ff15.FF15Exception;
 
@@ -74,6 +75,36 @@ public class TaskTime {
     /** Returns whether this moment comes before {@code other}. */
     public boolean isBefore(TaskTime other) {
         return moment.isBefore(other.moment);
+    }
+
+    /**
+     * Returns whether this and {@code other} are the very same instant, whether
+     * or not either was typed with a time. A date-only value stands for the start
+     * of its day, so it is the same moment as that day typed with 0000.
+     */
+    public boolean isSameMomentAs(TaskTime other) {
+        return moment.equals(other.moment);
+    }
+
+    /**
+     * Two values are equal when they show the same thing: the same moment, typed
+     * the same way. A date-only value and the same day at 0000 are not equal,
+     * since one prints a time and the other does not.
+     */
+    @Override
+    public boolean equals(Object other) {
+        if (this == other) {
+            return true;
+        }
+        if (!(other instanceof TaskTime that)) {
+            return false;
+        }
+        return moment.equals(that.moment) && hasTime == that.hasTime;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(moment, hasTime);
     }
 
     /** Returns a bare date in the form used throughout the output, e.g. {@code Dec 02 2019}. */

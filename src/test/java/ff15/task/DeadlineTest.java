@@ -81,4 +81,26 @@ public class DeadlineTest {
         assertTrue(deadline("return book", "2019-12-02 0000").occursIn(DateRange.parse("2019-12-02")));
         assertTrue(deadline("return book", "2019-12-02 2359").occursIn(DateRange.parse("2019-12-02")));
     }
+
+    @Test
+    public void isSameAs_sameDescriptionAndDate_isTrue() throws FF15Exception {
+        Deadline a = new Deadline("return book", TaskTime.parse("2019-12-02 1800"));
+        Deadline b = new Deadline("return book", TaskTime.parse("2019-12-02 1800"));
+        assertTrue(a.isSameAs(b));
+    }
+
+    @Test
+    public void isSameAs_sameDescriptionDifferentDate_isFalse() throws FF15Exception {
+        Deadline a = new Deadline("return book", TaskTime.parse("2019-12-02"));
+        Deadline b = new Deadline("return book", TaskTime.parse("2019-12-03"));
+        assertFalse(a.isSameAs(b));
+    }
+
+    @Test
+    public void isSameAs_dateOnlyVersusMidnight_isFalse() throws FF15Exception {
+        // They print differently, so the user would see two distinct tasks.
+        Deadline a = new Deadline("return book", TaskTime.parse("2019-12-02"));
+        Deadline b = new Deadline("return book", TaskTime.parse("2019-12-02 0000"));
+        assertFalse(a.isSameAs(b));
+    }
 }
