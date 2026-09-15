@@ -6,6 +6,7 @@ import ff15.FF15;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
@@ -25,6 +26,7 @@ public class Main extends Application {
             AnchorPane root = fxmlLoader.load();
 
             stage.setScene(new Scene(root));
+            stage.getIcons().add(new Image(Main.class.getResourceAsStream("/images/michael-scott.png")));
             stage.setTitle("FF15 \u00b7 Assistant to the Regional Manager");
             // Free to grow; the floor keeps the composer and a few lines of chat usable.
             stage.setMinWidth(360);
