@@ -55,6 +55,15 @@ public class Contact {
     }
 
     /**
+     * Returns whether {@code other} is the same contact: the same name, phone and
+     * email, exactly. Two people may share a name, so a name alone is not enough;
+     * only a contact identical in every field is a repeat of this one.
+     */
+    public boolean isSameAs(Contact other) {
+        return name.equals(other.name) && phone.equals(other.phone) && email.equals(other.email);
+    }
+
+    /**
      * Returns this contact as shown to the user, e.g.
      * {@code John (phone: 91234567, email: john@example.com)}. Fields the user
      * did not give are left out altogether, so a contact with only a name shows

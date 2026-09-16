@@ -53,6 +53,27 @@ public class ContactTest {
     }
 
     @Test
+    public void isSameAs_everyFieldEqual_isTrue() {
+        Contact a = new Contact("John", "91234567", "john@example.com");
+        Contact b = new Contact("John", "91234567", "john@example.com");
+        assertTrue(a.isSameAs(b));
+    }
+
+    @Test
+    public void isSameAs_sameNameDifferentDetails_isFalse() {
+        // Two people can share a name, so a name alone does not make a repeat.
+        Contact john = new Contact("John", "91234567", "");
+        assertFalse(john.isSameAs(new Contact("John", "98765432", "")));
+        assertFalse(john.isSameAs(new Contact("John", "91234567", "john@example.com")));
+        assertFalse(john.isSameAs(new Contact("John", "", "")));
+    }
+
+    @Test
+    public void isSameAs_nameDiffersOnlyInCase_isFalse() {
+        assertFalse(new Contact("John", "", "").isSameAs(new Contact("john", "", "")));
+    }
+
+    @Test
     public void hasKeyword_matchingName_returnsTrue() {
         assertTrue(new Contact("John Tan", "", "").hasKeyword("john"));
     }
