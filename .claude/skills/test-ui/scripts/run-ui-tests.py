@@ -4,6 +4,10 @@ program, one command at a time, and stop at the first mismatch.
 
 Usage (from the repository root):
     py .claude/skills/test-ui/scripts/run-ui-tests.py [path/to/ui-test-plan.md]
+
+To test a built jar instead of compiling the sources (e.g. a release), add
+--jar path/to/ff15.jar. The program then runs from that jar, in the current
+directory, so run it from an empty folder to see what a fresh user sees.
 """
 import re
 import shutil
@@ -89,6 +93,25 @@ def find_main_class(src_dir):
     raise ValueError(f"No file with a public static void main(...) found under {src_dir}")
 
 
+def find_main_class_in_jar(jar_path):
+    """
+    Returns the console entry point inside jar_path: the one class outside the
+    GUI package whose constant pool declares a main(String[]) method. Only the
+    class files' bytes are read; nothing in the jar is run.
+    """
+    import zipfile
+    with zipfile.ZipFile(jar_path) as jar:
+        for name in jar.namelist():
+            if not name.endswith(".class") or "$" in name or "/gui/" in name:
+                continue
+            if name.startswith(("javafx/", "com/sun/", "META-INF/", "org/", "module-info")):
+                continue
+            data = jar.read(name)
+            if b"main" in data and b"([Ljava/lang/String;)V" in data:
+                return name[:-len(".class")].replace("/", ".")
+    raise ValueError(f"No console main class found in {jar_path}")
+
+
 def compile_program(src_dir, build_dir):
     java_files = [str(p) for p in console_sources(src_dir)]
     result = subprocess.run(
@@ -132,20 +155,45 @@ def describe_crash(proc):
     return detail
 
 
+def parse_args(argv):
+    """Returns (plan_path or None, jar_path or None) from the command line."""
+    plan_path = None
+    jar_path = None
+    args = list(argv)
+    while args:
+        arg = args.pop(0)
+        if arg == "--jar":
+            if not args:
+                sys.exit("--jar needs a path")
+            jar_path = Path(args.pop(0))
+        else:
+            plan_path = Path(arg)
+    return plan_path, jar_path
+
+
 def main():
     repo_root = Path.cwd()
-    plan_path = Path(sys.argv[1]) if len(sys.argv) > 1 else repo_root / "test" / "ui-test-plan.md"
+    plan_path, jar_path = parse_args(sys.argv[1:])
+    if plan_path is None:
+        plan_path = repo_root / "test" / "ui-test-plan.md"
     src_dir = repo_root / "src" / "main" / "java"
 
     cases = parse_plan(plan_path)
-    main_class = find_main_class(src_dir)
 
     build_dir = Path(tempfile.mkdtemp(prefix="ui-test-build-"))
     try:
-        compile_program(src_dir, build_dir)
+        if jar_path is None:
+            main_class = find_main_class(src_dir)
+            compile_program(src_dir, build_dir)
+            classpath = str(build_dir)
+        else:
+            # The jar's manifest names the GUI launcher; the console main class is
+            # the one the jar's own sources declare, read from the jar itself.
+            main_class = find_main_class_in_jar(jar_path)
+            classpath = str(jar_path)
 
         proc = subprocess.Popen(
-            ["java", "-cp", str(build_dir), main_class],
+            ["java", "-cp", classpath, main_class],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             text=True, bufsize=1,
         )
