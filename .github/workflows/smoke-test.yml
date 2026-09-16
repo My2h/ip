@@ -44,7 +44,8 @@ jobs:
           fi
           ls -la smoke
           [ "$(ls smoke/*.jar | wc -l)" -eq 1 ] || { echo "expected exactly one jar"; exit 1; }
-          mv smoke/*.jar smoke/ff15.jar
+          jar=$(ls smoke/*.jar)
+          [ "$jar" = "smoke/ff15.jar" ] || mv "$jar" smoke/ff15.jar
           java -version
 
       - name: Every command and error case, through the console entry point
