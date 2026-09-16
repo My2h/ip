@@ -108,6 +108,24 @@ public class ContactListTest {
     }
 
     @Test
+    public void findSame_contactPresent_returnsItsNumber() {
+        ContactList contacts = listOf("Ann", "Ben", "Cal");
+        assertEquals(2, contacts.findSame(new Contact("Ben", "", "")).getAsInt());
+    }
+
+    @Test
+    public void findSame_sameNameOtherDetails_returnsEmpty() {
+        ContactList contacts = listOf("Ann", "Ben");
+        assertTrue(contacts.findSame(new Contact("Ben", "91234567", "")).isEmpty());
+    }
+
+    @Test
+    public void findSame_twoMatches_returnsTheFirst() {
+        ContactList contacts = listOf("Ann", "Ben", "Ben");
+        assertEquals(2, contacts.findSame(new Contact("Ben", "", "")).getAsInt());
+    }
+
+    @Test
     public void asList_attemptToModify_throwsException() {
         ContactList contacts = listOf("a");
         List<Contact> view = contacts.asList();

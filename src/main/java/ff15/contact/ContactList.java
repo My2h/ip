@@ -3,7 +3,9 @@ package ff15.contact;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import ff15.FF15Exception;
 
@@ -88,6 +90,18 @@ public class ContactList {
         return contacts.stream()
                 .filter(contact -> contact.hasKeyword(keyword))
                 .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    /**
+     * Returns the number of the contact in this list that is the same as
+     * {@code contact}, counting from 1, or nothing if there is no such contact.
+     * This is what lets an add refuse a repeat and say which one it repeats.
+     */
+    public OptionalInt findSame(Contact contact) {
+        return IntStream.range(0, contacts.size())
+                .filter(i -> contacts.get(i).isSameAs(contact))
+                .map(i -> i + 1)
+                .findFirst();
     }
 
     /**

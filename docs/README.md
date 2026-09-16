@@ -194,6 +194,8 @@ Here are the contacts in your list:
 
 A phone number may contain digits, spaces, `+`, `-` and brackets. An email needs an `@` with something on both sides.
 
+FF15 refuses a contact identical in every field to one already in the list. Two people can share a name, so the same name with a different number is a new contact.
+
 ### Exiting: `bye`
 
 Format: `bye`

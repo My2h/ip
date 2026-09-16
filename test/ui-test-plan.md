@@ -1312,6 +1312,46 @@ contact add John /phone 91234567 /email john@example.com
      1 contacts. I know everyone. Everyone knows me.
 ```
 
+## Test Case: Adding the same contact again
+
+**Aim:** A contact identical in every field to one already in the list is refused, and the message says which contact it repeats. Nothing is added.
+**Input:**
+```
+contact add John /phone 91234567 /email john@example.com
+```
+**Expected Output:**
+```
+     No. GOD. NO. I already know them. That's contact 1. I know everyone, remember?
+```
+
+## Test Case: Adding a contact who only shares a name
+
+**Aim:** Two people can share a name, so a contact with the same name but different details is a new contact, not a repeat.
+**Input:**
+```
+contact add John /phone 98765432
+```
+**Expected Output:**
+```
+     New friend. I'm friends with everyone. Added:
+       John (phone: 98765432)
+     2 contacts. I know everyone. Everyone knows me.
+```
+
+## Test Case: Delete the namesake
+
+**Aim:** Removes the second John, so the contacts that follow keep the numbers the rest of the plan expects.
+**Input:**
+```
+contact delete 2
+```
+**Expected Output:**
+```
+     Dead to me. Removed:
+       John (phone: 98765432)
+     1 contacts. I know everyone. Everyone knows me.
+```
+
 ## Test Case: Add a contact with the markers reversed
 
 **Aim:** `/email` before `/phone` reads the same way, since the markers are order-independent.

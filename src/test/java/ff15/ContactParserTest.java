@@ -49,6 +49,27 @@ public class ContactParserTest extends ParserTestBase {
     }
 
     @Test
+    public void parse_contactAlreadyInTheList_isRefusedAndNamesIt() throws Exception {
+        ContactList contacts = new ContactList();
+        run(new TaskList(), contacts, "contact add John /phone 91234567");
+        run(new TaskList(), contacts, "contact add Mary");
+
+        FF15Exception thrown = assertThrows(FF15Exception.class, () ->
+                run(new TaskList(), contacts, "contact add John /phone 91234567"));
+
+        assertTrue(thrown.getMessage().contains("contact 1"), thrown.getMessage());
+        assertEquals(2, contacts.size());
+    }
+
+    @Test
+    public void parse_contactSharingOnlyAName_isNotARepeat() throws Exception {
+        ContactList contacts = new ContactList();
+        run(new TaskList(), contacts, "contact add John /phone 91234567");
+        run(new TaskList(), contacts, "contact add John /phone 98765432");
+        assertEquals(2, contacts.size());
+    }
+
+    @Test
     public void parse_contactAddWithMarkersReversed_stillReadsBothFields() throws Exception {
         Contact contact = contactAddedBy("contact add John /email john@example.com /phone 91234567");
         assertEquals("John", contact.getName());
