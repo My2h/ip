@@ -24,12 +24,17 @@ jobs:
       - name: Set up repository
         uses: actions/checkout@v7
 
-      - name: Setup plain JDK 25
+      # A plain JDK, with no JavaFX of its own, is the stricter case: the GUI can
+      # then only run on the natives inside the jar. macOS is the exception: the
+      # jar carries Intel natives (the course template's "mac" classifier), and
+      # the runner is Apple Silicon, so it gets the JDK+FX build the course
+      # recommends for Macs, whose own JavaFX takes precedence over the jar's.
+      - name: Setup JDK 25
         uses: actions/setup-java@v5
         with:
           distribution: 'zulu'
           java-version: '25'
-          java-package: jdk
+          java-package: ${{ runner.os == 'macOS' && 'jdk+fx' || 'jdk' }}
 
       - name: Download the release jar into an empty folder
         shell: bash
