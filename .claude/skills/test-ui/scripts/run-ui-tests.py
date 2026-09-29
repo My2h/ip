@@ -65,20 +65,22 @@ def parse_plan(plan_path):
 
 
 PACKAGE_RE = re.compile(r"^\s*package\s+([\w.]+)\s*;", re.MULTILINE)
-JAVAFX_IMPORT_RE = re.compile(r"^\s*import\s+javafx\.", re.MULTILINE)
+# Libraries the console program runs without: JavaFX (the GUI) and LangChain4j
+# (the AI, which only the GUI wires in). Plain javac has neither on its classpath.
+EXTERNAL_IMPORT_RE = re.compile(r"^\s*import\s+(javafx|dev\.langchain4j)\.", re.MULTILINE)
 
 
 def console_sources(src_dir):
     """
     Return the sources that make up the console program: everything under src_dir
-    except the JavaFX classes. A console test plan cannot drive a window, and
-    compiling the GUI would need the JavaFX jars this script deliberately does
-    without -- plain javac, no build tool.
+    except the classes that import JavaFX or LangChain4j. A console test plan
+    cannot drive a window or reach an AI, and compiling either would need jars
+    this script deliberately does without -- plain javac, no build tool.
     """
     return [
         java_file
         for java_file in sorted(src_dir.rglob("*.java"))
-        if not JAVAFX_IMPORT_RE.search(java_file.read_text(encoding="utf-8"))
+        if not EXTERNAL_IMPORT_RE.search(java_file.read_text(encoding="utf-8"))
     ]
 
 
@@ -104,7 +106,7 @@ def find_main_class_in_jar(jar_path):
         for name in jar.namelist():
             if not name.endswith(".class") or "$" in name or "/gui/" in name:
                 continue
-            if name.startswith(("javafx/", "com/sun/", "META-INF/", "org/", "module-info")):
+            if name.startswith(("javafx/", "com/sun/", "dev/", "META-INF/", "org/", "module-info")):
                 continue
             data = jar.read(name)
             if b"main" in data and b"([Ljava/lang/String;)V" in data:
