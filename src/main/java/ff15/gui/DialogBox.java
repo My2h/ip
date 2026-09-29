@@ -91,6 +91,17 @@ public class DialogBox extends HBox {
     }
 
     /**
+     * Returns a dialog box standing in for a reply that is still being worked
+     * out. It is laid out like any other reply, but faded, so it reads as a
+     * placeholder rather than as something FF15 has said.
+     */
+    public static DialogBox getThinkingDialog(String text, Image image) {
+        DialogBox box = getFf15Dialog(text, image);
+        box.dialog.getStyleClass().add("thinking-label");
+        return box;
+    }
+
+    /**
      * Shows {@code image} as a small circle. The picture is cropped to its central
      * square first, so a portrait that is taller than it is wide still fills the
      * circle instead of leaving flat edges top and bottom.

@@ -26,6 +26,13 @@
     -fx-text-fill: #f5f0e1;
 }
 
+/* A reply still on its way: the same panel, faded and in italics, so it reads
+   as a placeholder about to be replaced rather than as something FF15 said. */
+.thinking-label {
+    -fx-font-style: italic;
+    -fx-opacity: 0.6;
+}
+
 /* An error from FF15: same panel, but in warning colours with a firmer edge,
    so it cannot be skimmed past as one more reply. Applied on top of
    .reply-label, so anything not overridden here is inherited from it. */

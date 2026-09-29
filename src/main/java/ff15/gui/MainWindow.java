@@ -4,6 +4,7 @@ import ff15.FF15;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -55,6 +56,12 @@ public class MainWindow extends AnchorPane {
     /** How long the window lingers after goodbye, so the farewell can be read. */
     private static final Duration FAREWELL_PAUSE = Duration.seconds(1.5);
 
+    /** Shown while a reply is slow in coming, which in practice means the AI is thinking. */
+    private static final String THINKING_MESSAGE = "Hold on. I'm consulting my people.";
+
+    /** How long a reply may take before the thinking bubble appears. */
+    private static final Duration THINKING_DELAY = Duration.millis(300);
+
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -97,9 +104,16 @@ public class MainWindow extends AnchorPane {
     }
 
     /**
-     * Shows what the user typed, then what FF15 said back, and empties the text
-     * field ready for the next line. A blank line is ignored rather than sent,
-     * since Enter still fires here even while the send button is disabled.
+     * Shows what the user typed, then works out FF15's reply in the background.
+     * A blank line is ignored rather than sent, since Enter still fires here even
+     * while the send button is disabled.
+     *
+     * <p>JavaFX draws the window and runs this method on one thread, the JavaFX
+     * application thread. An {@code @ai} reply can take seconds to come back over
+     * the network, and working it out here would leave the window frozen until
+     * it did. So the reply is worked out on a background thread, in a
+     * {@link Task}, and shown once it is ready. The composer is shut until then,
+     * so a second line cannot be sent while FF15 is still busy with the first.
      */
     @FXML
     private void handleUserInput() {
@@ -108,14 +122,71 @@ public class MainWindow extends AnchorPane {
             return;
         }
         dialogContainer.getChildren().add(DialogBox.getUserDialog(input));
-        showFf15Reply(ff15.getResponse(input));
         userInput.clear();
-        showNextPrompt();
-        offerSuggestion(ff15.getSuggestedCommand());
+        userInput.setDisable(true);
 
+        Task<String> replyTask = new Task<>() {
+            @Override
+            protected String call() {
+                return ff15.getResponse(input); // the only line that runs off the application thread
+            }
+        };
+
+        // Most replies are instant, so the bubble is held back briefly and only
+        // shows when there is a real wait, rather than flickering on every command.
+        DialogBox thinkingBox = DialogBox.getThinkingDialog(THINKING_MESSAGE, ff15Image);
+        PauseTransition thinkingDelay = new PauseTransition(THINKING_DELAY);
+        thinkingDelay.setOnFinished(event -> dialogContainer.getChildren().add(thinkingBox));
+
+        // These two run back on the application thread, where the window may be changed.
+        replyTask.setOnSucceeded(event -> {
+            thinkingDelay.stop();
+            dialogContainer.getChildren().remove(thinkingBox);
+            finishReply(replyTask.getValue());
+        });
+        replyTask.setOnFailed(event -> {
+            thinkingDelay.stop();
+            dialogContainer.getChildren().remove(thinkingBox);
+            showCrash(replyTask.getException());
+        });
+
+        Thread worker = new Thread(replyTask, "ff15-reply");
+        // A daemon thread never keeps the program running, so closing the window
+        // mid-reply still ends it rather than waiting on the network.
+        worker.setDaemon(true);
+        worker.start();
+        thinkingDelay.play();
+    }
+
+    /**
+     * Shows FF15's reply, then opens the composer again for the next line, with
+     * any command the AI suggested already in it. Closes the window instead if
+     * the reply ended the session.
+     */
+    private void finishReply(String reply) {
+        showFf15Reply(reply);
         if (ff15.isFinished()) {
             endSession();
+            return;
         }
+        showNextPrompt();
+        userInput.setDisable(false);
+        // Focus first: a text field selects all its text when it gains focus, and a
+        // selected suggestion would vanish at the first key the user pressed.
+        userInput.requestFocus();
+        offerSuggestion(ff15.getSuggestedCommand());
+    }
+
+    /**
+     * Reports a reply that failed with an exception FF15 did not expect, which
+     * means a bug rather than a mistyped command, and opens the composer again so
+     * the user is not left with a window that cannot be typed into.
+     */
+    private void showCrash(Throwable problem) {
+        dialogContainer.getChildren().add(DialogBox.getErrorDialog(
+                "No. GOD. NO. Something broke on my end: " + problem, ff15Image));
+        userInput.setDisable(false);
+        userInput.requestFocus();
     }
 
     /**
