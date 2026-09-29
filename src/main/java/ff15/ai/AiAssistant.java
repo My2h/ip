@@ -1,7 +1,11 @@
 package ff15.ai;
 
 import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import ff15.FF15Exception;
 
@@ -54,7 +58,7 @@ public class AiAssistant {
     private static final String COMMAND_INSTRUCTIONS = "You turn a user's request into one FF15 command. "
             + "Reply with the command only, on one line, exactly as the user would type it: "
             + "no explanation, no quotes, no markdown. "
-            + "Work out relative dates such as \"tomorrow\" or \"next Friday\" from today's date. "
+            + "Work out relative dates such as \"tomorrow\" or \"Friday\" from the calendar given below. "
             + "If no single command below can do what they ask, reply with exactly " + NO_COMMAND + ".\n\n";
 
     private final AiHelper aiHelper;
@@ -105,12 +109,32 @@ public class AiAssistant {
      * @throws FF15Exception if the AI could not be reached, or found no command that fits.
      */
     public String suggestCommand(String request) throws FF15Exception {
-        String systemPrompt = COMMAND_INSTRUCTIONS + "Today is " + today.get() + ".\n\n" + COMMAND_GUIDE;
+        String systemPrompt = COMMAND_INSTRUCTIONS + describeWeekAhead(today.get()) + "\n\n" + COMMAND_GUIDE;
         String command = cleanCommand(aiHelper.getAiResponse(systemPrompt, request));
         if (command.isEmpty() || command.equalsIgnoreCase(NO_COMMAND)) {
             throw new FF15Exception("I can't do that. Not with the commands I've got. Not even for you.");
         }
         return command;
+    }
+
+    /**
+     * Returns today's date and the dates of the seven days after it, each with its
+     * day of the week, e.g. "Today is Tuesday 2026-09-29. The next seven days are:
+     * Wednesday 2026-09-30, ...". An LLM predicts text rather than calculating, and
+     * is unreliable at working out which date a weekday falls on; given this list,
+     * "by Friday" becomes a lookup instead of a calculation it can get wrong.
+     */
+    static String describeWeekAhead(LocalDate today) {
+        String nextSevenDays = IntStream.rangeClosed(1, 7)
+                .mapToObj(today::plusDays)
+                .map(AiAssistant::describeDay)
+                .collect(Collectors.joining(", "));
+        return "Today is " + describeDay(today) + ". The next seven days are: " + nextSevenDays + ".";
+    }
+
+    /** Returns {@code date} with its day of the week, e.g. {@code Tuesday 2026-09-29}. */
+    private static String describeDay(LocalDate date) {
+        return date.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " + date;
     }
 
     /**

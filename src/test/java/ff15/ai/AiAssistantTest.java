@@ -62,12 +62,22 @@ public class AiAssistantTest {
     // --- suggesting commands ------------------------------------------------------
 
     @Test
-    public void suggestCommand_sendsTodaysDateSoRelativeDatesCanBeWorkedOut() throws Exception {
+    public void suggestCommand_sendsTheWeekAheadSoRelativeDatesCanBeWorkedOut() throws Exception {
         assistantReplying("todo x").suggestCommand("remind me tomorrow");
 
         assertEquals("remind me tomorrow", lastPrompts[1]);
-        assertTrue(lastPrompts[0].contains("Today is 2026-09-29."), lastPrompts[0]);
+        assertTrue(lastPrompts[0].contains(AiAssistant.describeWeekAhead(TODAY)), lastPrompts[0]);
         assertTrue(lastPrompts[0].contains(AiAssistant.COMMAND_GUIDE), lastPrompts[0]);
+    }
+
+    @Test
+    public void describeWeekAhead_namesTheDayOfEveryDate() {
+        // 2026-09-29 is a Tuesday, so the Friday to come is 2026-10-02: the case the AI
+        // got wrong when it was given the date alone and left to work out the weekday.
+        assertEquals("Today is Tuesday 2026-09-29. The next seven days are: "
+                + "Wednesday 2026-09-30, Thursday 2026-10-01, Friday 2026-10-02, Saturday 2026-10-03, "
+                + "Sunday 2026-10-04, Monday 2026-10-05, Tuesday 2026-10-06.",
+                AiAssistant.describeWeekAhead(TODAY));
     }
 
     @Test
