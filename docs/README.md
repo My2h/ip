@@ -4,6 +4,10 @@
 
 **FF15** is a desktop app for keeping track of your tasks and your contacts, typed one line at a time. You are the Regional Manager; FF15 is your Assistant to the Regional Manager, and it has Michael Scott's sense of humour.
 
+It also has an AI: tell it what you want in your own words, and it writes the command for you to check and send.
+
+![FF15 turning "remind me to submit expense claims by Friday 5pm" into a deadline, then answering a question about itself](demo.gif)
+
 - [Quick start](#quick-start)
 - [Features](#features)
   - [Adding a todo: `todo`](#adding-a-todo-todo)
@@ -15,6 +19,7 @@
   - [Finding tasks by keyword: `find`](#finding-tasks-by-keyword-find)
   - [Seeing what is on a date: `on`](#seeing-what-is-on-a-date-on)
   - [Managing contacts: `contact`](#managing-contacts-contact)
+  - [Asking the AI: `@ai` / `@do`](#asking-the-ai-ai--do)
   - [Exiting: `bye`](#exiting-bye)
   - [Saving your data](#saving-your-data)
 - [FAQ](#faq)
@@ -196,6 +201,45 @@ A phone number may contain digits, spaces, `+`, `-` and brackets. An email needs
 
 FF15 refuses a contact identical in every field to one already in the list. Two people can share a name, so the same name with a different number is a new contact.
 
+### Asking the AI: `@ai` / `@do`
+
+FF15 can call on an AI (Meta's Llama model, run by [Groq](https://groq.com)) to answer questions about FF15, and to turn what you want into a command.
+
+| Format | What it does |
+|---|---|
+| `@ai QUESTION` | Asks the AI about FF15's features, and shows its answer. |
+| `@do REQUEST` | Asks the AI to turn a request in your own words into an FF15 command, and shows the command. **It does not run it.** |
+
+Examples:
+- `@ai can I give a contact a birthday?`
+- `@do remind me to submit the report by next Friday 5pm`
+
+`@do` shows the command it came up with, and puts it in the box at the bottom for you:
+
+```
+Here's what I'd type:
+  deadline submit the report /by 2026-10-09 1700
+Send it to go ahead, or change it first.
+```
+
+Press <kbd>Enter</kbd> to run it, edit it first, or press <kbd>Esc</kbd> to throw it away. The AI can get things wrong, so FF15 always lets you check first. It also works out dates like "tomorrow" and "next Friday" from today's date.
+
+`@ai` answers are written by the AI, so their wording varies from one ask to the next, and they are not in Michael's voice.
+
+#### Setting up the AI
+
+The AI needs a free API key from Groq. Everything else in FF15 works without one.
+
+1. Sign up at [console.groq.com](https://console.groq.com), and create a key under **API Keys**. It starts with `gsk_`.
+2. Save it in an environment variable named `LLM_API_KEY`:
+   - **Windows:** in a terminal, run `setx LLM_API_KEY "gsk_your_key_here"`, then open a **new** terminal.
+   - **macOS / Linux:** add `export LLM_API_KEY="gsk_your_key_here"` to `~/.zshrc` (macOS) or `~/.bashrc` (Linux), then open a new terminal.
+3. Start FF15 from that new terminal with `java -jar ff15.jar`.
+
+Treat the key like a password. Don't share it or put it in a file you upload anywhere.
+
+The AI is only available in the window. Without a key, `@ai` and `@do` tell you so rather than doing anything.
+
 ### Exiting: `bye`
 
 Format: `bye`
@@ -227,6 +271,12 @@ A: No. Dates are `yyyy-mm-dd`, so `2026-12-31`. Times are 24-hour with no colon:
 **Q: Why does `find` not find my contacts?**
 A: `find` searches tasks. Use `contact find` for contacts.
 
+**Q: `@ai` says "I need an AI key for that", but I set one. Why?**
+A: FF15 reads the key when it starts, and a terminal only sees variables set before it opened. Open a new terminal and start FF15 from there. See [Setting up the AI](#setting-up-the-ai).
+
+**Q: Does the AI see my tasks and contacts?**
+A: No. Only what you type after `@ai` or `@do` is sent, along with FF15's list of commands and today's date. It goes to Groq's servers, so don't include anything private.
+
 ## Command summary
 
 | Action | Format | Example |
@@ -244,4 +294,6 @@ A: `find` searches tasks. Use `contact find` for contacts.
 | List contacts | `contact list` | `contact list` |
 | Find contacts | `contact find KEYWORD` | `contact find pam` |
 | Delete contact | `contact delete CONTACT_NUMBER` | `contact delete 1` |
+| Ask the AI | `@ai QUESTION` | `@ai can I set reminders?` |
+| Have the AI write a command | `@do REQUEST` | `@do remind me to call Pam tomorrow` |
 | Exit | `bye` | `bye` |

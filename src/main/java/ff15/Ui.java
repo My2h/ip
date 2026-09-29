@@ -33,6 +33,9 @@ public class Ui {
     /** What has been shown since the last drain, for callers that display it themselves. */
     private final StringBuilder transcript = new StringBuilder();
 
+    /** The command last suggested to the user, or an empty string if none has been since the last take. */
+    private String suggestion = "";
+
     /** Creates a Ui that reads from standard input and writes to standard output. */
     public Ui() {
         this.scanner = new Scanner(System.in);
@@ -131,6 +134,26 @@ public class Ui {
         String shown = transcript.toString().strip();
         transcript.setLength(0);
         return shown;
+    }
+
+    /**
+     * Shows a command the AI came up with for the user to check, and keeps it for
+     * {@link #takeSuggestion()}, so the window can put it in the text box ready to
+     * send.
+     */
+    public void showSuggestion(String command) {
+        showMessage("Here's what I'd type:", "  " + command, "Send it to go ahead, or change it first.");
+        suggestion = command;
+    }
+
+    /**
+     * Returns the command suggested since this was last called, or an empty string
+     * if there was none, and forgets it. The console session never calls this.
+     */
+    public String takeSuggestion() {
+        String taken = suggestion;
+        suggestion = "";
+        return taken;
     }
 
     /** Prints something that went wrong, tagged so it stands out from ordinary replies. */

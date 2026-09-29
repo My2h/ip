@@ -22,9 +22,11 @@ than `test/ui-test-plan.md`. The script:
 
 1. Finds the class with `public static void main` under `src/main/java` and
    compiles it with `javac` into a throwaway temp directory (never into the
-   source tree). Classes that import `javafx.*` are left out of both steps:
-   a console test plan cannot drive a window, and compiling the GUI would
-   need the JavaFX jars, which this script deliberately does without.
+   source tree). Classes that import `javafx.*` or `dev.langchain4j.*` are
+   left out of both steps: a console test plan cannot drive a window or reach
+   an AI, and compiling either would need the JavaFX or LangChain4j jars,
+   which this script deliberately does without. So the console program must
+   never refer to such a class directly; only the GUI wires the AI in.
 2. Launches that program once and, for each test case in order, sends its
    input line (if any), reads the program's response, and compares it
    line-for-line against the case's expected output. The startup case (no
