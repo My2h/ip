@@ -4,6 +4,10 @@
 
 **FF15** is a desktop app for keeping track of your tasks and your contacts, typed one line at a time. You are the Regional Manager; FF15 is your Assistant to the Regional Manager, and it has Michael Scott's sense of humour.
 
+It also has an AI: tell it what you want in your own words, and it writes the command for you to check and send.
+
+![FF15 turning "remind me to submit expense claims by Friday 5pm" into a deadline, then answering a question about itself](demo.gif)
+
 - [Quick start](#quick-start)
 - [Features](#features)
   - [Adding a todo: `todo`](#adding-a-todo-todo)
