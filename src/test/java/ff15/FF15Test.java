@@ -61,6 +61,11 @@ public class FF15Test {
         return new FF15(taskFile().toString(), contactFile().toString());
     }
 
+    /** Starts a chatbot on this test's own save files, whose AI always replies {@code reply}. */
+    private FF15 ff15WhoseAiReplies(String reply) {
+        return new FF15(taskFile().toString(), contactFile().toString(), (systemPrompt, userPrompt) -> reply);
+    }
+
     // --- the greeting -----------------------------------------------------------
 
     @Test
@@ -197,6 +202,41 @@ public class FF15Test {
         for (String line : new String[] {"list", "contact list", "find zzz", "on 2019", "blah", "mark 9"}) {
             assertFalse(ff15.getResponse(line).isEmpty(), line);
         }
+    }
+
+    // --- the AI commands ---------------------------------------------------------
+
+    @Test
+    public void getSuggestedCommand_afterAnAiRequest_isTheCommandAndNothingRan() {
+        FF15 ff15 = ff15WhoseAiReplies("todo read book");
+
+        String reply = ff15.getResponse("@do remind me to read");
+
+        assertTrue(reply.contains("todo read book"), reply);
+        assertEquals("todo read book", ff15.getSuggestedCommand());
+        assertFalse(ff15.isLastReplyError());
+        assertTrue(ff15.getResponse("list").contains("Nothing on the list"));
+    }
+
+    @Test
+    public void getSuggestedCommand_afterTheNextReply_isEmptyAgain() {
+        FF15 ff15 = ff15WhoseAiReplies("todo read book");
+        ff15.getResponse("@do remind me to read");
+
+        ff15.getResponse("todo read book");
+
+        assertEquals("", ff15.getSuggestedCommand());
+    }
+
+    @Test
+    public void getResponse_aiCommandWithNoAi_repliesWithAnError() {
+        FF15 ff15 = freshFf15();
+
+        String reply = ff15.getResponse("@ai what can you do?");
+
+        assertTrue(reply.contains("There's no AI here"), reply);
+        assertTrue(ff15.isLastReplyError());
+        assertEquals("", ff15.getSuggestedCommand());
     }
 
     // --- the console loop --------------------------------------------------------

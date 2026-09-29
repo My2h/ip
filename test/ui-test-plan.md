@@ -1570,6 +1570,72 @@ list
      Nothing on the list. Just like Toby's contribution to this office.
 ```
 
+## Test Case: AI question with nothing to ask
+**Aim:** `@ai` on its own asks for a question and shows an example, without reaching for the AI.
+**Input:**
+```
+@ai
+```
+**Expected Output:**
+```
+     No. GOD. NO. Ask me what? e.g.: @ai how do I add a deadline?
+```
+
+## Test Case: AI question in the console session
+**Aim:** The console session has no AI (only the window version wires one in), so `@ai` reports that instead of crashing.
+**Input:**
+```
+@ai how do I add a task?
+```
+**Expected Output:**
+```
+     No. GOD. NO. There's no AI here. It lives in the window version of me.
+```
+
+## Test Case: AI request with nothing to do
+**Aim:** `@do` on its own asks for a request and shows an example, without reaching for the AI.
+**Input:**
+```
+@do
+```
+**Expected Output:**
+```
+     No. GOD. NO. Do what? Say it like you'd say it to me. e.g.: @do remind me to call Pam
+```
+
+## Test Case: AI request in the console session
+**Aim:** `@do` likewise reports that there is no AI, and adds nothing.
+**Input:**
+```
+@do remind me to read a book
+```
+**Expected Output:**
+```
+     No. GOD. NO. There's no AI here. It lives in the window version of me.
+```
+
+## Test Case: List after an AI request
+**Aim:** The failed `@do` left the task list untouched.
+**Input:**
+```
+list
+```
+**Expected Output:**
+```
+     Nothing on the list. Just like Toby's contribution to this office.
+```
+
+## Test Case: AI command word run into its text
+**Aim:** `@aihello` is not `@ai hello`; with no space after it, the word is not recognised.
+**Input:**
+```
+@aihello
+```
+**Expected Output:**
+```
+     No. GOD. NO. I don't know what that means. Is this a Jim thing? Is Jim doing a thing?
+```
+
 ## Test Case: Exit
 **Aim:** `bye` prints the farewell message and ends the session.
 **Input:**

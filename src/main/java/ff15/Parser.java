@@ -1,6 +1,10 @@
 package ff15;
 
+import ff15.ai.AiAssistant;
+import ff15.ai.UnavailableAiHelper;
 import ff15.command.AddCommand;
+import ff15.command.AiAskCommand;
+import ff15.command.AiDoCommand;
 import ff15.command.Command;
 import ff15.command.ContactAddCommand;
 import ff15.command.ContactDeleteCommand;
@@ -67,16 +71,35 @@ public class Parser {
      */
     private static final String RESERVED = "|";
 
+    /** Answers the AI commands when {@link #parse(String)} is given no assistant of its own. */
+    private static final AiAssistant NO_AI = new AiAssistant(
+            new UnavailableAiHelper("There's no AI here. It lives in the window version of me."));
+
     private Parser() { // a private constructor stops anyone writing "new Parser()"
     }
 
     /**
      * Works out which command {@code input} asks for, and builds it ready to run.
+     * The AI commands built this way have no AI behind them, and report so when
+     * run; use {@link #parse(String, AiAssistant)} to give them one.
      *
      * @throws FF15Exception if the command word is not recognised, or the rest of
      *     the line does not give the command what it needs.
      */
     public static Command parse(String rawInput) throws FF15Exception {
+        return parse(rawInput, NO_AI);
+    }
+
+    /**
+     * Works out which command {@code input} asks for, and builds it ready to run,
+     * handing {@code assistant} to the AI commands so they can reach the AI.
+     *
+     * @param rawInput the line the user typed.
+     * @param assistant what the {@code @ai} and {@code @do} commands ask.
+     * @throws FF15Exception if the command word is not recognised, or the rest of
+     *     the line does not give the command what it needs.
+     */
+    public static Command parse(String rawInput, AiAssistant assistant) throws FF15Exception {
         // Trim the ends and collapse runs of spaces, so a stray space never turns a
         // good command into an unknown one, and a description is stored the way it
         // reads rather than with whatever spacing happened to be typed.
@@ -96,6 +119,8 @@ public class Parser {
             case EVENT -> new AddCommand(parseEvent(input));
             case FIND -> new FindCommand(parseKeyword(input));
             case CONTACT -> parseContactCommand(input);
+            case AI -> new AiAskCommand(assistant, parseAiQuestion(input));
+            case DO -> new AiDoCommand(assistant, parseAiRequest(input));
             case BYE -> new ExitCommand();
             case UNKNOWN -> throw new FF15Exception(
                     "I don't know what that means. Is this a Jim thing? Is Jim doing a thing?");
@@ -373,6 +398,25 @@ public class Parser {
             throw new FF15Exception("Look for who? Give me a name. e.g.: contact find john");
         }
         return rest;
+    }
+
+    /** Returns the question an {@code @ai} command puts to the AI. */
+    private static String parseAiQuestion(String input) throws FF15Exception {
+        String question = argumentAfter(input, CommandWord.AI);
+        if (question.isEmpty()) {
+            throw new FF15Exception("Ask me what? e.g.: @ai how do I add a deadline?");
+        }
+        return question;
+    }
+
+    /** Returns the request an {@code @do} command asks the AI to turn into a command. */
+    private static String parseAiRequest(String input) throws FF15Exception {
+        String request = argumentAfter(input, CommandWord.DO);
+        if (request.isEmpty()) {
+            throw new FF15Exception("Do what? Say it like you'd say it to me. "
+                    + "e.g.: @do remind me to call Pam");
+        }
+        return request;
     }
 
     /** Builds the span of dates asked about by an {@code on} command. */

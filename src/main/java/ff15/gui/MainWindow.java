@@ -17,7 +17,8 @@ import javafx.util.Duration;
 /**
  * Controller for the main window. It owns the controls declared in
  * {@code MainWindow.fxml} and turns each line the user sends into a pair of
- * dialog boxes: theirs, then FF15's reply.
+ * dialog boxes: theirs, then FF15's reply. A command the AI suggests is put in
+ * the text field, so the user can check it, then send it or change it.
  *
  * <p>The composer is where the window gets its voice: the hint in the empty
  * text field changes after every message, in the manner of a colleague who
@@ -42,6 +43,10 @@ public class MainWindow extends AnchorPane {
         "Try: contact add Pam /phone 91234567",
         "Bears. Beets. Battlestar Galactica. Also, tasks.",
         "Try: find book, or on 2026-09",
+        "I am Beyonce, always. Also, I have an AI now.",
+        "Try: @ai can I add a phone number to a contact?",
+        "I don't need an AI. The AI needs me.",
+        "Try: @do remind me to call Pam tomorrow at 3pm",
     };
 
     /** Shown once the user has said goodbye and the composer has shut. */
@@ -106,6 +111,7 @@ public class MainWindow extends AnchorPane {
         showFf15Reply(ff15.getResponse(input));
         userInput.clear();
         showNextPrompt();
+        offerSuggestion(ff15.getSuggestedCommand());
 
         if (ff15.isFinished()) {
             endSession();
@@ -126,6 +132,19 @@ public class MainWindow extends AnchorPane {
         PauseTransition farewellPause = new PauseTransition(FAREWELL_PAUSE);
         farewellPause.setOnFinished(event -> Platform.exit());
         farewellPause.play();
+    }
+
+    /**
+     * Puts a command the AI suggested into the composer, with the cursor at the
+     * end, so one press of Enter sends it and anything else can edit it first.
+     * Does nothing when there is no suggestion.
+     */
+    private void offerSuggestion(String command) {
+        if (command.isEmpty()) {
+            return;
+        }
+        userInput.setText(command);
+        userInput.end();
     }
 
     /** Puts the next hint in the empty composer, starting over once they run out. */

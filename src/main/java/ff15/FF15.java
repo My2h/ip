@@ -2,6 +2,9 @@ package ff15;
 
 import java.io.IOException;
 
+import ff15.ai.AiAssistant;
+import ff15.ai.AiHelper;
+import ff15.ai.UnavailableAiHelper;
 import ff15.command.Command;
 import ff15.contact.Contact;
 import ff15.contact.ContactList;
@@ -14,8 +17,9 @@ import ff15.task.TaskList;
  *
  * <p>{@link Ui} talks to the user, {@link Parser} makes sense of what they type,
  * {@link TaskList} holds the tasks, {@link ContactList} holds the contacts, and
- * {@link Storage} keeps both on disk. This class owns one of each and does
- * nothing but pass work between them.
+ * {@link Storage} keeps both on disk, and {@link AiAssistant} asks the AI for
+ * the {@code @ai} and {@code @do} commands. This class owns one of each and
+ * does nothing but pass work between them.
  */
 public class FF15 {
     /** Where the tasks are kept between sessions. */
@@ -24,8 +28,16 @@ public class FF15 {
     /** Where the contacts are kept between sessions. */
     private static final String CONTACT_FILE = "data/contacts.txt";
 
+    /**
+     * Why the console session has no AI. The window version passes a real
+     * {@link AiHelper} in; the console session is kept free of the AI library,
+     * so it still builds and runs with nothing but the JDK.
+     */
+    private static final String NO_AI_REASON = "There's no AI here. It lives in the window version of me.";
+
     private final Ui ui;
     private final Storage storage;
+    private final AiAssistant assistant;
     private TaskList tasks;
     private ContactList contacts;
 
@@ -35,9 +47,36 @@ public class FF15 {
     /** Whether the last reply from {@link #getResponse(String)} was an error rather than a result. */
     private boolean isLastReplyError;
 
-    /** Greets the user and loads the tasks and contacts kept in the default save files. */
+    /** The command the AI suggested in the last reply from {@link #getResponse(String)}, if any. */
+    private String suggestedCommand = "";
+
+    /**
+     * Greets the user and loads the tasks and contacts kept in the default save
+     * files. The AI commands report that there is no AI.
+     */
     public FF15() {
-        this(DATA_FILE, CONTACT_FILE);
+        this(new UnavailableAiHelper(NO_AI_REASON));
+    }
+
+    /**
+     * Greets the user and loads the tasks and contacts kept in the default save
+     * files, with the AI commands answered through {@code aiHelper}.
+     *
+     * @param aiHelper what the {@code @ai} and {@code @do} commands send their prompts through.
+     */
+    public FF15(AiHelper aiHelper) {
+        this(DATA_FILE, CONTACT_FILE, aiHelper);
+    }
+
+    /**
+     * Greets the user and loads the tasks saved at {@code filePath} and the
+     * contacts saved at {@code contactFilePath}. The AI commands report that
+     * there is no AI.
+     *
+     * @see #FF15(String, String, AiHelper)
+     */
+    public FF15(String filePath, String contactFilePath) {
+        this(filePath, contactFilePath, new UnavailableAiHelper(NO_AI_REASON));
     }
 
     /**
@@ -47,10 +86,15 @@ public class FF15 {
      * session starts empty rather than stopping; a file with lines that cannot be
      * understood keeps the rest and reports the ones it skipped. The two files
      * are read independently, so a bad one does not cost the user the other.
+     *
+     * @param filePath where the tasks are saved.
+     * @param contactFilePath where the contacts are saved.
+     * @param aiHelper what the {@code @ai} and {@code @do} commands send their prompts through.
      */
-    public FF15(String filePath, String contactFilePath) {
+    public FF15(String filePath, String contactFilePath, AiHelper aiHelper) {
         ui = new Ui();
         storage = new Storage(filePath, contactFilePath);
+        assistant = new AiAssistant(aiHelper);
 
         ui.startBlock();
         ui.showWelcome();
@@ -84,7 +128,7 @@ public class FF15 {
             String input = ui.readCommand();
             ui.startBlock();
             try {
-                Command command = Parser.parse(input);
+                Command command = Parser.parse(input, assistant);
                 command.execute(tasks, contacts, ui, storage);
                 isExit = command.isExit();
             } catch (FF15Exception e) {
@@ -128,6 +172,15 @@ public class FF15 {
     }
 
     /**
+     * Returns the command the AI suggested in the last reply from
+     * {@link #getResponse(String)}, or an empty string if it suggested none, so a
+     * caller showing a window can offer it to the user ready to send.
+     */
+    public String getSuggestedCommand() {
+        return suggestedCommand;
+    }
+
+    /**
      * Carries out one command and returns what the chatbot would have said. This
      * is the same work the loop in {@link #run()} does for one line of input,
      * with the reply handed back instead of being left on the console.
@@ -135,7 +188,7 @@ public class FF15 {
     public String getResponse(String input) {
         isLastReplyError = false;
         try {
-            Command command = Parser.parse(input);
+            Command command = Parser.parse(input, assistant);
             command.execute(tasks, contacts, ui, storage);
             isFinished = command.isExit();
         } catch (FF15Exception e) {
@@ -145,6 +198,7 @@ public class FF15 {
             ui.showError("Couldn't save your tasks: " + e.getMessage());
             isLastReplyError = true;
         }
+        suggestedCommand = ui.takeSuggestion();
         String reply = ui.drainTranscript();
         // An empty reply would surface in the GUI as an empty speech bubble, so every
         // path above must leave the user something to read.

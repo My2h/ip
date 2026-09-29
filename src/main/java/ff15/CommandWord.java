@@ -27,6 +27,10 @@ public enum CommandWord {
     FIND("find", true),
     /** Adds, lists, deletes, or searches contacts, according to the word that follows. */
     CONTACT("contact", true),
+    /** Asks the AI a question about FF15's features. */
+    AI("@ai", true),
+    /** Asks the AI to turn a request in plain words into a command. */
+    DO("@do", true),
     /** Ends the session. */
     BYE("bye", false),
     /** Anything the chatbot does not recognise. Has no word of its own. */
